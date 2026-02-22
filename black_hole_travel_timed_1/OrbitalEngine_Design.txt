@@ -1,0 +1,192 @@
+﻿- Amjad Althabteh Engine :
+
+ORBITAL MECHANICS ENGINE
+Design & System Overview
+============================================================
+
+PROJECT VISION
+------------------------------------------------------------
+Build a real-time orbital simulation engine in C++ using SFML.
+The system will simulate realistic gravitational interactions
+between multiple celestial bodies.
+
+The engine must separate physics and rendering.
+The math must be correct.
+The visuals must feel cinematic.
+
+
+CORE OBJECTIVES
+------------------------------------------------------------
+• Implement full N-body gravitational physics
+• Use stable numerical integration
+• Support multiple planets and black holes
+• Track energy and angular momentum
+• Render smooth real-time visuals
+• Keep architecture modular and expandable
+
+
+SYSTEM ARCHITECTURE
+------------------------------------------------------------
+The engine is divided into three layers:
+
+1. Physics Layer
+   Handles gravity, acceleration, and motion updates.
+
+2. Rendering Layer
+   Handles drawing, trails, starfield, and glow effects.
+
+3. Simulation Controller
+   Controls the main loop and coordinates updates.
+
+Data Flow:
+
+    main()
+        → PhysicsEngine.update(dt)
+        → Renderer.draw(bodies)
+
+
+PHYSICS MODEL
+------------------------------------------------------------
+
+Newton’s Law of Gravitation:
+
+    F = G * (m1 * m2) / r^2
+
+Vector Form:
+
+    F_ij = G * m_i * m_j * (r_j - r_i) / |r|^3
+
+Acceleration Equation (N-body):
+
+    a_i = G Σ m_j (r_j - r_i) / |r_ij|^3
+
+Each body affects every other body.
+No shortcuts. Real orbital mechanics.
+
+
+INTEGRATION METHOD
+------------------------------------------------------------
+
+Current Method:
+Semi-Implicit Euler
+
+    v += a * dt
+    pos += v * dt
+
+Reason:
+More stable than explicit Euler.
+Better energy conservation for orbital systems.
+
+Future Upgrade:
+Runge-Kutta 4 (RK4)
+
+
+ENERGY & MOMENTUM TRACKING
+------------------------------------------------------------
+
+Kinetic Energy:
+    KE = 1/2 m v^2
+
+Potential Energy:
+    PE = -G * m_i * m_j / r
+
+Angular Momentum (2D):
+    L = m (x * v_y - y * v_x)
+
+Energy and momentum are tracked to verify stability.
+
+
+EVENT HORIZON & RELATIVITY
+------------------------------------------------------------
+
+Schwarzschild Radius:
+
+    r_s = 2GM / c^2
+
+If distance < r_s:
+Body enters event horizon region.
+
+Optional Time Dilation:
+
+    t' = t * sqrt(1 - (2GM / (r c^2)))
+
+Used for visual effects only.
+
+
+RENDERING DESIGN
+------------------------------------------------------------
+
+Space Background:
+• Procedural starfield
+• Random brightness variation
+• Subtle color differences
+
+Celestial Bodies:
+• Core circle
+• Glow ring
+• Custom color per body
+
+Trails:
+• Store previous positions
+• Fade over time
+• Creates cinematic motion effect
+
+Accretion Disk (Future):
+• Fast orbiting particles
+• Bright orange/red glow
+• High orbital velocity
+
+
+SIMULATION LOOP
+------------------------------------------------------------
+
+while (window open):
+    1. Calculate dt
+    2. Compute gravitational accelerations
+    3. Integrate velocities
+    4. Integrate positions
+    5. Update trails
+    6. Render scene
+
+
+PERFORMANCE NOTES
+------------------------------------------------------------
+
+N-body complexity:
+    O(N^2)
+
+Suitable for:
+    < 100 bodies in real time
+
+Future optimization:
+    Barnes-Hut algorithm
+    Parallel computation
+
+
+VISUAL GOALS
+------------------------------------------------------------
+
+• Deep space aesthetic
+• Smooth orbital motion
+• Stable elliptical paths
+• Glowing black hole
+• Motion trails
+• Real physics under the hood
+
+The engine must look cinematic,
+but behave scientifically.
+
+
+FUTURE EXPANSION
+------------------------------------------------------------
+
+• RK4 integrator
+• Planet collision merging
+• Slingshot mechanics
+• Shader-based distortion
+• Camera zoom and pan
+• Save/Load simulation states
+
+
+END OF DESIGN DOCUMENT
+============================================================
