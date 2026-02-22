@@ -1,60 +1,101 @@
 
 // spacehsip and more like mor epn prject based -- enhance two projects 
 // Pleas elie in doeth program for the spaceship and liek do math and more 
-// opengl and c++ code to show somethng 
-#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <glad/glad.h>
+#include <iostream>
 #include <vector>
-#include "Body.hpp"
-#include "PhysicsEngine.hpp"
-#include "Renderer.hpp"
+
+#include "Mat4.hpp"
+#include "Vec3.hpp"
+#include "Shader.hpp"
 
 int main()
 {
-    const unsigned WIDTH = 1400;
-    const unsigned HEIGHT = 900;
+    sf::ContextSettings settings;
+    settings.depthBits = 24;
+    settings.majorVersion = 4;
+    settings.minorVersion = 6;
 
-    sf::RenderWindow window(
-        sf::VideoMode(WIDTH, HEIGHT),
-        "Orbital N-Body Simulation");
+    sf::Window window(
+        sf::VideoMode(1280, 720),
+        "Cube Test",
+        sf::Style::Default,
+        settings
+    );
 
-    window.setFramerateLimit(60);
+    if (!gladLoadGL())
+    {
+        std::cout << "GLAD failed\n";
+        return -1;
+    }
 
-    std::vector<Body> bodies;
+    glEnable(GL_DEPTH_TEST);
 
-    // Central black hole.
-    bodies.emplace_back(
-        15000.f,
-        35.f,
-        sf::Vector2f(WIDTH / 2.f, HEIGHT / 2.f),
-        sf::Vector2f(0.f, 0.f),
-        sf::Color::Black,
-        true);
+    const char* vertexShaderSrc = R"(
+    #version 460 core
+    layout(location = 0) in vec3 aPos;
 
-    // Planet 1
-    bodies.emplace_back(
-        15.f,
-        10.f,
-        sf::Vector2f(WIDTH / 2.f + 300.f, HEIGHT / 2.f),
-        sf::Vector2f(0.f, -280.f),
-        sf::Color::Cyan);
+    uniform mat4 projection;
+    uniform mat4 view;
+    uniform mat4 model;
 
-    // Planet 2
-    bodies.emplace_back(
-        20.f,
-        12.f,
-        sf::Vector2f(WIDTH / 2.f - 450.f, HEIGHT / 2.f),
-        sf::Vector2f(0.f, 220.f),
-        sf::Color(255, 150, 50));
+    void main()
+    {
+        gl_Position = projection * view * model * vec4(aPos,1.0);
+    }
+    )";
 
-    PhysicsEngine physics(6000.f);
-    Renderer renderer(WIDTH, HEIGHT);
+    const char* fragmentShaderSrc = R"(
+    #version 460 core
+    out vec4 FragColor;
+    uniform vec3 objectColor;
 
-    sf::Clock clock;
+    void main()
+    {
+        FragColor = vec4(objectColor,1.0);
+    }
+    )";
+
+    Shader shader(vertexShaderSrc, fragmentShaderSrc);
+
+    float vertices[] = {
+        -1,-1,-1,  1,-1,-1,  1, 1,-1,
+         1, 1,-1, -1, 1,-1, -1,-1,-1,
+
+        -1,-1, 1,  1,-1, 1,  1, 1, 1,
+         1, 1, 1, -1, 1, 1, -1,-1, 1,
+
+        -1, 1, 1, -1, 1,-1, -1,-1,-1,
+        -1,-1,-1, -1,-1, 1, -1, 1, 1,
+
+         1, 1, 1,  1, 1,-1,  1,-1,-1,
+         1,-1,-1,  1,-1, 1,  1, 1, 1,
+
+        -1,-1,-1,  1,-1,-1,  1,-1, 1,
+         1,-1, 1, -1,-1, 1, -1,-1,-1,
+
+        -1, 1,-1,  1, 1,-1,  1, 1, 1,
+         1, 1, 1, -1, 1, 1, -1, 1,-1
+    };
+
+    unsigned int VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
     while (window.isOpen())
     {
-        float dt = clock.restart().asSeconds();
-
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -62,10 +103,30 @@ int main()
                 window.close();
         }
 
-        physics.update(bodies, dt);
+        glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        window.clear(sf::Color(5, 5, 15));
-        renderer.draw(window, bodies);
+        shader.use();
+
+        Mat4 projection = Mat4::perspective(
+            45.f * 3.14159f / 180.f,
+            1280.f / 720.f,
+            0.1f,
+            100.f
+        );
+
+        Mat4 view = Mat4::translate(Vec3(0, 0, -6));
+        Mat4 model = Mat4::identity();
+
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        shader.setMat4("model", model);
+
+        shader.setVec3("objectColor", 0.2f, 0.6f, 1.0f);
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         window.display();
     }
 

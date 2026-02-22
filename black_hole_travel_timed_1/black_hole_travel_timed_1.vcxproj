@@ -102,13 +102,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Dev\SFML-2.6.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;gdi32.lib;user32.lib;kernel32.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -126,15 +126,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Users\amjad\Downloads\glad\src\glad.c" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CelestialBody.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SolarSystemFactory.cpp" />
+    <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="StarField.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp" />
+    <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="CelestialBody.hpp" />
+    <ClInclude Include="Mat4.hpp" />
     <ClInclude Include="PhysicsEngine.hpp" />
     <ClInclude Include="Renderer.hpp" />
+    <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="SolarSystemFactory.hpp" />
+    <ClInclude Include="Sphere.hpp" />
+    <ClInclude Include="StarField.hpp" />
+    <ClInclude Include="Vec3.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="OrbitalEngine_Design.txt" />

@@ -1,17 +1,13 @@
 #pragma once
 #include <vector>
-#include "Body.hpp"
+#include "CelestialBody.hpp"
 
-// Handles gravity + integration.
 class PhysicsEngine
 {
-private:
+public:
     float G;
 
-    float length(const sf::Vector2f& v) const;
-
-public:
     PhysicsEngine(float gravitationalConstant);
 
-    void update(std::vector<Body>& bodies, float dt);
+    void update(std::vector<CelestialBody>& bodies, float dt);
 };

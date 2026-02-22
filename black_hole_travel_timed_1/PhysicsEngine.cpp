@@ -1,54 +1,38 @@
 #include "PhysicsEngine.hpp"
-#include <cmath>
-
-// Vector length.
-float PhysicsEngine::length(const sf::Vector2f& v) const
-{
-    return std::sqrt(v.x * v.x + v.y * v.y);
-}
 
 PhysicsEngine::PhysicsEngine(float gravitationalConstant)
     : G(gravitationalConstant)
 {
 }
 
-// Main N-body solver.
-void PhysicsEngine::update(std::vector<Body>& bodies, float dt)
+void PhysicsEngine::update(std::vector<CelestialBody>& bodies, float dt)
 {
-    // Reset accelerations.
     for (auto& body : bodies)
         body.resetAcceleration();
 
-    // Compute pairwise gravity.
     for (size_t i = 0; i < bodies.size(); ++i)
     {
-        for (size_t j = 0; j < bodies.size(); ++j)
+        for (size_t j = i + 1; j < bodies.size(); ++j)
         {
-            if (i == j) continue;
+            Vec3 direction = bodies[j].position - bodies[i].position;
+            float distanceSq = direction.lengthSquared();
 
-            sf::Vector2f direction =
-                bodies[j].position - bodies[i].position;
+            if (distanceSq < 0.01f) continue;
 
-            float distance = length(direction);
+            float force = G * bodies[i].mass * bodies[j].mass / distanceSq;
+            Vec3 forceDir = direction.normalize();
 
-            if (distance < 5.f) continue;
+            Vec3 accel_i = forceDir * (force / bodies[i].mass);
+            Vec3 accel_j = forceDir * (-force / bodies[j].mass);
 
-            direction /= distance;
-
-            float force =
-                (G * bodies[j].mass) /
-                (distance * distance);
-
-            bodies[i].acceleration += direction * force;
+            bodies[i].acceleration += accel_i;
+            bodies[j].acceleration += accel_j;
         }
     }
 
-    // Semi-implicit Euler integration.
     for (auto& body : bodies)
     {
         body.velocity += body.acceleration * dt;
         body.position += body.velocity * dt;
-
-        body.updateTrail();
     }
 }

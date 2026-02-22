@@ -1,0 +1,41 @@
+#include "Shader.hpp"
+#include <glad/glad.h>
+
+Shader::Shader(const char* vertexSrc, const char* fragmentSrc)
+{
+    unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &vertexSrc, nullptr);
+    glCompileShader(vertex);
+
+    unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &fragmentSrc, nullptr);
+    glCompileShader(fragment);
+
+    ID = glCreateProgram();
+    glAttachShader(ID, vertex);
+    glAttachShader(ID, fragment);
+    glLinkProgram(ID);
+
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
+}
+
+void Shader::use() const
+{
+    glUseProgram(ID);
+}
+
+void Shader::setMat4(const std::string& name, const Mat4& mat) const
+{
+    glUniformMatrix4fv(
+        glGetUniformLocation(ID, name.c_str()),
+        1,
+        GL_FALSE,
+        mat.m
+    );
+}
+
+void Shader::setVec3(const std::string& name, float x, float y, float z) const
+{
+    glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+}
