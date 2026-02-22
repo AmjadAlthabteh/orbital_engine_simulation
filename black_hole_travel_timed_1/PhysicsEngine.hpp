@@ -1,13 +1,19 @@
 #pragma once
+#include "Body.hpp"
 #include <vector>
-#include "CelestialBody.hpp"
 
 class PhysicsEngine
 {
+private:
+    std::vector<Body*> bodies;
+    float gravitationalConstant;
+
 public:
-    float G;
+    PhysicsEngine(float G = 0.1f);
 
-    PhysicsEngine(float gravitationalConstant);
+    void addBody(Body* body);
+    void update(float deltaTime);
 
-    void update(std::vector<CelestialBody>& bodies, float dt);
+private:
+    void applyGravity();
 };

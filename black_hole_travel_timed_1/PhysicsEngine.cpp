@@ -1,38 +1,45 @@
 #include "PhysicsEngine.hpp"
 
-PhysicsEngine::PhysicsEngine(float gravitationalConstant)
-    : G(gravitationalConstant)
+PhysicsEngine::PhysicsEngine(float G)
 {
+    gravitationalConstant = G;
 }
 
-void PhysicsEngine::update(std::vector<CelestialBody>& bodies, float dt)
+void PhysicsEngine::addBody(Body* body)
 {
-    for (auto& body : bodies)
-        body.resetAcceleration();
+    bodies.push_back(body);
+}
 
+void PhysicsEngine::update(float deltaTime)
+{
+    applyGravity();
+
+    for (auto* body : bodies)
+    {
+        body->integrate(deltaTime);
+    }
+}
+
+void PhysicsEngine::applyGravity()
+{
     for (size_t i = 0; i < bodies.size(); ++i)
     {
         for (size_t j = i + 1; j < bodies.size(); ++j)
         {
-            Vec3 direction = bodies[j].position - bodies[i].position;
-            float distanceSq = direction.lengthSquared();
+            Vec3 direction = bodies[j]->position - bodies[i]->position;
+            float distance = direction.length();
 
-            if (distanceSq < 0.01f) continue;
+            if (distance < 0.01f) continue;
 
-            float force = G * bodies[i].mass * bodies[j].mass / distanceSq;
-            Vec3 forceDir = direction.normalize();
+            float forceMagnitude =
+                gravitationalConstant *
+                (bodies[i]->mass * bodies[j]->mass) /
+                (distance * distance);
 
-            Vec3 accel_i = forceDir * (force / bodies[i].mass);
-            Vec3 accel_j = forceDir * (-force / bodies[j].mass);
+            Vec3 force = direction.normalize() * forceMagnitude;
 
-            bodies[i].acceleration += accel_i;
-            bodies[j].acceleration += accel_j;
+            bodies[i]->applyForce(force);
+            bodies[j]->applyForce(force * -1.0f);
         }
-    }
-
-    for (auto& body : bodies)
-    {
-        body.velocity += body.acceleration * dt;
-        body.position += body.velocity * dt;
     }
 }

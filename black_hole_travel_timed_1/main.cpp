@@ -4,11 +4,36 @@
 #include <SFML/Window.hpp>
 #include <glad/glad.h>
 #include <iostream>
-#include <vector>
 
-#include "Mat4.hpp"
-#include "Vec3.hpp"
+#include "Camera.hpp"
 #include "Shader.hpp"
+#include "Renderer.hpp"
+#include "SolarSystemFactory.hpp"
+#include "PhysicsEngine.hpp"
+
+const char* vertexShaderSource = R"(
+#version 460 core
+layout (location = 0) in vec3 aPos;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+}
+)";
+
+const char* fragmentShaderSource = R"(
+#version 460 core
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = vec4(0.9, 0.9, 1.0, 1.0);
+}
+)";
 
 int main()
 {
@@ -19,83 +44,50 @@ int main()
 
     sf::Window window(
         sf::VideoMode(1280, 720),
-        "Cube Test",
+        "Black Hole Engine",
         sf::Style::Default,
         settings
     );
 
+    window.setVerticalSyncEnabled(true);
+    window.setMouseCursorGrabbed(true);
+    window.setMouseCursorVisible(false);
+
     if (!gladLoadGL())
     {
-        std::cout << "GLAD failed\n";
+        std::cout << "Failed to load GLAD\n";
         return -1;
     }
 
     glEnable(GL_DEPTH_TEST);
 
-    const char* vertexShaderSrc = R"(
-    #version 460 core
-    layout(location = 0) in vec3 aPos;
+    Shader shader(vertexShaderSource, fragmentShaderSource);
+    Renderer renderer(&shader);
+    Camera camera;
 
-    uniform mat4 projection;
-    uniform mat4 view;
-    uniform mat4 model;
+    Mat4 projection = Mat4::perspective(
+        45.0f * 0.0174533f,
+        1280.0f / 720.0f,
+        0.1f,
+        1000.0f
+    );
 
-    void main()
-    {
-        gl_Position = projection * view * model * vec4(aPos,1.0);
-    }
-    )";
+    auto bodies = SolarSystemFactory::createSimpleSystem();
+    PhysicsEngine physics(0.1f);
 
-    const char* fragmentShaderSrc = R"(
-    #version 460 core
-    out vec4 FragColor;
-    uniform vec3 objectColor;
+    for (auto* body : bodies)
+        physics.addBody(&body->getPhysicsBody());
 
-    void main()
-    {
-        FragColor = vec4(objectColor,1.0);
-    }
-    )";
+    sf::Clock clock;
 
-    Shader shader(vertexShaderSrc, fragmentShaderSrc);
-
-    float vertices[] = {
-        -1,-1,-1,  1,-1,-1,  1, 1,-1,
-         1, 1,-1, -1, 1,-1, -1,-1,-1,
-
-        -1,-1, 1,  1,-1, 1,  1, 1, 1,
-         1, 1, 1, -1, 1, 1, -1,-1, 1,
-
-        -1, 1, 1, -1, 1,-1, -1,-1,-1,
-        -1,-1,-1, -1,-1, 1, -1, 1, 1,
-
-         1, 1, 1,  1, 1,-1,  1,-1,-1,
-         1,-1,-1,  1,-1, 1,  1, 1, 1,
-
-        -1,-1,-1,  1,-1,-1,  1,-1, 1,
-         1,-1, 1, -1,-1, 1, -1,-1,-1,
-
-        -1, 1,-1,  1, 1,-1,  1, 1, 1,
-         1, 1, 1, -1, 1, 1, -1, 1,-1
-    };
-
-    unsigned int VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    float lastX = 640;
+    float lastY = 360;
+    bool firstMouse = true;
 
     while (window.isOpen())
     {
+        float deltaTime = clock.restart().asSeconds();
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -103,29 +95,69 @@ int main()
                 window.close();
         }
 
-        glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
+        // -------- Mouse Look --------
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+        float xpos = mousePos.x;
+        float ypos = mousePos.y;
+
+        if (firstMouse)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos;
+
+        lastX = xpos;
+        lastY = ypos;
+
+        float sensitivity = 0.1f;
+        xoffset *= sensitivity;
+        yoffset *= sensitivity;
+
+        camera.yaw += xoffset;
+        camera.pitch += yoffset;
+
+        if (camera.pitch > 89.0f)
+            camera.pitch = 89.0f;
+        if (camera.pitch < -89.0f)
+            camera.pitch = -89.0f;
+
+        camera.updateVectors();
+
+        // -------- WASD Movement --------
+        float speed = 20.0f * deltaTime;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            camera.position = camera.position + camera.front * speed;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            camera.position = camera.position - camera.front * speed;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            camera.position = camera.position - camera.right * speed;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            camera.position = camera.position + camera.right * speed;
+
+        // -------- Physics --------
+        physics.update(deltaTime);
+        for (auto* body : bodies)
+            body->update(deltaTime);
+
+        glClearColor(0.0f, 0.0f, 0.02f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.use();
+        Mat4 view = camera.getViewMatrix();
 
-        Mat4 projection = Mat4::perspective(
-            45.f * 3.14159f / 180.f,
-            1280.f / 720.f,
-            0.1f,
-            100.f
-        );
-
-        Mat4 view = Mat4::translate(Vec3(0, 0, -6));
-        Mat4 model = Mat4::identity();
-
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", view);
-        shader.setMat4("model", model);
-
-        shader.setVec3("objectColor", 0.2f, 0.6f, 1.0f);
-
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (auto* body : bodies)
+        {
+            Mat4 model = body->getModelMatrix();
+            renderer.render(model, view, projection);
+        }
 
         window.display();
     }

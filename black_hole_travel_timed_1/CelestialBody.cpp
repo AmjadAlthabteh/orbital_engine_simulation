@@ -1,21 +1,34 @@
 #include "CelestialBody.hpp"
 
-CelestialBody::CelestialBody(
-    const Vec3& pos,
-    const Vec3& vel,
-    float r,
-    float m,
-    const Vec3& col)
-    : position(pos),
-    velocity(vel),
-    radius(r),
-    mass(m),
-    color(col)
+CelestialBody::CelestialBody(const std::string& name_,
+    float mass,
+    float radius_)
+    : name(name_),
+    radius(radius_),
+    physicsBody(mass)
 {
-    acceleration = { 0,0,0 };
+    setScale(Vec3(radius, radius, radius));
 }
 
-void CelestialBody::resetAcceleration()
+void CelestialBody::update(float deltaTime)
 {
-    acceleration = { 0,0,0 };
+    physicsBody.integrate(deltaTime);
+
+    // Sync physics position with entity transform
+    setPosition(physicsBody.position);
+}
+
+Body& CelestialBody::getPhysicsBody()
+{
+    return physicsBody;
+}
+
+const std::string& CelestialBody::getName() const
+{
+    return name;
+}
+
+float CelestialBody::getRadius() const
+{
+    return radius;
 }

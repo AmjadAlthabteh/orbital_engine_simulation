@@ -1,9 +1,10 @@
 #pragma once
-#include <vector>
+
 #include "CelestialBody.hpp"
+#include <vector>
 
 class SolarSystemFactory
 {
 public:
-    static void createSolarSystem(std::vector<CelestialBody>& bodies);
+    static std::vector<CelestialBody*> createSimpleSystem();
 };

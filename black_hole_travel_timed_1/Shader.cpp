@@ -1,5 +1,6 @@
 #include "Shader.hpp"
 #include <glad/glad.h>
+#include <iostream>
 
 Shader::Shader(const char* vertexSrc, const char* fragmentSrc)
 {
@@ -25,17 +26,8 @@ void Shader::use() const
     glUseProgram(ID);
 }
 
-void Shader::setMat4(const std::string& name, const Mat4& mat) const
+void Shader::setMat4(const std::string& name, const Mat4& matrix) const
 {
-    glUniformMatrix4fv(
-        glGetUniformLocation(ID, name.c_str()),
-        1,
-        GL_FALSE,
-        mat.m
-    );
-}
-
-void Shader::setVec3(const std::string& name, float x, float y, float z) const
-{
-    glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+    int loc = glGetUniformLocation(ID, name.c_str());
+    glUniformMatrix4fv(loc, 1, GL_FALSE, matrix.m);
 }

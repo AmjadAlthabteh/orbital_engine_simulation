@@ -63,6 +63,9 @@
     <ClCompile Include="StarField.cpp">
       <Filter>entities</Filter>
     </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp">
@@ -96,6 +99,9 @@
       <Filter>rendering</Filter>
     </ClInclude>
     <ClInclude Include="StarField.hpp">
+      <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.hpp">
       <Filter>entities</Filter>
     </ClInclude>
   </ItemGroup>

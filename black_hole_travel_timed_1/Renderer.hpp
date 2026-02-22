@@ -1,16 +1,18 @@
 #pragma once
-#include <vector>
-#include "CelestialBody.hpp"
 #include "Shader.hpp"
+#include "Sphere.hpp"
+#include "Camera.hpp"
 
 class Renderer
 {
-public:
-    Renderer();
+private:
+    Shader* shader;
+    Sphere sphere;
 
-    void render(
-        const std::vector<CelestialBody>& bodies,
-        const Mat4& projection,
-        const Mat4& view
-    );
+public:
+    Renderer(Shader* shader);
+
+    void render(const Mat4& model,
+        const Mat4& view,
+        const Mat4& projection);
 };

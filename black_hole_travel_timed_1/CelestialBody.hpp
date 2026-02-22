@@ -1,25 +1,25 @@
 #pragma once
-#include "Vec3.hpp"
 
-class CelestialBody
+#include "Entity.hpp"
+#include "Body.hpp"
+#include <string>
+
+class CelestialBody : public Entity
 {
-public:
-    Vec3 position;
-    Vec3 velocity;
-    Vec3 acceleration;
-
+private:
+    std::string name;
     float radius;
-    float mass;
+    Body physicsBody;
 
-    Vec3 color;
+public:
+    CelestialBody(const std::string& name,
+        float mass,
+        float radius);
 
-    CelestialBody(
-        const Vec3& pos,
-        const Vec3& vel,
-        float r,
-        float m,
-        const Vec3& col
-    );
+    void update(float deltaTime) override;
 
-    void resetAcceleration();
+    Body& getPhysicsBody();
+
+    const std::string& getName() const;
+    float getRadius() const;
 };

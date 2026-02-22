@@ -1,33 +1,31 @@
 #include "Body.hpp"
 
-Body::Body(float m,
-    float r,
-    const sf::Vector2f& pos,
-    const sf::Vector2f& vel,
-    sf::Color c,
-    bool blackHole)
-    : mass(m),
-    radius(r),
-    isBlackHole(blackHole),
-    position(pos),
-    velocity(vel),
-    acceleration(0.f, 0.f),
-    color(c)
+Body::Body(float m)
 {
+    mass = m;
+    position = Vec3(0, 0, 0);
+    velocity = Vec3(0, 0, 0);
+    forceAccum = Vec3(0, 0, 0);
 }
 
-// Clears acceleration each frame.
-void Body::resetAcceleration()
+void Body::applyForce(const Vec3& force)
 {
-    acceleration = { 0.f, 0.f };
+    forceAccum = forceAccum + force;
 }
 
-// Stores previous positions for trail effect.
-void Body::updateTrail()
+void Body::integrate(float deltaTime)
 {
-    trail.push_back(position);
+    if (mass <= 0.0f) return;
 
-    // Keep trail size limited.
-    if (trail.size() > 250)
-        trail.pop_front();
+    Vec3 acceleration = forceAccum * (1.0f / mass);
+
+    velocity = velocity + acceleration * deltaTime;
+    position = position + velocity * deltaTime;
+
+    clearForces();
+}
+
+void Body::clearForces()
+{
+    forceAccum = Vec3(0, 0, 0);
 }

@@ -1,24 +1,20 @@
 #include "Renderer.hpp"
 #include <glad/glad.h>
 
-Renderer::Renderer()
+Renderer::Renderer(Shader* shader_)
+    : shader(shader_), sphere(1.0f)
 {
 }
 
-void Renderer::render(
-    const std::vector<CelestialBody>& bodies,
-    const Mat4& projection,
-    const Mat4& view)
+void Renderer::render(const Mat4& model,
+    const Mat4& view,
+    const Mat4& projection)
 {
-    for (const auto& body : bodies)
-    {
-        Mat4 model = Mat4::translate(body.position);
-        Mat4 scale = Mat4::scale(body.radius);
+    shader->use();
 
-        // Model = Translate * Scale (simplified)
-        Mat4 finalModel = model;
+    shader->setMat4("model", model);
+    shader->setMat4("view", view);
+    shader->setMat4("projection", projection);
 
-        // Set uniforms through shader externally
-        // Drawing sphere mesh would happen here
-    }
+    sphere.draw();
 }
