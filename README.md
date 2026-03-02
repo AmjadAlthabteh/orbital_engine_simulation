@@ -1,73 +1,50 @@
-A custom 3D space simulation engine built in modern C++ using OpenGL.
+Orbital Engine Simulation
 
-          Tech Stack
+A custom 3D space simulation engine built from scratch in modern C++ using OpenGL.
+
+Tech Stack
 
 C++17
 
 OpenGL 4.x (Core Profile)
 
-GLAD (OpenGL loader)
+GLAD
 
-SFML (window & OpenGL context management)
+SFML (window + context management)
 
 Custom math library (Vec3, Mat4)
 
-Custom shader pipeline (GLSL)
+GLSL shader pipeline
 
-          What This Project Is
+Overview
 
-This project is a from-scratch 3D engine focused on rendering and simulating a space environment. It uses a fully modern OpenGL pipeline (no deprecated fixed-function code) and is structured with clean engine-style architecture.
+This project is a from-scratch 3D engine designed to render and simulate a space environment.
+It uses a fully modern OpenGL pipeline (no deprecated fixed-function code) and is structured with a clean, modular architecture inspired by real engine design.
 
-The goal is to simulate:
+The goal is to build a scalable foundation for:
 
-3D planets (sphere meshes)
-
-Camera navigation in space
-
-Spaceships
+Planet rendering (sphere meshes)
 
 Star fields
 
+Camera navigation in 3D space
+
+Spaceships and interactive objects
+
 Newtonian gravity and orbital motion
 
-Everything is modular and separated into systems (rendering, physics, math, universe, etc.) instead of putting everything in main.cpp.
+All systems are separated into dedicated modules (rendering, physics, math, universe, entities) rather than placing everything inside main.cpp.
 
-          Engine Structure
+Engine Architecture
 
-math/ → Custom vectors, matrices, camera system
+math/ → Custom vector, matrix, and camera systems
 
-rendering/ → Shader system, mesh handling, renderer
+rendering/ → Shader management, mesh handling, renderer
 
 physics/ → Gravity and motion simulation
 
-universe/ → Planets and solar system creation
+universe/ → Planet and solar system generation
 
-entities/ → Spaceship and interactive objects
+entities/ → Ships and interactive objects
 
-effects/ → Star field rendering
-
-         Current Status
-
-OpenGL pipeline fully working
-
-Depth testing enabled
-
-3D cube rendering confirmed
-
-Custom camera system implemented
-
-Projection and view matrices working
-
-Next steps:
-
-Sphere mesh generation
-
-Planet rendering
-
-Starfield background
-
-Gravity simulation
-
-Spaceship controls
-
-This is an ongoing engine project focused on low-level graphics programming, physics simulation, and clean system architecture.
+effects/ → Starfield rendering
