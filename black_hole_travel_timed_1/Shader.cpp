@@ -43,3 +43,9 @@ void Shader::setBool(const std::string& name, bool value) const
     int loc = glGetUniformLocation(ID, name.c_str());
     glUniform1i(loc, value ? 1 : 0);
 }
+
+void Shader::setFloat(const std::string& name, float value) const
+{
+    int loc = glGetUniformLocation(ID, name.c_str());
+    glUniform1f(loc, value);
+}

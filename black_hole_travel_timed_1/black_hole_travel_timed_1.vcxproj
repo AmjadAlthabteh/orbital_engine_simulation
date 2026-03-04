@@ -138,6 +138,11 @@
     <ClCompile Include="SolarSystemFactory.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="StarField.cpp" />
+    <ClCompile Include="Trail.cpp" />
+    <ClCompile Include="OrbitalPath.cpp" />
+    <ClCompile Include="CollisionPredictor.cpp" />
+    <ClCompile Include="PredictionMarker.cpp" />
+    <ClCompile Include="VectorRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp" />
@@ -152,6 +157,12 @@
     <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="StarField.hpp" />
     <ClInclude Include="Vec3.hpp" />
+    <ClInclude Include="Trail.hpp" />
+    <ClInclude Include="OrbitalPath.hpp" />
+    <ClInclude Include="CollisionPredictor.hpp" />
+    <ClInclude Include="PredictionMarker.hpp" />
+    <ClInclude Include="VectorRenderer.hpp" />
+    <ClInclude Include="Mesh.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="OrbitalEngine_Design.txt" />
