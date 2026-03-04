@@ -2,9 +2,11 @@
 
 CelestialBody::CelestialBody(const std::string& name_,
     float mass,
-    float radius_)
+    float radius_,
+    const Vec3& color_)
     : name(name_),
     radius(radius_),
+    color(color_),
     physicsBody(mass, radius_)
 {
     setScale(Vec3(radius, radius, radius));
@@ -31,4 +33,9 @@ const std::string& CelestialBody::getName() const
 float CelestialBody::getRadius() const
 {
     return radius;
+}
+
+const Vec3& CelestialBody::getColor() const
+{
+    return color;
 }

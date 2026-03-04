@@ -14,5 +14,6 @@ public:
 
     void render(const Mat4& model,
         const Mat4& view,
-        const Mat4& projection);
+        const Mat4& projection,
+        const Vec3& color = Vec3(1.0f, 1.0f, 1.0f));
 };

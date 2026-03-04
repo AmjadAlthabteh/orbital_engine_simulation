@@ -10,11 +10,13 @@ private:
     std::string name;
     float radius;
     Body physicsBody;
+    Vec3 color;
 
 public:
     CelestialBody(const std::string& name,
         float mass,
-        float radius);
+        float radius,
+        const Vec3& color = Vec3(1.0f, 1.0f, 1.0f));
 
     void update(float deltaTime) override;
 
@@ -22,4 +24,5 @@ public:
 
     const std::string& getName() const;
     float getRadius() const;
+    const Vec3& getColor() const;
 };

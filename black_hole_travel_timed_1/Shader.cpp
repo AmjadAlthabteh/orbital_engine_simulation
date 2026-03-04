@@ -31,3 +31,15 @@ void Shader::setMat4(const std::string& name, const Mat4& matrix) const
     int loc = glGetUniformLocation(ID, name.c_str());
     glUniformMatrix4fv(loc, 1, GL_FALSE, matrix.m);
 }
+
+void Shader::setVec3(const std::string& name, const Vec3& value) const
+{
+    int loc = glGetUniformLocation(ID, name.c_str());
+    glUniform3f(loc, value.x, value.y, value.z);
+}
+
+void Shader::setBool(const std::string& name, bool value) const
+{
+    int loc = glGetUniformLocation(ID, name.c_str());
+    glUniform1i(loc, value ? 1 : 0);
+}

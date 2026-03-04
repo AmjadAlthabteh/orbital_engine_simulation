@@ -19,8 +19,13 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+out vec3 FragPos;
+out vec3 Normal;
+
 void main()
 {
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    Normal = normalize(aPos);
     gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
 )";
@@ -29,9 +34,41 @@ const char* fragmentShaderSource = R"(
 #version 460 core
 out vec4 FragColor;
 
+in vec3 FragPos;
+in vec3 Normal;
+
+uniform vec3 objectColor;
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+uniform bool isSun;
+
 void main()
 {
-    FragColor = vec4(0.9, 0.9, 1.0, 1.0);
+    if (isSun)
+    {
+        // Sun emits light, no lighting calculation
+        FragColor = vec4(objectColor, 1.0);
+    }
+    else
+    {
+        // Ambient lighting
+        vec3 ambient = 0.15 * objectColor;
+
+        // Diffuse lighting
+        vec3 norm = normalize(Normal);
+        vec3 lightDir = normalize(lightPos - FragPos);
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = diff * objectColor;
+
+        // Specular lighting
+        vec3 viewDir = normalize(viewPos - FragPos);
+        vec3 reflectDir = reflect(-lightDir, norm);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+        vec3 specular = 0.3 * spec * vec3(1.0, 1.0, 1.0);
+
+        vec3 result = ambient + diffuse + specular;
+        FragColor = vec4(result, 1.0);
+    }
 }
 )";
 
@@ -153,10 +190,16 @@ int main()
 
         Mat4 view = camera.getViewMatrix();
 
+        shader.use();
+        shader.setVec3("viewPos", camera.position);
+        shader.setVec3("lightPos", Vec3(0, 0, 0)); // Sun at origin
+
         for (auto* body : bodies)
         {
             Mat4 model = body->getModelMatrix();
-            renderer.render(model, view, projection);
+            bool isSun = (body->getName() == "Sun");
+            shader.setBool("isSun", isSun);
+            renderer.render(model, view, projection, body->getColor());
         }
 
         window.display();
