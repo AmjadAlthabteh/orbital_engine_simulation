@@ -1,8 +1,9 @@
 #include "Body.hpp"
 
-Body::Body(float m)
+Body::Body(float m, float r)
 {
     mass = m;
+    radius = r;
     position = Vec3(0, 0, 0);
     velocity = Vec3(0, 0, 0);
     forceAccum = Vec3(0, 0, 0);

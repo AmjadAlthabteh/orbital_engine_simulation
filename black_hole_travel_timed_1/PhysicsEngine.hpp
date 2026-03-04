@@ -13,7 +13,10 @@ public:
 
     void addBody(Body* body);
     void update(float deltaTime);
+    bool checkCollision(const Body* a, const Body* b) const;
+    float predictCollisionTime(const Body* a, const Body* b) const;
 
 private:
     void applyGravity();
+    void handleCollisions();
 };

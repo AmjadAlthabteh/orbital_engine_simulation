@@ -5,7 +5,7 @@ CelestialBody::CelestialBody(const std::string& name_,
     float radius_)
     : name(name_),
     radius(radius_),
-    physicsBody(mass)
+    physicsBody(mass, radius_)
 {
     setScale(Vec3(radius, radius, radius));
 }

@@ -12,8 +12,9 @@ public:
     Vec3 position;
     Vec3 velocity;
     float mass;
+    float radius;
 
-    Body(float m = 1.0f);
+    Body(float m = 1.0f, float r = 1.0f);
 
     void applyForce(const Vec3& force);
     void integrate(float deltaTime);
