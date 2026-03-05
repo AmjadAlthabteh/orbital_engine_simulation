@@ -3,6 +3,9 @@
 
 #define DEG2RAD 0.01745329251f
 
+
+// make a stong 3d figure with strong featurers
+
 Camera::Camera()
 {
     position = Vec3(0.0f, 5.0f, 30.0f);
