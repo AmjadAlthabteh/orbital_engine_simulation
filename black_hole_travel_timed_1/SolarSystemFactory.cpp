@@ -4,13 +4,13 @@ std::vector<CelestialBody*> SolarSystemFactory::createSimpleSystem()
 {
     std::vector<CelestialBody*> system;
 
-    // Sun - Bright yellow-orange glow
-    CelestialBody* sun = new CelestialBody("Sun", 2000.0f, 3.5f, Vec3(1.0f, 0.9f, 0.2f));
+    // Sun - INTENSE yellow-orange glow (MORE REALISTIC)
+    CelestialBody* sun = new CelestialBody("Sun", 2000.0f, 4.0f, Vec3(1.0f, 0.95f, 0.3f));
     sun->getPhysicsBody().position = Vec3(0, 0, 0);
     sun->getPhysicsBody().velocity = Vec3(0, 0, 0);
 
-    // Mercury - Small gray rocky planet
-    CelestialBody* mercury = new CelestialBody("Mercury", 0.4f, 0.35f, Vec3(0.5f, 0.5f, 0.5f));
+    // Mercury - Small gray-brown rocky planet (MORE REALISTIC)
+    CelestialBody* mercury = new CelestialBody("Mercury", 0.4f, 0.35f, Vec3(0.55f, 0.5f, 0.45f));
     mercury->getPhysicsBody().position = Vec3(8, 0, 0);
     mercury->getPhysicsBody().velocity = Vec3(0, 5.2f, 0);
 
@@ -19,18 +19,18 @@ std::vector<CelestialBody*> SolarSystemFactory::createSimpleSystem()
     venus->getPhysicsBody().position = Vec3(12, 0, 0);
     venus->getPhysicsBody().velocity = Vec3(0, 4.3f, 0);
 
-    // Earth - Blue oceans, green continents
-    CelestialBody* earth = new CelestialBody("Earth", 1.0f, 0.6f, Vec3(0.2f, 0.5f, 0.95f));
+    // Earth - VIBRANT blue oceans, atmosphere glow
+    CelestialBody* earth = new CelestialBody("Earth", 1.0f, 0.65f, Vec3(0.1f, 0.4f, 0.9f));
     earth->getPhysicsBody().position = Vec3(18, 0, 0);
     earth->getPhysicsBody().velocity = Vec3(0, 3.6f, 0);
 
-    // Mars - Red dusty terrain
-    CelestialBody* mars = new CelestialBody("Mars", 0.6f, 0.45f, Vec3(0.85f, 0.35f, 0.2f));
+    // Mars - RUSTY red dusty terrain (MORE REALISTIC)
+    CelestialBody* mars = new CelestialBody("Mars", 0.6f, 0.45f, Vec3(0.9f, 0.3f, 0.15f));
     mars->getPhysicsBody().position = Vec3(24, 0, 0);
     mars->getPhysicsBody().velocity = Vec3(0, 3.0f, 0);
 
-    // Jupiter - Massive gas giant with orange/white storms
-    CelestialBody* jupiter = new CelestialBody("Jupiter", 15.0f, 2.2f, Vec3(0.85f, 0.65f, 0.4f));
+    // Jupiter - MASSIVE gas giant with orange/white storm bands
+    CelestialBody* jupiter = new CelestialBody("Jupiter", 15.0f, 2.5f, Vec3(0.9f, 0.7f, 0.45f));
     jupiter->getPhysicsBody().position = Vec3(38, 0, 0);
     jupiter->getPhysicsBody().velocity = Vec3(0, 2.2f, 0);
 
@@ -49,8 +49,8 @@ std::vector<CelestialBody*> SolarSystemFactory::createSimpleSystem()
     neptune->getPhysicsBody().position = Vec3(82, 0, 0);
     neptune->getPhysicsBody().velocity = Vec3(0, 1.2f, 0);
 
-    // Black Hole - Dark purple/black with event horizon
-    CelestialBody* blackHole = new CelestialBody("Black Hole", 8000.0f, 2.0f, Vec3(0.1f, 0.0f, 0.2f));
+    // Black Hole - OMINOUS dark purple/black with event horizon
+    CelestialBody* blackHole = new CelestialBody("Black Hole", 8000.0f, 2.5f, Vec3(0.15f, 0.05f, 0.25f));
     blackHole->getPhysicsBody().position = Vec3(-100, 30, 0);
     blackHole->getPhysicsBody().velocity = Vec3(0, 0, 0);
 

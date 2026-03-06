@@ -5,6 +5,7 @@
 #include <SFML/Window.hpp>
 #include <glad/glad.h>
 #include <iostream>
+#include <cmath>
 
 #include "Camera.hpp"
 #include "Shader.hpp"
@@ -17,6 +18,7 @@
 #include "OrbitalPath.hpp"
 #include "PredictionMarker.hpp"
 #include "VectorRenderer.hpp"
+#include "Spaceship.hpp"
 
 const char* vertexShaderSource = R"(
 #version 460 core
@@ -212,13 +214,45 @@ int main()
     Camera camera;
     camera.position = Vec3(0, 30, 80);
 
-    std::cout << "=== 3D ORBITAL PHYSICS SIMULATOR ===\n";
-    std::cout << "Controls:\n";
-    std::cout << "  WASD - Move camera\n";
-    std::cout << "  Mouse - Look around\n";
-    std::cout << "  Space - Toggle vector display\n";
-    std::cout << "  T - Toggle trajectory markers\n";
-    std::cout << "  ESC - Exit\n\n";
+    std::cout << "\n";
+    std::cout << "╔════════════════════════════════════════════════════════════╗\n";
+    std::cout << "║   3D ORBITAL PHYSICS SIMULATOR WITH SPACESHIP             ║\n";
+    std::cout << "╚════════════════════════════════════════════════════════════╝\n\n";
+
+    std::cout << "┌─ SPACESHIP CONTROLS ──────────────────────────────────────┐\n";
+    std::cout << "│  I / ↑ Arrow  │ Thrust forward                            │\n";
+    std::cout << "│  K / ↓ Arrow  │ Reverse thrust                            │\n";
+    std::cout << "│  J / ← Arrow  │ Rotate left (yaw)                         │\n";
+    std::cout << "│  L / → Arrow  │ Rotate right (yaw)                        │\n";
+    std::cout << "│  U            │ Pitch up                                  │\n";
+    std::cout << "│  O            │ Pitch down                                │\n";
+    std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
+
+    std::cout << "┌─ CAMERA CONTROLS ─────────────────────────────────────────┐\n";
+    std::cout << "│  WASD         │ Move camera (Free mode only)              │\n";
+    std::cout << "│  Mouse        │ Look around (Free mode only)              │\n";
+    std::cout << "│  C            │ Toggle mode (Free/Follow/Chase)           │\n";
+    std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
+
+    std::cout << "┌─ DISPLAY & TIME CONTROLS ─────────────────────────────────┐\n";
+    std::cout << "│  Space        │ Toggle velocity vectors                   │\n";
+    std::cout << "│  T            │ Toggle trajectory markers (planets)       │\n";
+    std::cout << "│  R            │ Toggle ship trajectory prediction         │\n";
+    std::cout << "│  + / =        │ Speed up time (up to 10x)                 │\n";
+    std::cout << "│  - / _        │ Slow down time (down to 0.1x)             │\n";
+    std::cout << "│  P            │ Pause/Unpause simulation                  │\n";
+    std::cout << "│  ESC          │ Exit                                      │\n";
+    std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
+
+    std::cout << "FEATURES:\n";
+    std::cout << "  ✓ Realistic Newtonian gravity (F = G·m₁·m₂/r²)\n";
+    std::cout << "  ✓ Elastic collision physics with visualization\n";
+    std::cout << "  ✓ Real-time collision markers (RED SPHERES)\n";
+    std::cout << "  ✓ Collision warnings and altitude alerts\n";
+    std::cout << "  ✓ Ship telemetry display (updates every 1 sec)\n";
+    std::cout << "  ✓ 5000+ star background field\n";
+    std::cout << "  ✓ Enhanced planet colors and sizes\n";
+    std::cout << "  ✓ Black hole gravity well detection\n\n";
 
     Mat4 projection = Mat4::perspective(
         45.0f * 0.0174533f,
@@ -241,6 +275,27 @@ int main()
             body->enableTrail(800);
         }
     }
+
+    // Create spaceship
+    Spaceship ship(1.0f, 0.5f, Vec3(0.2f, 0.8f, 1.0f));  // Mass=1, Radius=0.5, Cyan color
+    ship.getPhysicsBody().position = Vec3(-20, 0, 50);   // Start position away from planets
+    ship.getPhysicsBody().velocity = Vec3(0, 2, 0);      // Initial orbital velocity
+    ship.enableExhaustTrail(300);                        // Enable orange exhaust trail
+    physics.addBody(&ship.getPhysicsBody());             // Add to physics simulation
+
+    std::cout << "╔═══════════════════════════════════════════════════════════╗\n";
+    std::cout << "║  SPACESHIP INITIALIZED                                    ║\n";
+    std::cout << "╠═══════════════════════════════════════════════════════════╣\n";
+    std::cout << "║  Position:  (-20.0, 0.0, 50.0)                            ║\n";
+    std::cout << "║  Velocity:  (0.0, 2.0, 0.0) - Stable orbit                ║\n";
+    std::cout << "║  Mass:      1.0 kg                                        ║\n";
+    std::cout << "║  Radius:    0.5 units                                     ║\n";
+    std::cout << "║  Color:     Cyan (pilot ship)                             ║\n";
+    std::cout << "║                                                           ║\n";
+    std::cout << "║  Ship is affected by gravity from 13 celestial bodies:    ║\n";
+    std::cout << "║  • Sun (2000 mass) • 8 Planets • Black Hole (8000 mass)  ║\n";
+    std::cout << "╚═══════════════════════════════════════════════════════════╝\n\n";
+    std::cout << "Ready to launch! Press I to thrust forward...\n\n";
 
     // Create starfield
     StarField starfield(5000);
@@ -282,6 +337,11 @@ int main()
     // Flags for toggling visualizations
     bool showVectors = true;
     bool showTrajectoryMarkers = true;
+    bool showShipTrajectory = true;
+
+    // Time controls
+    float timeScale = 1.0f;      // 1.0 = normal speed
+    bool isPaused = false;
 
     sf::Clock clock;
     float collisionPredictTimer = 0.0f;
@@ -294,7 +354,8 @@ int main()
 
     while (window.isOpen())
     {
-        float deltaTime = clock.restart().asSeconds();
+        float rawDeltaTime = clock.restart().asSeconds();
+        float deltaTime = isPaused ? 0.0f : rawDeltaTime * timeScale;
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -314,6 +375,33 @@ int main()
                     showTrajectoryMarkers = !showTrajectoryMarkers;
                     std::cout << "Trajectory markers: " << (showTrajectoryMarkers ? "ON" : "OFF") << "\n";
                 }
+                if (event.key.code == sf::Keyboard::R)
+                {
+                    showShipTrajectory = !showShipTrajectory;
+                    std::cout << "Ship trajectory prediction: " << (showShipTrajectory ? "ON" : "OFF") << "\n";
+                }
+                if (event.key.code == sf::Keyboard::C)
+                {
+                    camera.toggleMode();
+                    std::cout << "Camera mode: " << camera.getModeName() << "\n";
+                }
+                if (event.key.code == sf::Keyboard::P)
+                {
+                    isPaused = !isPaused;
+                    std::cout << "Simulation: " << (isPaused ? "PAUSED" : "RUNNING") << "\n";
+                }
+                if (event.key.code == sf::Keyboard::Equal || event.key.code == sf::Keyboard::Add)
+                {
+                    timeScale *= 1.5f;
+                    if (timeScale > 10.0f) timeScale = 10.0f;
+                    std::cout << "Time scale: " << timeScale << "x\n";
+                }
+                if (event.key.code == sf::Keyboard::Hyphen || event.key.code == sf::Keyboard::Subtract)
+                {
+                    timeScale /= 1.5f;
+                    if (timeScale < 0.1f) timeScale = 0.1f;
+                    std::cout << "Time scale: " << timeScale << "x\n";
+                }
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
@@ -321,58 +409,181 @@ int main()
             }
         }
 
-        // -------- Mouse Look --------
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
-        float xpos = mousePos.x;
-        float ypos = mousePos.y;
-
-        if (firstMouse)
+        // -------- Camera Control (only in FREE mode) --------
+        if (camera.getMode() == CameraMode::FREE)
         {
+            // Mouse Look
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+            float xpos = mousePos.x;
+            float ypos = mousePos.y;
+
+            if (firstMouse)
+            {
+                lastX = xpos;
+                lastY = ypos;
+                firstMouse = false;
+            }
+
+            float xoffset = xpos - lastX;
+            float yoffset = lastY - ypos;
+
             lastX = xpos;
             lastY = ypos;
-            firstMouse = false;
+
+            float sensitivity = 0.1f;
+            xoffset *= sensitivity;
+            yoffset *= sensitivity;
+
+            camera.yaw += xoffset;
+            camera.pitch += yoffset;
+
+            if (camera.pitch > 89.0f)
+                camera.pitch = 89.0f;
+            if (camera.pitch < -89.0f)
+                camera.pitch = -89.0f;
+
+            camera.updateVectors();
+
+            // WASD Movement (use rawDeltaTime for camera, not affected by time scale)
+            float speed = 20.0f * rawDeltaTime;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                camera.position = camera.position + camera.front * speed;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                camera.position = camera.position - camera.front * speed;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+                camera.position = camera.position - camera.right * speed;
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                camera.position = camera.position + camera.right * speed;
+        }
+        else if (camera.getMode() == CameraMode::FOLLOW_SHIP)
+        {
+            camera.updateFollowMode(ship);
+        }
+        else if (camera.getMode() == CameraMode::CHASE_SHIP)
+        {
+            camera.updateChaseMode(ship);
         }
 
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos;
+        // -------- Spaceship Controls --------
+        // Reset thrusting state each frame
+        ship.stopThrust();
 
-        lastX = xpos;
-        lastY = ypos;
+        // Thrust controls (I/K or Up/Down arrows)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::I) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            ship.applyThrust(deltaTime);
+        }
 
-        float sensitivity = 0.1f;
-        xoffset *= sensitivity;
-        yoffset *= sensitivity;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            ship.applyReverseThrust(deltaTime);
+        }
 
-        camera.yaw += xoffset;
-        camera.pitch += yoffset;
+        // Rotation controls (J/L or Left/Right arrows for yaw)
+        // Use rawDeltaTime for ship controls so they're responsive even when paused/slowed
+        float rotationAmount = ship.getRotationSpeed() * rawDeltaTime;
 
-        if (camera.pitch > 89.0f)
-            camera.pitch = 89.0f;
-        if (camera.pitch < -89.0f)
-            camera.pitch = -89.0f;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            ship.rotate(-rotationAmount, 0.0f);  // Rotate left (negative yaw)
+        }
 
-        camera.updateVectors();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            ship.rotate(rotationAmount, 0.0f);  // Rotate right (positive yaw)
+        }
 
-        // -------- WASD Movement --------
-        float speed = 20.0f * deltaTime;
+        // Pitch controls (U/O for up/down)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
+        {
+            ship.rotate(0.0f, rotationAmount);  // Pitch up
+        }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            camera.position = camera.position + camera.front * speed;
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            camera.position = camera.position - camera.front * speed;
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            camera.position = camera.position - camera.right * speed;
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            camera.position = camera.position + camera.right * speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
+        {
+            ship.rotate(0.0f, -rotationAmount);  // Pitch down
+        }
 
         // -------- Physics Update --------
         physics.update(deltaTime);
         for (auto* body : bodies)
             body->update(deltaTime);
+
+        // Update spaceship
+        ship.update(deltaTime);
+
+        // *** REAL-TIME DISTANCE/ALTITUDE DISPLAY ***
+        static float displayTimer = 0.0f;
+        displayTimer += rawDeltaTime;
+        if (displayTimer > 1.0f)  // Update every second
+        {
+            displayTimer = 0.0f;
+
+            // Find nearest celestial body
+            float nearestDist = 999999.0f;
+            std::string nearestName = "Unknown";
+            Vec3 shipPos = ship.getPhysicsBody().position;
+
+            for (auto* body : bodies)
+            {
+                Vec3 diff = body->getPhysicsBody().position - shipPos;
+                float dist = diff.length();
+                if (dist < nearestDist)
+                {
+                    nearestDist = dist;
+                    nearestName = body->getName();
+                }
+            }
+
+            // Calculate altitude (distance from nearest body's surface)
+            float altitude = nearestDist;  // Distance from center
+            for (auto* body : bodies)
+            {
+                if (body->getName() == nearestName)
+                {
+                    altitude = nearestDist - body->getRadius();  // Subtract radius
+                    break;
+                }
+            }
+
+            // Display telemetry
+            std::cout << "\n=== SHIP TELEMETRY ===\n";
+            std::cout << "Position: (" << shipPos.x << ", " << shipPos.y << ", " << shipPos.z << ")\n";
+            std::cout << "Velocity: " << ship.getSpeed() << " m/s\n";
+            std::cout << "Nearest body: " << nearestName << " (" << nearestDist << " units)\n";
+            std::cout << "Altitude: " << altitude << " units\n";
+
+            // *** COLLISION WARNING SYSTEM ***
+            if (altitude < 5.0f && altitude > 0.0f)
+            {
+                std::cout << "*** DANGER: LOW ALTITUDE WARNING! ***\n";
+                std::cout << "*** COLLISION IMMINENT IN " << (altitude / ship.getSpeed()) << " SECONDS! ***\n";
+            }
+            else if (altitude < 10.0f && altitude > 0.0f)
+            {
+                std::cout << "** CAUTION: Approaching " << nearestName << " **\n";
+            }
+
+            // Check if we're being pulled into black hole
+            if (nearestName == "Black Hole" && nearestDist < 30.0f)
+            {
+                std::cout << "!!! BLACK HOLE GRAVITY WELL DETECTED !!!\n";
+                std::cout << "!!! EXTREME GRAVITATIONAL FORCES !!!\n";
+            }
+
+            std::cout << "Time scale: " << timeScale << "x " << (isPaused ? "[PAUSED]" : "[RUNNING]") << "\n";
+            std::cout << "Camera mode: " << camera.getModeName() << "\n";
+            std::cout << "=====================\n";
+        }
 
         // Update collision predictions and markers every 0.5 seconds
         collisionPredictTimer += deltaTime;
@@ -409,42 +620,83 @@ int main()
                     );
                 }
             }
+
+            // Add spaceship velocity vector (brighter when thrusting)
+            vectorRenderer.addVelocityVector(
+                ship.getPhysicsBody().position,
+                ship.getPhysicsBody().velocity
+            );
+
             vectorUpdateTimer = 0.0f;
         }
 
         // Update trajectory prediction points every 1 second
         trajectoryUpdateTimer += deltaTime;
-        if (trajectoryUpdateTimer > 1.0f && showTrajectoryMarkers)
+        if (trajectoryUpdateTimer > 1.0f)
         {
             // Calculate and show trajectory points for selected bodies
             std::vector<Body*> allBodies;
             for (auto* body : bodies)
                 allBodies.push_back(&body->getPhysicsBody());
 
-            for (auto* body : bodies)
+            if (showTrajectoryMarkers)
             {
-                if (body->getName() == "Earth" || body->getName() == "Mars")
+                for (auto* body : bodies)
                 {
-                    std::vector<Vec3> trajectoryPoints;
-                    collisionPredictor.calculateTrajectoryPoints(
-                        body->getPhysicsBody(),
-                        allBodies,
-                        0.1f,
-                        0.5f,
-                        50,
-                        trajectoryPoints
-                    );
+                    if (body->getName() == "Earth" || body->getName() == "Mars")
+                    {
+                        std::vector<Vec3> trajectoryPoints;
+                        collisionPredictor.calculateTrajectoryPoints(
+                            body->getPhysicsBody(),
+                            allBodies,
+                            0.1f,
+                            0.5f,
+                            50,
+                            trajectoryPoints
+                        );
 
-                    // Add markers for every 5th point to avoid clutter
-                    for (size_t i = 0; i < trajectoryPoints.size(); i += 5)
+                        // Add markers for every 5th point to avoid clutter
+                        // Safety check: ensure trajectoryPoints is not empty
+                        if (!trajectoryPoints.empty())
+                        {
+                            for (size_t i = 0; i < trajectoryPoints.size(); i += 5)
+                            {
+                                predictionMarkers.addTrajectoryPoint(
+                                    trajectoryPoints[i],
+                                    body->getColor() * 0.7f
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add spaceship trajectory prediction
+            if (showShipTrajectory)
+            {
+                std::vector<Vec3> shipTrajectoryPoints;
+                collisionPredictor.calculateTrajectoryPoints(
+                    ship.getPhysicsBody(),
+                    allBodies,
+                    0.1f,
+                    0.5f,
+                    50,
+                    shipTrajectoryPoints
+                );
+
+                // Add markers for every 3rd point (more frequent for ship)
+                if (!shipTrajectoryPoints.empty())
+                {
+                    for (size_t i = 0; i < shipTrajectoryPoints.size(); i += 3)
                     {
                         predictionMarkers.addTrajectoryPoint(
-                            trajectoryPoints[i],
-                            body->getColor() * 0.7f
+                            shipTrajectoryPoints[i],
+                            ship.getColor() * 0.8f  // Bright cyan trail
                         );
                     }
                 }
             }
+
             trajectoryUpdateTimer = 0.0f;
         }
 
@@ -493,6 +745,39 @@ int main()
             renderer.render(model, view, projection, body->getColor());
         }
 
+        // Render spaceship with oriented model matrix
+        Mat4 shipModel = ship.getOrientedModelMatrix();
+        shader.setBool("isSun", false);
+        renderer.render(shipModel, view, projection, ship.getColor());
+
+        // *** RENDER COLLISION POINTS - RED PULSING SPHERES ***
+        const auto& collisions = physics.getRecentCollisions();
+        for (const auto& collision : collisions)
+        {
+            // Calculate fade-out based on age (0 = new, 3 = old)
+            float age = collision.timestamp;
+            float fade = 1.0f - (age / 3.0f);  // Fades over 3 seconds
+            if (fade < 0.0f) fade = 0.0f;
+
+            // Pulsing effect - make sphere throb
+            float pulse = 1.0f + 0.3f * std::sin(age * 10.0f);  // Fast pulse
+            float markerSize = 0.8f * pulse * fade;  // Size based on fade
+
+            // Bright red color that fades to orange
+            Vec3 collisionColor(1.0f, fade * 0.2f, 0.0f);  // Red to orange
+
+            // Create model matrix for collision marker
+            Mat4 collisionModel = Mat4::translation(
+                collision.position.x,
+                collision.position.y,
+                collision.position.z
+            ) * Mat4::scale(markerSize);
+
+            // Render as glowing sphere (like sun)
+            shader.setBool("isSun", true);  // Makes it glow!
+            renderer.render(collisionModel, view, projection, collisionColor);
+        }
+
         // Render orbital trails
         glDepthMask(GL_FALSE);
         lineShader.use();
@@ -508,6 +793,10 @@ int main()
                 body->renderTrail();
             }
         }
+
+        // Render spaceship exhaust trail (orange/red)
+        lineShader.setVec3("lineColor", Vec3(1.0f, 0.5f, 0.1f));
+        ship.renderExhaustTrail();
 
         // Render collision prediction lines
         if (!collisionPredictor.getPredictions().empty())
@@ -542,6 +831,13 @@ int main()
 
         window.display();
     }
+
+    // Cleanup: Delete all dynamically allocated celestial bodies
+    for (auto* body : bodies)
+    {
+        delete body;
+    }
+    bodies.clear();
 
     return 0;
 }

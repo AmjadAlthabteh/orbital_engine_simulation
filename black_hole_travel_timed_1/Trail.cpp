@@ -49,13 +49,21 @@ void Trail::clear()
 
 void Trail::updateBuffers()
 {
-    if (!needsUpdate || positions.empty())
+    // CRITICAL SAFETY: Check for empty vector before accessing
+    if (!needsUpdate || positions.empty() || positions.size() == 0)
         return;
+
+    // EXTRA SAFETY: Verify we have valid data
+    if (positions.size() > 10000)  // Sanity check - trail should never be this long
+    {
+        positions.clear();
+        return;
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER,
         positions.size() * 3 * sizeof(float),
-        &positions[0],
+        positions.data(),  // Use .data() instead of &[0] - safer in C++11+
         GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 

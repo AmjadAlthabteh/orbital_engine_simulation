@@ -104,13 +104,21 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 
 void CollisionPredictor::updateBuffers()
 {
-    if (lineVertices.empty())
+    // CRITICAL SAFETY: Multiple checks before buffer access
+    if (lineVertices.empty() || lineVertices.size() == 0)
         return;
+
+    // EXTRA SAFETY: Verify reasonable size
+    if (lineVertices.size() > 100000)  // Sanity check
+    {
+        lineVertices.clear();
+        return;
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER,
         lineVertices.size() * 3 * sizeof(float),
-        &lineVertices[0],
+        lineVertices.data(),  // Use .data() - safer than &[0]
         GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

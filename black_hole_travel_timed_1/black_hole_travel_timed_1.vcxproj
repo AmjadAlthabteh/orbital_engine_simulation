@@ -143,6 +143,7 @@
     <ClCompile Include="CollisionPredictor.cpp" />
     <ClCompile Include="PredictionMarker.cpp" />
     <ClCompile Include="VectorRenderer.cpp" />
+    <ClCompile Include="Spaceship.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="PredictionMarker.hpp" />
     <ClInclude Include="VectorRenderer.hpp" />
     <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="Spaceship.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="OrbitalEngine_Design.txt" />
