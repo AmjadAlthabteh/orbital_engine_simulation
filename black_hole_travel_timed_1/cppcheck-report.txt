@@ -1,0 +1,917 @@
+Body.cpp:7:5: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'position' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    position = Vec3(0, 0, 0);
+    ^
+Body.hpp:17:5: style: Class 'Body' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    Body(float m = 1.0f, float r = 1.0f);
+    ^
+Camera.cpp:9:5: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'position' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    position = Vec3(0.0f, 5.0f, 30.0f);
+    ^
+Trail.hpp:17:5: style: Class 'Trail' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    Trail(size_t maxPoints = 500, const Vec3& color = Vec3(1.0f, 1.0f, 1.0f));
+    ^
+Spaceship.hpp:38:5: style: Class 'Spaceship' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    Spaceship(float mass = 1.0f, float radius = 0.5f, const Vec3& color = Vec3(0.2f, 0.8f, 1.0f));
+    ^
+Camera.hpp:37:10: performance: Function 'getPosition()' should return member 'position' by const reference. [returnByReference]
+    Vec3 getPosition() const;
+         ^
+CollisionPredictor.cpp:31:26: style: Unused private function: 'CollisionPredictor::calculateFuturePosition' [unusedPrivateFunction]
+Vec3 CollisionPredictor::calculateFuturePosition(const Body& body, const Body& otherBody, float G, float time)
+                         ^
+CollisionPredictor.hpp:35:10: note: Unused private function: 'CollisionPredictor::calculateFuturePosition'
+    Vec3 calculateFuturePosition(const Body& body, const Body& otherBody, float G, float time);
+         ^
+CollisionPredictor.cpp:31:26: note: Unused private function: 'CollisionPredictor::calculateFuturePosition'
+Vec3 CollisionPredictor::calculateFuturePosition(const Body& body, const Body& otherBody, float G, float time)
+                         ^
+CollisionPredictor.cpp:108:53: style: Condition 'lineVertices.size()==0' is always false [knownConditionTrueFalse]
+    if (lineVertices.empty() || lineVertices.size() == 0)
+                                                    ^
+CollisionPredictor.cpp:108:27: note: Assuming that condition 'lineVertices.empty()' is not redundant
+    if (lineVertices.empty() || lineVertices.size() == 0)
+                          ^
+CollisionPredictor.cpp:108:53: note: Condition 'lineVertices.size()==0' is always false
+    if (lineVertices.empty() || lineVertices.size() == 0)
+                                                    ^
+CollisionPredictor.cpp:49:64: style: Parameter 'bodies' can be declared as reference to const [constParameterReference]
+void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, float maxTime)
+                                                               ^
+CollisionPredictor.cpp:141:90: style: Parameter 'otherBodies' can be declared as reference to const [constParameterReference]
+void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector<Body*>& otherBodies, float G, float timeStep, int numPoints, std::vector<Vec3>& outPoints)
+                                                                                         ^
+CollisionPredictor.cpp:156:20: style: Variable 'other' can be declared as pointer to const [constVariablePointer]
+        for (Body* other : otherBodies)
+                   ^
+CollisionPredictor.cpp:43:25: style: Variable 'futureVelocity' is assigned a value that is never used. [unreadVariable]
+    Vec3 futureVelocity = body.velocity + acceleration * time;
+                        ^
+CollisionPredictor.cpp:43:10: style: Variable 'futureVelocity' is assigned a value that is never used. [unreadVariable]
+    Vec3 futureVelocity = body.velocity + acceleration * time;
+         ^
+CoordinateGrid.cpp:207:22: style: Unused private function: 'CoordinateGrid::updateBuffers' [unusedPrivateFunction]
+void CoordinateGrid::updateBuffers()
+                     ^
+CoordinateGrid.hpp:41:10: note: Unused private function: 'CoordinateGrid::updateBuffers'
+    void updateBuffers();
+         ^
+CoordinateGrid.cpp:207:22: note: Unused private function: 'CoordinateGrid::updateBuffers'
+void CoordinateGrid::updateBuffers()
+                     ^
+CoordinateGrid.cpp:7:15: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'gridVBO' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    gridVAO = gridVBO = 0;
+              ^
+CoordinateGrid.cpp:8:5: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'axesVAO' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    axesVAO = axesVBO = 0;
+    ^
+CoordinateGrid.cpp:8:15: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'axesVBO' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    axesVAO = axesVBO = 0;
+              ^
+CoordinateGrid.cpp:9:5: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'pointVAO' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    pointVAO = pointVBO = 0;
+    ^
+CoordinateGrid.cpp:9:16: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'pointVBO' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    pointVAO = pointVBO = 0;
+               ^
+CoordinateGrid.hpp:24:5: style: Class 'CoordinateGrid' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    CoordinateGrid(float gridSize = 100.0f, float spacing = 10.0f);
+    ^
+EngineParticles.hpp:28:5: style: Class 'EngineParticles' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    EngineParticles(int maxCount = 500);
+    ^
+Entity.cpp:5:5: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'position' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    position = Vec3(0.0f, 0.0f, 0.0f);
+    ^
+Entity.hpp:18:10: performance: Function 'getPosition()' should return member 'position' by const reference. [returnByReference]
+    Vec3 getPosition() const;
+         ^
+GalaxyBackground.hpp:21:5: style: Class 'GalaxyBackground' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    GalaxyBackground(int starCount = 20000);
+    ^
+HUD.cpp:5:6: warning: Member variable 'HUD::textureID' is not initialized in the constructor. Member variables of native types, pointers, or references are left uninitialized when the class is instantiated. That may cause bugs or undefined behavior. [uninitMemberVar]
+HUD::HUD()
+     ^
+HUD.cpp:101:20: style: Variable 'endAngle' is assigned a value that is never used. [unreadVariable]
+    float endAngle = startAngle + (270.0f * 0.0174533f * speedPercent);
+                   ^
+HUD.cpp:118:18: style: Variable 'x3' is assigned a value that is never used. [unreadVariable]
+        float x3 = centerX + (radius * 0.8f) * std::cos(angle2);
+                 ^
+HUD.cpp:119:18: style: Variable 'y3' is assigned a value that is never used. [unreadVariable]
+        float y3 = centerY + (radius * 0.8f) * std::sin(angle2);
+                 ^
+HUD.cpp:120:18: style: Variable 'x4' is assigned a value that is never used. [unreadVariable]
+        float x4 = centerX + radius * std::cos(angle2);
+                 ^
+HUD.cpp:121:18: style: Variable 'y4' is assigned a value that is never used. [unreadVariable]
+        float y4 = centerY + radius * std::sin(angle2);
+                 ^
+HUD.cpp:101:11: style: Variable 'endAngle' is assigned a value that is never used. [unreadVariable]
+    float endAngle = startAngle + (270.0f * 0.0174533f * speedPercent);
+          ^
+HUD.cpp:118:15: style: Variable 'x3' is assigned a value that is never used. [unreadVariable]
+        float x3 = centerX + (radius * 0.8f) * std::cos(angle2);
+              ^
+HUD.cpp:119:15: style: Variable 'y3' is assigned a value that is never used. [unreadVariable]
+        float y3 = centerY + (radius * 0.8f) * std::sin(angle2);
+              ^
+HUD.cpp:120:15: style: Variable 'x4' is assigned a value that is never used. [unreadVariable]
+        float x4 = centerX + radius * std::cos(angle2);
+              ^
+HUD.cpp:121:15: style: Variable 'y4' is assigned a value that is never used. [unreadVariable]
+        float y4 = centerY + radius * std::sin(angle2);
+              ^
+HohmannTransfer.cpp:90:24: style: Unused private function: 'HohmannTransfer::calculateOrbitalRadius' [unusedPrivateFunction]
+float HohmannTransfer::calculateOrbitalRadius(const Vec3& position, const Vec3& centralPos)
+                       ^
+HohmannTransfer.hpp:51:11: note: Unused private function: 'HohmannTransfer::calculateOrbitalRadius'
+    float calculateOrbitalRadius(const Vec3& position, const Vec3& centralPos);
+          ^
+HohmannTransfer.cpp:90:24: note: Unused private function: 'HohmannTransfer::calculateOrbitalRadius'
+float HohmannTransfer::calculateOrbitalRadius(const Vec3& position, const Vec3& centralPos)
+                       ^
+HohmannTransfer.hpp:33:10: performance: Function 'calculateBurnPoint()' should return member 'position' by const reference. [returnByReference]
+    Vec3 calculateBurnPoint(const Body& from, const Body& centralBody);
+         ^
+HohmannTransfer.cpp:27:16: error: Uninitialized variables: transfer.transferTime, transfer.deltaV, transfer.phase_angle, transfer.optimal_phase [uninitvar]
+        return transfer;  // Invalid - too close to central body
+               ^
+HohmannTransfer.cpp:27:16: error: Uninitialized struct member: transfer.transferTime [uninitStructMember]
+        return transfer;  // Invalid - too close to central body
+               ^
+HohmannTransfer.cpp:27:16: error: Uninitialized struct member: transfer.deltaV [uninitStructMember]
+        return transfer;  // Invalid - too close to central body
+               ^
+HohmannTransfer.cpp:27:16: error: Uninitialized struct member: transfer.phase_angle [uninitStructMember]
+        return transfer;  // Invalid - too close to central body
+               ^
+HohmannTransfer.cpp:27:16: error: Uninitialized struct member: transfer.optimal_phase [uninitStructMember]
+        return transfer;  // Invalid - too close to central body
+               ^
+Sphere.hpp:11:5: style: Class 'Sphere' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    Sphere(float radius = 1.0f, int sectorCount = 36, int stackCount = 18);
+    ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized variables: params.apoapsis, params.periapsis, params.eccentricity, params.semiMajorAxis, params.semiMinorAxis, params.orbitalPeriod, params.orbitalVelocity, params.altitude, params.inclination, params.specificEnergy, params.angularMomentum [uninitvar]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.apoapsis [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.periapsis [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.eccentricity [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.semiMajorAxis [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.semiMinorAxis [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.orbitalPeriod [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.orbitalVelocity [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.altitude [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.inclination [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.specificEnergy [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:30:16: error: Uninitialized struct member: params.angularMomentum [uninitStructMember]
+        return params;
+               ^
+OrbitalMechanicsHUD.cpp:89:17: style: Variable 'v_mag' is assigned a value that is never used. [unreadVariable]
+    float v_mag = v.length();
+                ^
+OrbitalMechanicsHUD.cpp:89:11: style: Variable 'v_mag' is assigned a value that is never used. [unreadVariable]
+    float v_mag = v.length();
+          ^
+PhysicsEngine.cpp:0:0: information: Limiting analysis of branches. Use --check-level=exhaustive to analyze all branches. [normalCheckLevelMaxBranches]
+
+^
+PhysicsEngine.hpp:23:5: style: Class 'PhysicsEngine' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    PhysicsEngine(float G = 0.1f);
+    ^
+PhysicsEngine.cpp:59:41: style: Condition 'bodies.size()==0' is always false [knownConditionTrueFalse]
+    if (bodies.empty() || bodies.size() == 0)
+                                        ^
+PhysicsEngine.cpp:59:21: note: Assuming that condition 'bodies.empty()' is not redundant
+    if (bodies.empty() || bodies.size() == 0)
+                    ^
+PhysicsEngine.cpp:59:41: note: Condition 'bodies.size()==0' is always false
+    if (bodies.empty() || bodies.size() == 0)
+                                        ^
+PredictionMarker.cpp:128:39: style: Parameter 'shader' can be declared as pointer to const [constParameterPointer]
+void PredictionMarker::render(Shader* shader, const Mat4& view, const Mat4& projection)
+                                      ^
+Renderer.hpp:13:5: style: Class 'Renderer' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    Renderer(Shader* shader);
+    ^
+Spaceship.hpp:56:10: performance: Function 'getVelocity()' should return member 'velocity' by const reference. [returnByReference]
+    Vec3 getVelocity() const;               // Current velocity vector
+         ^
+Spaceship.hpp:57:10: performance: Function 'getForward()' should return member 'forward' by const reference. [returnByReference]
+    Vec3 getForward() const;                // Forward direction
+         ^
+Spaceship.hpp:58:10: performance: Function 'getUp()' should return member 'up' by const reference. [returnByReference]
+    Vec3 getUp() const;                     // Up direction
+         ^
+Spaceship.hpp:59:10: performance: Function 'getRight()' should return member 'right' by const reference. [returnByReference]
+    Vec3 getRight() const;                  // Right direction
+         ^
+Sphere.cpp:0:0: information: Limiting analysis of branches. Use --check-level=exhaustive to analyze all branches. [normalCheckLevelMaxBranches]
+
+^
+StarField.hpp:23:5: style: Class 'StarField' has a constructor with 1 argument that is not explicit. Such, so called "Converting constructors", should in general be explicit for type safety reasons as that prevents unintended implicit conversions. [noExplicitConstructor]
+    StarField(int count = 5000);
+    ^
+StarField.hpp:24:6: style: The destructor '~StarField' overrides a destructor in a base class but is not marked with a 'override' specifier. [missingOverride]
+    ~StarField();
+     ^
+Entity.hpp:13:14: note: Virtual destructor in base class
+    virtual ~Entity() = default;
+             ^
+StarField.hpp:24:6: note: Destructor in derived class
+    ~StarField();
+     ^
+TextureLoader.cpp:0:0: information: Limiting analysis of branches. Use --check-level=exhaustive to analyze all branches. [normalCheckLevelMaxBranches]
+
+^
+Trail.cpp:53:63: style: Condition 'positions.size()==0' is always false [knownConditionTrueFalse]
+    if (!needsUpdate || positions.empty() || positions.size() == 0)
+                                                              ^
+Trail.cpp:53:40: note: Assuming that condition 'positions.empty()' is not redundant
+    if (!needsUpdate || positions.empty() || positions.size() == 0)
+                                       ^
+Trail.cpp:53:63: note: Condition 'positions.size()==0' is always false
+    if (!needsUpdate || positions.empty() || positions.size() == 0)
+                                                              ^
+VectorRenderer.cpp:55:28: style: Expression 'log(1 + x)' can be replaced by 'log1p(x)' to avoid loss of precision. [unpreciseMathCall]
+    arrow.magnitude = std::log(forceMag + 1.0f) * 3.0f; // Logarithmic scale for visibility
+                           ^
+main.cpp:0:0: information: Limiting analysis of branches. Use --check-level=exhaustive to analyze all branches. [normalCheckLevelMaxBranches]
+
+^
+main.cpp:323:11: style: Variable 'sun' can be declared as pointer to const [constVariablePointer]
+    Body* sun = nullptr;
+          ^
+main.cpp:420:27: style: Variable 'earth' can be declared as pointer to const [constVariablePointer]
+                    Body* earth = nullptr;
+                          ^
+main.cpp:421:27: style: Variable 'mars' can be declared as pointer to const [constVariablePointer]
+                    Body* mars = nullptr;
+                          ^
+main.cpp:445:31: style: Variable 'earth' can be declared as pointer to const [constVariablePointer]
+                        Body* earth = nullptr;
+                              ^
+main.cpp:665:24: style: Variable 'body' can be declared as pointer to const [constVariablePointer]
+            for (auto* body : bodies)
+                       ^
+main.cpp:905:20: style: Variable 'body' can be declared as pointer to const [constVariablePointer]
+        for (auto* body : bodies)
+                   ^
+main.cpp:327:9: style: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
+        {
+        ^
+main.cpp:449:29: style: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
+                            {
+                            ^
+main.cpp:668:17: style: Consider using std::find_if algorithm instead of a raw loop. [useStlAlgorithm]
+                {
+                ^
+main.cpp:723:28: style: Consider using std::transform algorithm instead of a raw loop. [useStlAlgorithm]
+                physBodies.push_back(&body->getPhysicsBody());
+                           ^
+main.cpp:769:27: style: Consider using std::transform algorithm instead of a raw loop. [useStlAlgorithm]
+                allBodies.push_back(&body->getPhysicsBody());
+                          ^
+Body.hpp:9:10: style: class member 'Body::forceAccum' is never used. [unusedStructMember]
+    Vec3 forceAccum;
+         ^
+Body.hpp:12:10: style: class member 'Body::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+Body.hpp:13:10: style: class member 'Body::velocity' is never used. [unusedStructMember]
+    Vec3 velocity;
+         ^
+Body.hpp:14:11: style: class member 'Body::mass' is never used. [unusedStructMember]
+    float mass;
+          ^
+Body.hpp:15:11: style: class member 'Body::radius' is never used. [unusedStructMember]
+    float radius;
+          ^
+Camera.hpp:18:10: style: class member 'Camera::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+Camera.hpp:19:10: style: class member 'Camera::front' is never used. [unusedStructMember]
+    Vec3 front;
+         ^
+Camera.hpp:20:10: style: class member 'Camera::up' is never used. [unusedStructMember]
+    Vec3 up;
+         ^
+Camera.hpp:21:10: style: class member 'Camera::right' is never used. [unusedStructMember]
+    Vec3 right;
+         ^
+Camera.hpp:22:10: style: class member 'Camera::worldUp' is never used. [unusedStructMember]
+    Vec3 worldUp;
+         ^
+Camera.hpp:24:11: style: class member 'Camera::yaw' is never used. [unusedStructMember]
+    float yaw;
+          ^
+Camera.hpp:25:11: style: class member 'Camera::pitch' is never used. [unusedStructMember]
+    float pitch;
+          ^
+Camera.hpp:26:11: style: class member 'Camera::fov' is never used. [unusedStructMember]
+    float fov;            // Field of view for zoom
+          ^
+Camera.hpp:27:11: style: class member 'Camera::targetFov' is never used. [unusedStructMember]
+    float targetFov;      // Target FOV for smooth zoom
+          ^
+Camera.hpp:28:11: style: class member 'Camera::zoomSpeed' is never used. [unusedStructMember]
+    float zoomSpeed;      // Zoom interpolation speed
+          ^
+Camera.hpp:30:16: style: class member 'Camera::mode' is never used. [unusedStructMember]
+    CameraMode mode;
+               ^
+CelestialBody.hpp:12:17: style: class member 'CelestialBody::name' is never used. [unusedStructMember]
+    std::string name;
+                ^
+CelestialBody.hpp:13:11: style: class member 'CelestialBody::radius' is never used. [unusedStructMember]
+    float radius;
+          ^
+CelestialBody.hpp:15:10: style: class member 'CelestialBody::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+CelestialBody.hpp:17:11: style: class member 'CelestialBody::rotationAngle' is never used. [unusedStructMember]
+    float rotationAngle;
+          ^
+CelestialBody.hpp:18:11: style: class member 'CelestialBody::rotationSpeed' is never used. [unusedStructMember]
+    float rotationSpeed;
+          ^
+CelestialBody.hpp:19:10: style: class member 'CelestialBody::rotationAxis' is never used. [unusedStructMember]
+    Vec3 rotationAxis;
+         ^
+CelestialBody.hpp:22:10: style: class member 'CelestialBody::hasTrail' is never used. [unusedStructMember]
+    bool hasTrail;
+         ^
+CelestialBody.hpp:23:11: style: class member 'CelestialBody::trailTimer' is never used. [unusedStructMember]
+    float trailTimer;
+          ^
+CelestialBody.hpp:24:11: style: class member 'CelestialBody::trailInterval' is never used. [unusedStructMember]
+    float trailInterval;
+          ^
+CollisionPredictor.hpp:9:11: style: struct member 'CollisionPrediction::bodyA' is never used. [unusedStructMember]
+    Body* bodyA;
+          ^
+CollisionPredictor.hpp:10:11: style: struct member 'CollisionPrediction::bodyB' is never used. [unusedStructMember]
+    Body* bodyB;
+          ^
+CollisionPredictor.hpp:11:10: style: struct member 'CollisionPrediction::collisionPoint' is never used. [unusedStructMember]
+    Vec3 collisionPoint;
+         ^
+CollisionPredictor.hpp:12:11: style: struct member 'CollisionPrediction::timeToCollision' is never used. [unusedStructMember]
+    float timeToCollision;
+          ^
+CollisionPredictor.hpp:13:10: style: struct member 'CollisionPrediction::willCollide' is never used. [unusedStructMember]
+    bool willCollide;
+         ^
+CollisionPredictor.hpp:19:38: style: class member 'CollisionPredictor::predictions' is never used. [unusedStructMember]
+    std::vector<CollisionPrediction> predictions;
+                                     ^
+CollisionPredictor.hpp:20:18: style: class member 'CollisionPredictor::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                 ^
+CollisionPredictor.hpp:20:23: style: class member 'CollisionPredictor::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                      ^
+CollisionPredictor.hpp:21:23: style: class member 'CollisionPredictor::lineVertices' is never used. [unusedStructMember]
+    std::vector<Vec3> lineVertices;
+                      ^
+CoordinateGrid.hpp:12:10: style: struct member 'GridPoint::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+CoordinateGrid.hpp:13:10: style: struct member 'GridPoint::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+CoordinateGrid.hpp:14:11: style: struct member 'GridPoint::size' is never used. [unusedStructMember]
+    float size;
+          ^
+CoordinateGrid.hpp:15:10: style: struct member 'GridPoint::showLabel' is never used. [unusedStructMember]
+    bool showLabel;
+         ^
+CoordinateGrid.hpp:16:17: style: struct member 'GridPoint::label' is never used. [unusedStructMember]
+    std::string label;
+                ^
+CoordinateGrid.hpp:43:24: style: class member 'CoordinateGrid::gridVertexData' is never used. [unusedStructMember]
+    std::vector<float> gridVertexData;   // Grid lines
+                       ^
+CoordinateGrid.hpp:44:24: style: class member 'CoordinateGrid::axesVertexData' is never used. [unusedStructMember]
+    std::vector<float> axesVertexData;   // X, Y, Z axes
+                       ^
+CoordinateGrid.hpp:45:24: style: class member 'CoordinateGrid::pointVertexData' is never used. [unusedStructMember]
+    std::vector<float> pointVertexData;  // Grid intersection points
+                       ^
+CoordinateGrid.hpp:46:28: style: class member 'CoordinateGrid::customPoints' is never used. [unusedStructMember]
+    std::vector<GridPoint> customPoints;
+                           ^
+CoordinateGrid.hpp:52:11: style: class member 'CoordinateGrid::gridSize' is never used. [unusedStructMember]
+    float gridSize;
+          ^
+CoordinateGrid.hpp:53:11: style: class member 'CoordinateGrid::spacing' is never used. [unusedStructMember]
+    float spacing;
+          ^
+CoordinateGrid.hpp:55:11: style: class member 'CoordinateGrid::animationTime' is never used. [unusedStructMember]
+    float animationTime;
+          ^
+EngineParticles.hpp:9:10: style: struct member 'Particle::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+EngineParticles.hpp:10:10: style: struct member 'Particle::velocity' is never used. [unusedStructMember]
+    Vec3 velocity;
+         ^
+EngineParticles.hpp:11:10: style: struct member 'Particle::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+EngineParticles.hpp:12:11: style: struct member 'Particle::size' is never used. [unusedStructMember]
+    float size;
+          ^
+EngineParticles.hpp:13:11: style: struct member 'Particle::lifetime' is never used. [unusedStructMember]
+    float lifetime;
+          ^
+EngineParticles.hpp:14:11: style: struct member 'Particle::maxLifetime' is never used. [unusedStructMember]
+    float maxLifetime;
+          ^
+EngineParticles.hpp:15:11: style: struct member 'Particle::alpha' is never used. [unusedStructMember]
+    float alpha;
+          ^
+EngineParticles.hpp:22:27: style: class member 'EngineParticles::particles' is never used. [unusedStructMember]
+    std::vector<Particle> particles;
+                          ^
+EngineParticles.hpp:23:18: style: class member 'EngineParticles::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                 ^
+EngineParticles.hpp:23:23: style: class member 'EngineParticles::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                      ^
+EngineParticles.hpp:24:24: style: class member 'EngineParticles::vertexData' is never used. [unusedStructMember]
+    std::vector<float> vertexData;
+                       ^
+EngineParticles.hpp:25:9: style: class member 'EngineParticles::maxParticles' is never used. [unusedStructMember]
+    int maxParticles;
+        ^
+Entity.hpp:8:10: style: class member 'Entity::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+Entity.hpp:9:10: style: class member 'Entity::scale' is never used. [unusedStructMember]
+    Vec3 scale;
+         ^
+GalaxyBackground.hpp:9:10: style: struct member 'GalaxyStar::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+GalaxyBackground.hpp:10:10: style: struct member 'GalaxyStar::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+GalaxyBackground.hpp:11:11: style: struct member 'GalaxyStar::size' is never used. [unusedStructMember]
+    float size;
+          ^
+GalaxyBackground.hpp:12:11: style: struct member 'GalaxyStar::brightness' is never used. [unusedStructMember]
+    float brightness;
+          ^
+GalaxyBackground.hpp:13:11: style: struct member 'GalaxyStar::twinkleSpeed' is never used. [unusedStructMember]
+    float twinkleSpeed;
+          ^
+GalaxyBackground.hpp:14:11: style: struct member 'GalaxyStar::twinklePhase' is never used. [unusedStructMember]
+    float twinklePhase;
+          ^
+GalaxyBackground.hpp:39:29: style: class member 'GalaxyBackground::stars' is never used. [unusedStructMember]
+    std::vector<GalaxyStar> stars;
+                            ^
+GalaxyBackground.hpp:40:24: style: class member 'GalaxyBackground::vertexData' is never used. [unusedStructMember]
+    std::vector<float> vertexData;
+                       ^
+GalaxyBackground.hpp:45:11: style: class member 'GalaxyBackground::animationTime' is never used. [unusedStructMember]
+    float animationTime;
+          ^
+HUD.hpp:13:18: style: class member 'HUD::quadVAO' is never used. [unusedStructMember]
+    unsigned int quadVAO, quadVBO;
+                 ^
+HUD.hpp:13:27: style: class member 'HUD::quadVBO' is never used. [unusedStructMember]
+    unsigned int quadVAO, quadVBO;
+                          ^
+HUD.hpp:14:18: style: class member 'HUD::textureID' is never used. [unusedStructMember]
+    unsigned int textureID;
+                 ^
+HUD.hpp:25:29: style: class member 'HUD::elements' is never used. [unusedStructMember]
+    std::vector<HUDElement> elements;
+                            ^
+HUD.hpp:19:15: style: struct member 'HUDElement::x' is never used. [unusedStructMember]
+        float x, y;          // Screen position (-1 to 1)
+              ^
+HUD.hpp:19:18: style: struct member 'HUDElement::y' is never used. [unusedStructMember]
+        float x, y;          // Screen position (-1 to 1)
+                 ^
+HUD.hpp:20:15: style: struct member 'HUDElement::width' is never used. [unusedStructMember]
+        float width, height;  // Size
+              ^
+HUD.hpp:20:22: style: struct member 'HUDElement::height' is never used. [unusedStructMember]
+        float width, height;  // Size
+                     ^
+HUD.hpp:21:14: style: struct member 'HUDElement::color' is never used. [unusedStructMember]
+        Vec3 color;          // Color
+             ^
+HUD.hpp:22:15: style: struct member 'HUDElement::alpha' is never used. [unusedStructMember]
+        float alpha;         // Transparency
+              ^
+HohmannTransfer.hpp:10:10: style: struct member 'TransferOrbit::departurePoint' is never used. [unusedStructMember]
+    Vec3 departurePoint;      // Where to start the burn
+         ^
+HohmannTransfer.hpp:11:10: style: struct member 'TransferOrbit::arrivalPoint' is never used. [unusedStructMember]
+    Vec3 arrivalPoint;        // Where you'll arrive
+         ^
+HohmannTransfer.hpp:12:10: style: struct member 'TransferOrbit::burnVelocity' is never used. [unusedStructMember]
+    Vec3 burnVelocity;        // Velocity change needed (Delta-V)
+         ^
+HohmannTransfer.hpp:13:11: style: struct member 'TransferOrbit::transferTime' is never used. [unusedStructMember]
+    float transferTime;       // How long the transfer takes (seconds)
+          ^
+HohmannTransfer.hpp:14:11: style: struct member 'TransferOrbit::deltaV' is never used. [unusedStructMember]
+    float deltaV;             // Total Delta-V required
+          ^
+HohmannTransfer.hpp:15:11: style: struct member 'TransferOrbit::phase_angle' is never used. [unusedStructMember]
+    float phase_angle;        // Current phase angle between bodies
+          ^
+HohmannTransfer.hpp:16:11: style: struct member 'TransferOrbit::optimal_phase' is never used. [unusedStructMember]
+    float optimal_phase;      // Optimal phase angle for transfer
+          ^
+HohmannTransfer.hpp:17:10: style: struct member 'TransferOrbit::isValid' is never used. [unusedStructMember]
+    bool isValid;             // Whether transfer is possible
+         ^
+HohmannTransfer.hpp:18:23: style: struct member 'TransferOrbit::transferPath' is never used. [unusedStructMember]
+    std::vector<Vec3> transferPath;  // Points along the transfer orbit
+                      ^
+LagrangePoints.hpp:22:18: style: struct member 'LagrangePoint::type' is never used. [unusedStructMember]
+    LagrangeType type;
+                 ^
+LagrangePoints.hpp:23:10: style: struct member 'LagrangePoint::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+LagrangePoints.hpp:24:10: style: struct member 'LagrangePoint::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+LagrangePoints.hpp:25:11: style: struct member 'LagrangePoint::size' is never used. [unusedStructMember]
+    float size;
+          ^
+LagrangePoints.hpp:26:10: style: struct member 'LagrangePoint::stable' is never used. [unusedStructMember]
+    bool stable;  // L4 and L5 are stable, others are unstable
+         ^
+LagrangePoints.hpp:27:17: style: struct member 'LagrangePoint::label' is never used. [unusedStructMember]
+    std::string label;
+                ^
+LagrangePoints.hpp:62:24: style: class member 'LagrangePoints::vertexData' is never used. [unusedStructMember]
+    std::vector<float> vertexData;
+                       ^
+LagrangePoints.hpp:67:11: style: class member 'LagrangePoints::animationTime' is never used. [unusedStructMember]
+    float animationTime;
+          ^
+NebulaBackground.hpp:9:10: style: struct member 'NebulaParticle::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+NebulaBackground.hpp:10:10: style: struct member 'NebulaParticle::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+NebulaBackground.hpp:11:11: style: struct member 'NebulaParticle::size' is never used. [unusedStructMember]
+    float size;
+          ^
+NebulaBackground.hpp:12:11: style: struct member 'NebulaParticle::density' is never used. [unusedStructMember]
+    float density;
+          ^
+NebulaBackground.hpp:13:11: style: struct member 'NebulaParticle::rotation' is never used. [unusedStructMember]
+    float rotation;
+          ^
+NebulaBackground.hpp:20:33: style: class member 'NebulaBackground::nebulaParticles' is never used. [unusedStructMember]
+    std::vector<NebulaParticle> nebulaParticles;
+                                ^
+NebulaBackground.hpp:21:18: style: class member 'NebulaBackground::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                 ^
+NebulaBackground.hpp:21:23: style: class member 'NebulaBackground::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                      ^
+NebulaBackground.hpp:22:24: style: class member 'NebulaBackground::vertexData' is never used. [unusedStructMember]
+    std::vector<float> vertexData;
+                       ^
+NebulaBackground.hpp:33:31: style: class member 'NebulaBackground::regions' is never used. [unusedStructMember]
+    std::vector<NebulaRegion> regions;
+                              ^
+NebulaBackground.hpp:27:14: style: struct member 'NebulaRegion::center' is never used. [unusedStructMember]
+        Vec3 center;
+             ^
+NebulaBackground.hpp:28:15: style: struct member 'NebulaRegion::radius' is never used. [unusedStructMember]
+        float radius;
+              ^
+NebulaBackground.hpp:29:14: style: struct member 'NebulaRegion::color' is never used. [unusedStructMember]
+        Vec3 color;
+             ^
+NebulaBackground.hpp:30:13: style: struct member 'NebulaRegion::particleCount' is never used. [unusedStructMember]
+        int particleCount;
+            ^
+OrbitalMechanicsHUD.hpp:10:11: style: struct member 'OrbitalParameters::apoapsis' is never used. [unusedStructMember]
+    float apoapsis;          // Highest point in orbit (km)
+          ^
+OrbitalMechanicsHUD.hpp:11:11: style: struct member 'OrbitalParameters::periapsis' is never used. [unusedStructMember]
+    float periapsis;         // Lowest point in orbit (km)
+          ^
+OrbitalMechanicsHUD.hpp:12:11: style: struct member 'OrbitalParameters::eccentricity' is never used. [unusedStructMember]
+    float eccentricity;      // How elliptical (0 = circle, 0.9 = very elliptical)
+          ^
+OrbitalMechanicsHUD.hpp:13:11: style: struct member 'OrbitalParameters::semiMajorAxis' is never used. [unusedStructMember]
+    float semiMajorAxis;     // Half the long axis of ellipse
+          ^
+OrbitalMechanicsHUD.hpp:14:11: style: struct member 'OrbitalParameters::semiMinorAxis' is never used. [unusedStructMember]
+    float semiMinorAxis;     // Half the short axis of ellipse
+          ^
+OrbitalMechanicsHUD.hpp:15:11: style: struct member 'OrbitalParameters::orbitalPeriod' is never used. [unusedStructMember]
+    float orbitalPeriod;     // Time for one complete orbit (seconds)
+          ^
+OrbitalMechanicsHUD.hpp:16:11: style: struct member 'OrbitalParameters::orbitalVelocity' is never used. [unusedStructMember]
+    float orbitalVelocity;   // Current speed in orbit
+          ^
+OrbitalMechanicsHUD.hpp:17:11: style: struct member 'OrbitalParameters::altitude' is never used. [unusedStructMember]
+    float altitude;          // Current altitude above surface
+          ^
+OrbitalMechanicsHUD.hpp:18:11: style: struct member 'OrbitalParameters::inclination' is never used. [unusedStructMember]
+    float inclination;       // Orbit tilt angle (degrees)
+          ^
+OrbitalMechanicsHUD.hpp:19:11: style: struct member 'OrbitalParameters::specificEnergy' is never used. [unusedStructMember]
+    float specificEnergy;    // Orbital energy per unit mass
+          ^
+OrbitalMechanicsHUD.hpp:20:11: style: struct member 'OrbitalParameters::angularMomentum' is never used. [unusedStructMember]
+    float angularMomentum;   // Rotational momentum
+          ^
+OrbitalMechanicsHUD.hpp:22:17: style: struct member 'OrbitalParameters::orbitType' is never used. [unusedStructMember]
+    std::string orbitType;   // "Circular", "Elliptical", "Parabolic", "Hyperbolic"
+                ^
+OrbitalMechanicsHUD.hpp:23:10: style: struct member 'OrbitalParameters::isStable' is never used. [unusedStructMember]
+    bool isStable;           // Whether orbit is closed/stable
+         ^
+OrbitalMechanicsHUD.hpp:61:11: style: class member 'OrbitalMechanicsHUD::updateInterval' is never used. [unusedStructMember]
+    float updateInterval;
+          ^
+OrbitalMechanicsHUD.hpp:62:11: style: class member 'OrbitalMechanicsHUD::timeSinceLastUpdate' is never used. [unusedStructMember]
+    float timeSinceLastUpdate;
+          ^
+OrbitalPath.hpp:10:23: style: class member 'OrbitalPath::pathPoints' is never used. [unusedStructMember]
+    std::vector<Vec3> pathPoints;
+                      ^
+OrbitalPath.hpp:11:10: style: class member 'OrbitalPath::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+OrbitalPath.hpp:12:18: style: class member 'OrbitalPath::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                 ^
+OrbitalPath.hpp:12:23: style: class member 'OrbitalPath::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                      ^
+PhysicsEngine.hpp:8:10: style: struct member 'CollisionEvent::position' is never used. [unusedStructMember]
+    Vec3 position;        // Where collision happened
+         ^
+PhysicsEngine.hpp:9:11: style: struct member 'CollisionEvent::timestamp' is never used. [unusedStructMember]
+    float timestamp;      // When it happened (for fade-out)
+          ^
+PhysicsEngine.hpp:10:11: style: struct member 'CollisionEvent::intensity' is never used. [unusedStructMember]
+    float intensity;      // How hard (for size/color)
+          ^
+PhysicsEngine.hpp:11:11: style: struct member 'CollisionEvent::bodyA' is never used. [unusedStructMember]
+    Body* bodyA;          // What collided
+          ^
+PhysicsEngine.hpp:12:11: style: struct member 'CollisionEvent::bodyB' is never used. [unusedStructMember]
+    Body* bodyB;
+          ^
+PhysicsEngine.hpp:18:24: style: class member 'PhysicsEngine::bodies' is never used. [unusedStructMember]
+    std::vector<Body*> bodies;
+                       ^
+PhysicsEngine.hpp:19:11: style: class member 'PhysicsEngine::gravitationalConstant' is never used. [unusedStructMember]
+    float gravitationalConstant;
+          ^
+PhysicsEngine.hpp:20:33: style: class member 'PhysicsEngine::recentCollisions' is never used. [unusedStructMember]
+    std::vector<CollisionEvent> recentCollisions;  // Track recent collisions
+                                ^
+PlanetaryRings.hpp:23:24: style: class member 'PlanetaryRings::vertices' is never used. [unusedStructMember]
+    std::vector<float> vertices;
+                       ^
+PlanetaryRings.hpp:24:31: style: class member 'PlanetaryRings::indices' is never used. [unusedStructMember]
+    std::vector<unsigned int> indices;
+                              ^
+PlanetaryRings.hpp:27:11: style: class member 'PlanetaryRings::innerRadius' is never used. [unusedStructMember]
+    float innerRadius;
+          ^
+PlanetaryRings.hpp:28:11: style: class member 'PlanetaryRings::outerRadius' is never used. [unusedStructMember]
+    float outerRadius;
+          ^
+PlanetaryRings.hpp:29:9: style: class member 'PlanetaryRings::segments' is never used. [unusedStructMember]
+    int segments;
+        ^
+PredictionMarker.hpp:18:10: style: struct member 'Marker::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+PredictionMarker.hpp:19:10: style: struct member 'Marker::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+PredictionMarker.hpp:20:11: style: struct member 'Marker::size' is never used. [unusedStructMember]
+    float size;
+          ^
+PredictionMarker.hpp:21:16: style: struct member 'Marker::type' is never used. [unusedStructMember]
+    MarkerType type;
+               ^
+PredictionMarker.hpp:22:11: style: struct member 'Marker::lifetime' is never used. [unusedStructMember]
+    float lifetime;
+          ^
+PredictionMarker.hpp:23:10: style: struct member 'Marker::active' is never used. [unusedStructMember]
+    bool active;
+         ^
+PredictionMarker.hpp:29:25: style: class member 'PredictionMarker::markers' is never used. [unusedStructMember]
+    std::vector<Marker> markers;
+                        ^
+PredictionMarker.hpp:31:18: style: class member 'PredictionMarker::lineVAO' is never used. [unusedStructMember]
+    unsigned int lineVAO, lineVBO;
+                 ^
+PredictionMarker.hpp:31:27: style: class member 'PredictionMarker::lineVBO' is never used. [unusedStructMember]
+    unsigned int lineVAO, lineVBO;
+                          ^
+PredictionMarker.hpp:32:23: style: class member 'PredictionMarker::lineVertices' is never used. [unusedStructMember]
+    std::vector<Vec3> lineVertices;
+                      ^
+Renderer.hpp:9:13: style: class member 'Renderer::shader' is never used. [unusedStructMember]
+    Shader* shader;
+            ^
+Shader.hpp:9:18: style: class member 'Shader::ID' is never used. [unusedStructMember]
+    unsigned int ID;
+                 ^
+Spaceship.hpp:15:11: style: class member 'Spaceship::radius' is never used. [unusedStructMember]
+    float radius;
+          ^
+Spaceship.hpp:16:10: style: class member 'Spaceship::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+Spaceship.hpp:19:11: style: class member 'Spaceship::thrustPower' is never used. [unusedStructMember]
+    float thrustPower;          // Thrust force magnitude (e.g., 50.0f)
+          ^
+Spaceship.hpp:20:10: style: class member 'Spaceship::isThrusting' is never used. [unusedStructMember]
+    bool isThrusting;           // Currently applying thrust?
+         ^
+Spaceship.hpp:23:11: style: class member 'Spaceship::yaw' is never used. [unusedStructMember]
+    float yaw;                  // Rotation around Y axis (degrees)
+          ^
+Spaceship.hpp:24:11: style: class member 'Spaceship::pitch' is never used. [unusedStructMember]
+    float pitch;                // Rotation around X axis (degrees)
+          ^
+Spaceship.hpp:25:11: style: class member 'Spaceship::rotationSpeed' is never used. [unusedStructMember]
+    float rotationSpeed;        // Rotation rate (degrees per second)
+          ^
+Spaceship.hpp:26:10: style: class member 'Spaceship::forward' is never used. [unusedStructMember]
+    Vec3 forward;               // Forward direction vector
+         ^
+Spaceship.hpp:27:10: style: class member 'Spaceship::up' is never used. [unusedStructMember]
+    Vec3 up;                    // Up direction vector
+         ^
+Spaceship.hpp:28:10: style: class member 'Spaceship::right' is never used. [unusedStructMember]
+    Vec3 right;                 // Right direction vector
+         ^
+Spaceship.hpp:32:10: style: class member 'Spaceship::hasExhaustTrail' is never used. [unusedStructMember]
+    bool hasExhaustTrail;
+         ^
+Spaceship.hpp:33:11: style: class member 'Spaceship::exhaustTimer' is never used. [unusedStructMember]
+    float exhaustTimer;
+          ^
+Spaceship.hpp:34:11: style: class member 'Spaceship::exhaustInterval' is never used. [unusedStructMember]
+    float exhaustInterval;      // Time between exhaust trail points
+          ^
+Sphere.hpp:7:18: style: class member 'Sphere::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO, EBO;
+                 ^
+Sphere.hpp:7:23: style: class member 'Sphere::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO, EBO;
+                      ^
+Sphere.hpp:7:28: style: class member 'Sphere::EBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO, EBO;
+                           ^
+Sphere.hpp:8:18: style: class member 'Sphere::indexCount' is never used. [unusedStructMember]
+    unsigned int indexCount;
+                 ^
+StarField.hpp:9:10: style: struct member 'Star::position' is never used. [unusedStructMember]
+    Vec3 position;
+         ^
+StarField.hpp:10:11: style: struct member 'Star::brightness' is never used. [unusedStructMember]
+    float brightness;
+          ^
+StarField.hpp:11:11: style: struct member 'Star::size' is never used. [unusedStructMember]
+    float size;
+          ^
+StarField.hpp:12:10: style: struct member 'Star::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+StarField.hpp:18:23: style: class member 'StarField::stars' is never used. [unusedStructMember]
+    std::vector<Star> stars;
+                      ^
+StarField.hpp:19:18: style: class member 'StarField::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                 ^
+StarField.hpp:19:23: style: class member 'StarField::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                      ^
+StarField.hpp:20:24: style: class member 'StarField::vertexData' is never used. [unusedStructMember]
+    std::vector<float> vertexData;
+                       ^
+StoryNarrator.hpp:22:17: style: struct member 'NarrativeMessage::message' is never used. [unusedStructMember]
+    std::string message;
+                ^
+StoryNarrator.hpp:23:16: style: struct member 'NarrativeMessage::eventType' is never used. [unusedStructMember]
+    StoryEvent eventType;
+               ^
+StoryNarrator.hpp:24:11: style: struct member 'NarrativeMessage::displayTime' is never used. [unusedStructMember]
+    float displayTime;
+          ^
+StoryNarrator.hpp:25:10: style: struct member 'NarrativeMessage::displayed' is never used. [unusedStructMember]
+    bool displayed;
+         ^
+StoryNarrator.hpp:45:35: style: class member 'StoryNarrator::narrativeQueue' is never used. [unusedStructMember]
+    std::vector<NarrativeMessage> narrativeQueue;
+                                  ^
+StoryNarrator.hpp:46:11: style: class member 'StoryNarrator::messageTimer' is never used. [unusedStructMember]
+    float messageTimer;
+          ^
+StoryNarrator.hpp:47:11: style: class member 'StoryNarrator::totalMissionTime' is never used. [unusedStructMember]
+    float totalMissionTime;
+          ^
+StoryNarrator.hpp:50:10: style: class member 'StoryNarrator::hasEnteredOrbit' is never used. [unusedStructMember]
+    bool hasEnteredOrbit;
+         ^
+StoryNarrator.hpp:51:10: style: class member 'StoryNarrator::hasApproachedSun' is never used. [unusedStructMember]
+    bool hasApproachedSun;
+         ^
+StoryNarrator.hpp:52:10: style: class member 'StoryNarrator::hasSeenBlackHole' is never used. [unusedStructMember]
+    bool hasSeenBlackHole;
+         ^
+StoryNarrator.hpp:53:9: style: class member 'StoryNarrator::planetsEncountered' is never used. [unusedStructMember]
+    int planetsEncountered;
+        ^
+TextureLoader.hpp:11:35: style: class member 'TextureLoader::textureCache' is never used. [unusedStructMember]
+    std::map<std::string, GLuint> textureCache;
+                                  ^
+Trail.hpp:9:23: style: class member 'Trail::positions' is never used. [unusedStructMember]
+    std::vector<Vec3> positions;
+                      ^
+Trail.hpp:10:12: style: class member 'Trail::maxPoints' is never used. [unusedStructMember]
+    size_t maxPoints;
+           ^
+Trail.hpp:11:10: style: class member 'Trail::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+Trail.hpp:13:18: style: class member 'Trail::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                 ^
+Trail.hpp:13:23: style: class member 'Trail::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                      ^
+Trail.hpp:14:10: style: class member 'Trail::needsUpdate' is never used. [unusedStructMember]
+    bool needsUpdate;
+         ^
+VectorRenderer.hpp:8:10: style: struct member 'VectorArrow::origin' is never used. [unusedStructMember]
+    Vec3 origin;
+         ^
+VectorRenderer.hpp:9:10: style: struct member 'VectorArrow::direction' is never used. [unusedStructMember]
+    Vec3 direction;
+         ^
+VectorRenderer.hpp:10:10: style: struct member 'VectorArrow::color' is never used. [unusedStructMember]
+    Vec3 color;
+         ^
+VectorRenderer.hpp:11:11: style: struct member 'VectorArrow::magnitude' is never used. [unusedStructMember]
+    float magnitude;
+          ^
+VectorRenderer.hpp:12:10: style: struct member 'VectorArrow::active' is never used. [unusedStructMember]
+    bool active;
+         ^
+VectorRenderer.hpp:18:30: style: class member 'VectorRenderer::velocityVectors' is never used. [unusedStructMember]
+    std::vector<VectorArrow> velocityVectors;
+                             ^
+VectorRenderer.hpp:19:30: style: class member 'VectorRenderer::forceVectors' is never used. [unusedStructMember]
+    std::vector<VectorArrow> forceVectors;
+                             ^
+VectorRenderer.hpp:20:18: style: class member 'VectorRenderer::VAO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                 ^
+VectorRenderer.hpp:20:23: style: class member 'VectorRenderer::VBO' is never used. [unusedStructMember]
+    unsigned int VAO, VBO;
+                      ^
+VectorRenderer.hpp:21:24: style: class member 'VectorRenderer::vertexData' is never used. [unusedStructMember]
+    std::vector<float> vertexData;
+                       ^
+nofile:0:0: information: Active checkers: 169/966 (use --checkers-report=<filename> to see details) [checkersReport]
+
