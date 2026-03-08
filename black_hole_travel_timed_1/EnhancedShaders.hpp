@@ -336,3 +336,64 @@ void main()
     FragColor = vec4(gridColor, 0.3);  // Semi-transparent grid
 }
 )";
+
+// ===== PLANETARY RINGS SHADER =====
+const char* ringVertexShader = R"(
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoord;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+out vec3 FragPos;
+out vec3 Normal;
+out vec2 TexCoord;
+
+void main()
+{
+    vec4 worldPos = model * vec4(aPos, 1.0);
+    FragPos = vec3(worldPos);
+    Normal = mat3(transpose(inverse(model))) * aNormal;
+    TexCoord = aTexCoord;
+
+    gl_Position = projection * view * worldPos;
+}
+)";
+
+const char* ringFragmentShader = R"(
+#version 460 core
+out vec4 FragColor;
+
+in vec3 FragPos;
+in vec3 Normal;
+in vec2 TexCoord;
+
+uniform vec3 ringColor;
+uniform float ringAlpha;
+uniform vec3 lightPos;
+
+void main()
+{
+    // Ring color with radial banding (like Saturn's rings!)
+    float bandFactor = fract(TexCoord.x * 15.0);  // 15 bands
+    float bandBrightness = 0.7 + bandFactor * 0.3;
+
+    vec3 color = ringColor * bandBrightness;
+
+    // Add some lighting (top/bottom shading)
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = abs(dot(norm, lightDir)) * 0.5 + 0.5;  // Two-sided lighting
+
+    color = color * diff;
+
+    // Fade edges for realism
+    float edgeFade = 1.0 - abs(TexCoord.x * 2.0 - 1.0);  // Fade at inner/outer edges
+    edgeFade = smoothstep(0.0, 0.3, edgeFade);
+
+    FragColor = vec4(color, ringAlpha * edgeFade);
+}
+)";

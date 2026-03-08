@@ -102,6 +102,18 @@
     <ClCompile Include="StoryNarrator.cpp">
       <Filter>entities</Filter>
     </ClCompile>
+    <ClCompile Include="HohmannTransfer.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="LagrangePoints.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanetaryRings.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="OrbitalMechanicsHUD.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp">
@@ -184,6 +196,18 @@
     </ClInclude>
     <ClInclude Include="HUD.hpp">
       <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="HohmannTransfer.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="LagrangePoints.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetaryRings.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="OrbitalMechanicsHUD.hpp">
+      <Filter>entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

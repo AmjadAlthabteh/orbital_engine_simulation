@@ -27,6 +27,10 @@
 #include "GalaxyBackground.hpp"
 #include "CoordinateGrid.hpp"
 #include "StoryNarrator.hpp"
+#include "HohmannTransfer.hpp"
+#include "LagrangePoints.hpp"
+#include "PlanetaryRings.hpp"
+#include "OrbitalMechanicsHUD.hpp"
 
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
@@ -161,6 +165,7 @@ int main()
     Shader nebulaShader(nebulaVertexShader, nebulaFragmentShader);
     Shader engineParticleShader(engineParticleVertexShader, engineParticleFragmentShader);
     Shader gridShader(gridVertexShader, gridFragmentShader);
+    Shader ringShader(ringVertexShader, ringFragmentShader);
 
     // Create texture loader and load/generate planet textures
     TextureLoader textureLoader;
@@ -182,12 +187,24 @@ int main()
     GalaxyBackground galaxy(20000);          // 20,000 stars in realistic galaxy structure
     CoordinateGrid coordinateGrid(100.0f, 10.0f);  // 100 unit grid with 10 unit spacing
     StoryNarrator narrator;                  // Story and narrative system
+    HohmannTransfer transferCalculator;      // NASA-style transfer orbit calculator
+    LagrangePoints lagrangePoints;           // Gravitational balance points (L1-L5)
+    OrbitalMechanicsHUD orbitalHUD;          // Display orbital parameters
+
+    // Create Saturn's beautiful rings!
+    PlanetaryRings saturnRings(2.8f, 4.5f, 120);  // Inner radius, outer radius, segments
+    saturnRings.setColor(Vec3(0.9f, 0.85f, 0.7f));  // Golden-tan color
+    saturnRings.setAlpha(0.6f);
 
     std::cout << "Nebula background created with multiple colored regions\n";
     std::cout << "Engine particle system initialized\n";
     std::cout << "Galaxy background created with 20,000 stars in spiral arms\n";
     std::cout << "Coordinate grid system initialized (toggle with 'G' key)\n";
     std::cout << "Story narrator activated - immersive storytelling enabled\n";
+    std::cout << "Hohmann Transfer Calculator ready (press 'H' for Earth->Mars transfer)\n";
+    std::cout << "Lagrange Points calculator ready (press 'L' to show/hide)\n";
+    std::cout << "Saturn Rings added - look for the beautiful golden rings!\n";
+    std::cout << "Orbital Mechanics HUD enabled (press 'M' for ship orbit analysis)\n";
 
     Renderer renderer(&planetShader);
     Camera camera;
@@ -220,6 +237,9 @@ int main()
     std::cout << "│  T            │ Toggle trajectory markers (planets)       │\n";
     std::cout << "│  R            │ Toggle ship trajectory prediction         │\n";
     std::cout << "│  G            │ Toggle coordinate grid (math visualization)│\n";
+    std::cout << "│  H            │ Calculate Hohmann Transfer (Earth->Mars) │\n";
+    std::cout << "│  L            │ Toggle Lagrange Points display           │\n";
+    std::cout << "│  M            │ Show Orbital Mechanics data for ship     │\n";
     std::cout << "│  + / =        │ Speed up time (up to 10x)                 │\n";
     std::cout << "│  - / _        │ Slow down time (down to 0.1x)             │\n";
     std::cout << "│  P            │ Pause/Unpause simulation                  │\n";
@@ -245,9 +265,13 @@ int main()
     std::cout << "  ★ Camera zoom with smooth transitions\n";
     std::cout << "  ★ Improved lighting and specular highlights\n";
     std::cout << "  ★ REALISTIC GALAXY: 20,000 stars in spiral arm structure!\n";
-    std::cout << "  ★ MASSIVE SUN: 7x larger and intensely bright\n";
+    std::cout << "  ★ MASSIVE SUN: 7x larger and blazing yellow-orange\n";
     std::cout << "  ★ 3D COORDINATE GRID: Mathematical visualization system\n";
-    std::cout << "  ★ STORY MODE: Immersive narrative and mission objectives\n\n";
+    std::cout << "  ★ STORY MODE: Immersive narrative and mission objectives\n";
+    std::cout << "  ★ HOHMANN TRANSFERS: NASA-style interplanetary route calculator!\n";
+    std::cout << "  ★ LAGRANGE POINTS: Visualize L1-L5 gravitational balance points!\n";
+    std::cout << "  ★ SATURN RINGS: Beautiful golden rings with realistic banding!\n";
+    std::cout << "  ★ ORBITAL MECHANICS HUD: Real-time orbital parameter display!\n\n";
 
     // Projection matrix will be dynamic based on camera FOV (for zoom)
     float aspectRatio = 1280.0f / 720.0f;
@@ -330,6 +354,8 @@ int main()
     bool showTrajectoryMarkers = true;
     bool showShipTrajectory = true;
     bool showCoordinateGrid = false;  // Grid starts hidden (toggle with 'G')
+    bool showLagrangePoints = false;  // Lagrange points hidden initially
+    bool showTransferOrbit = false;   // Transfer orbit visualization
 
     // Time controls
     float timeScale = 1.0f;      // 1.0 = normal speed
@@ -387,6 +413,63 @@ int main()
                     showCoordinateGrid = !showCoordinateGrid;
                     coordinateGrid.setVisible(showCoordinateGrid);
                     std::cout << "Coordinate grid: " << (showCoordinateGrid ? "ON" : "OFF") << "\n";
+                }
+                if (event.key.code == sf::Keyboard::H)
+                {
+                    // Calculate Hohmann transfer from Earth to Mars
+                    Body* earth = nullptr;
+                    Body* mars = nullptr;
+                    for (auto* body : bodies)
+                    {
+                        if (body->getName() == "Earth") earth = &body->getPhysicsBody();
+                        if (body->getName() == "Mars") mars = &body->getPhysicsBody();
+                    }
+
+                    if (earth && mars && sun)
+                    {
+                        TransferOrbit transfer = transferCalculator.calculateTransfer(*earth, *mars, *sun, 0.0f);
+                        showTransferOrbit = true;
+                        std::cout << "\n=== HOHMANN TRANSFER: Earth -> Mars ===\n";
+                        orbitalHUD.displayTransferInfo(transfer.deltaV, transfer.transferTime,
+                                                      transfer.phase_angle, transfer.optimal_phase);
+                    }
+                }
+                if (event.key.code == sf::Keyboard::L)
+                {
+                    showLagrangePoints = !showLagrangePoints;
+                    lagrangePoints.setVisible(showLagrangePoints);
+
+                    if (showLagrangePoints && sun)
+                    {
+                        // Calculate Lagrange points between Sun and Earth
+                        Body* earth = nullptr;
+                        for (auto* body : bodies)
+                        {
+                            if (body->getName() == "Earth")
+                            {
+                                earth = &body->getPhysicsBody();
+                                break;
+                            }
+                        }
+
+                        if (earth)
+                        {
+                            lagrangePoints.calculatePoints(*sun, *earth);
+                            orbitalHUD.displayLagrangeInfo(5, true);
+                        }
+                    }
+
+                    std::cout << "Lagrange points: " << (showLagrangePoints ? "ON" : "OFF") << "\n";
+                }
+                if (event.key.code == sf::Keyboard::M)
+                {
+                    // Display orbital mechanics for ship
+                    if (sun)
+                    {
+                        OrbitalParameters shipOrbit = orbitalHUD.calculateOrbitalParameters(
+                            ship.getPhysicsBody(), *sun);
+                        orbitalHUD.displayToConsole(shipOrbit, "Ship", "Sun");
+                    }
                 }
                 if (event.key.code == sf::Keyboard::C)
                 {
@@ -537,6 +620,7 @@ int main()
         galaxy.update(deltaTime);
         coordinateGrid.update(deltaTime);
         narrator.update(deltaTime);
+        lagrangePoints.update(deltaTime);
 
         // Emit engine particles when thrusting
         if (ship.getIsThrusting())
@@ -814,6 +898,10 @@ int main()
         planetShader.setVec3("viewPos", camera.position);
         planetShader.setVec3("lightPos", Vec3(0, 0, 0));
 
+        // Track Saturn for rings
+        Mat4 saturnModelMatrix;
+        bool foundSaturn = false;
+
         for (auto* body : bodies)
         {
             Mat4 model = body->getModelMatrix();
@@ -866,6 +954,33 @@ int main()
             }
 
             renderer.render(model, view, projection, body->getColor());
+
+            // Save Saturn's model matrix for rendering rings
+            if (body->getName() == "Saturn")
+            {
+                saturnModelMatrix = model;
+                foundSaturn = true;
+            }
+        }
+
+        // Render Saturn's Rings!
+        if (foundSaturn)
+        {
+            glDepthMask(GL_FALSE);  // Don't write to depth buffer (for transparency)
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            ringShader.use();
+            ringShader.setMat4("model", saturnModelMatrix);
+            ringShader.setMat4("view", view);
+            ringShader.setMat4("projection", projection);
+            ringShader.setVec3("ringColor", Vec3(0.9f, 0.85f, 0.7f));
+            ringShader.setFloat("ringAlpha", 0.6f);
+            ringShader.setVec3("lightPos", Vec3(0, 0, 0));
+
+            saturnRings.render(saturnModelMatrix, view, projection);
+
+            glDepthMask(GL_TRUE);
         }
 
         // Render spaceship with oriented model matrix and atmospheric effects
@@ -967,6 +1082,33 @@ int main()
 
             glLineWidth(2.0f);
             glDepthMask(GL_TRUE);
+        }
+
+        // Render Lagrange Points (gravitational balance points!)
+        if (showLagrangePoints)
+        {
+            starShader.use();  // Use star shader for glowing points
+            starShader.setMat4("view", view);
+            starShader.setMat4("projection", projection);
+            lagrangePoints.render();
+        }
+
+        // Render Hohmann Transfer orbit path
+        if (showTransferOrbit && transferCalculator.getActive())
+        {
+            const TransferOrbit& transfer = transferCalculator.getCurrentTransfer();
+            if (transfer.isValid && !transfer.transferPath.empty())
+            {
+                // Render transfer path as a glowing line
+                lineShader.use();
+                lineShader.setMat4("view", view);
+                lineShader.setMat4("projection", projection);
+                lineShader.setVec3("lineColor", Vec3(0.2f, 1.0f, 0.8f));  // Cyan
+                lineShader.setFloat("alpha", 0.8f);
+
+                // Would render the path here if we had a line renderer
+                // For now, the transfer info is displayed in console
+            }
         }
 
         window.display();

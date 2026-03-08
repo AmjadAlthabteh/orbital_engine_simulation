@@ -150,6 +150,10 @@
     <ClCompile Include="GalaxyBackground.cpp" />
     <ClCompile Include="CoordinateGrid.cpp" />
     <ClCompile Include="StoryNarrator.cpp" />
+    <ClCompile Include="HohmannTransfer.cpp" />
+    <ClCompile Include="LagrangePoints.cpp" />
+    <ClCompile Include="PlanetaryRings.cpp" />
+    <ClCompile Include="OrbitalMechanicsHUD.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp" />
@@ -179,6 +183,10 @@
     <ClInclude Include="CoordinateGrid.hpp" />
     <ClInclude Include="StoryNarrator.hpp" />
     <ClInclude Include="HUD.hpp" />
+    <ClInclude Include="HohmannTransfer.hpp" />
+    <ClInclude Include="LagrangePoints.hpp" />
+    <ClInclude Include="PlanetaryRings.hpp" />
+    <ClInclude Include="OrbitalMechanicsHUD.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="OrbitalEngine_Design.txt" />
