@@ -144,6 +144,12 @@
     <ClCompile Include="PredictionMarker.cpp" />
     <ClCompile Include="VectorRenderer.cpp" />
     <ClCompile Include="Spaceship.cpp" />
+    <ClCompile Include="NebulaBackground.cpp" />
+    <ClCompile Include="EngineParticles.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="GalaxyBackground.cpp" />
+    <ClCompile Include="CoordinateGrid.cpp" />
+    <ClCompile Include="StoryNarrator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp" />
@@ -165,6 +171,14 @@
     <ClInclude Include="VectorRenderer.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="Spaceship.hpp" />
+    <ClInclude Include="NebulaBackground.hpp" />
+    <ClInclude Include="EngineParticles.hpp" />
+    <ClInclude Include="TextureLoader.hpp" />
+    <ClInclude Include="EnhancedShaders.hpp" />
+    <ClInclude Include="GalaxyBackground.hpp" />
+    <ClInclude Include="CoordinateGrid.hpp" />
+    <ClInclude Include="StoryNarrator.hpp" />
+    <ClInclude Include="HUD.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="OrbitalEngine_Design.txt" />

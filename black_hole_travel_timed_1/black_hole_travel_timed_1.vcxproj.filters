@@ -66,6 +66,42 @@
     <ClCompile Include="Entity.cpp">
       <Filter>entities</Filter>
     </ClCompile>
+    <ClCompile Include="Trail.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="OrbitalPath.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionPredictor.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PredictionMarker.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorRenderer.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Spaceship.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
+    <ClCompile Include="NebulaBackground.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineParticles.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="GalaxyBackground.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="CoordinateGrid.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="StoryNarrator.cpp">
+      <Filter>entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Body.hpp">
@@ -103,6 +139,51 @@
     </ClInclude>
     <ClInclude Include="Entity.hpp">
       <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Trail.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="OrbitalPath.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionPredictor.hpp">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PredictionMarker.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorRenderer.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Spaceship.hpp">
+      <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="NebulaBackground.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineParticles.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="EnhancedShaders.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="GalaxyBackground.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="CoordinateGrid.hpp">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="StoryNarrator.hpp">
+      <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.hpp">
+      <Filter>rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

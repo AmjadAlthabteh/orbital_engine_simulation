@@ -24,6 +24,9 @@
 #include "NebulaBackground.hpp"
 #include "EngineParticles.hpp"
 #include "TextureLoader.hpp"
+#include "GalaxyBackground.hpp"
+#include "CoordinateGrid.hpp"
+#include "StoryNarrator.hpp"
 
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
@@ -157,6 +160,7 @@ int main()
     Shader vectorShader(vectorVertexShaderSource, vectorFragmentShaderSource);
     Shader nebulaShader(nebulaVertexShader, nebulaFragmentShader);
     Shader engineParticleShader(engineParticleVertexShader, engineParticleFragmentShader);
+    Shader gridShader(gridVertexShader, gridFragmentShader);
 
     // Create texture loader and load/generate planet textures
     TextureLoader textureLoader;
@@ -175,8 +179,15 @@ int main()
     // Create visual enhancement systems
     NebulaBackground nebula;
     EngineParticles engineParticles(1000);  // Max 1000 particles
+    GalaxyBackground galaxy(20000);          // 20,000 stars in realistic galaxy structure
+    CoordinateGrid coordinateGrid(100.0f, 10.0f);  // 100 unit grid with 10 unit spacing
+    StoryNarrator narrator;                  // Story and narrative system
+
     std::cout << "Nebula background created with multiple colored regions\n";
     std::cout << "Engine particle system initialized\n";
+    std::cout << "Galaxy background created with 20,000 stars in spiral arms\n";
+    std::cout << "Coordinate grid system initialized (toggle with 'G' key)\n";
+    std::cout << "Story narrator activated - immersive storytelling enabled\n";
 
     Renderer renderer(&planetShader);
     Camera camera;
@@ -184,8 +195,8 @@ int main()
 
     std::cout << "\n";
     std::cout << "╔════════════════════════════════════════════════════════════╗\n";
-    std::cout << "║   3D ORBITAL PHYSICS SIMULATOR - ENHANCED EDITION          ║\n";
-    std::cout << "║   With Atmospheric Glow, Nebula, Textures & Particles      ║\n";
+    std::cout << "║   3D ORBITAL PHYSICS SIMULATOR - ULTRA REALISTIC EDITION   ║\n";
+    std::cout << "║   With Galaxy Background, Story Mode & Advanced Graphics   ║\n";
     std::cout << "╚════════════════════════════════════════════════════════════╝\n\n";
 
     std::cout << "┌─ SPACESHIP CONTROLS ──────────────────────────────────────┐\n";
@@ -208,6 +219,7 @@ int main()
     std::cout << "│  Space        │ Toggle velocity vectors                   │\n";
     std::cout << "│  T            │ Toggle trajectory markers (planets)       │\n";
     std::cout << "│  R            │ Toggle ship trajectory prediction         │\n";
+    std::cout << "│  G            │ Toggle coordinate grid (math visualization)│\n";
     std::cout << "│  + / =        │ Speed up time (up to 10x)                 │\n";
     std::cout << "│  - / _        │ Slow down time (down to 0.1x)             │\n";
     std::cout << "│  P            │ Pause/Unpause simulation                  │\n";
@@ -231,7 +243,11 @@ int main()
     std::cout << "  ★ Realistic engine particle effects\n";
     std::cout << "  ★ Enhanced star rendering with halos\n";
     std::cout << "  ★ Camera zoom with smooth transitions\n";
-    std::cout << "  ★ Improved lighting and specular highlights\n\n";
+    std::cout << "  ★ Improved lighting and specular highlights\n";
+    std::cout << "  ★ REALISTIC GALAXY: 20,000 stars in spiral arm structure!\n";
+    std::cout << "  ★ MASSIVE SUN: 7x larger and intensely bright\n";
+    std::cout << "  ★ 3D COORDINATE GRID: Mathematical visualization system\n";
+    std::cout << "  ★ STORY MODE: Immersive narrative and mission objectives\n\n";
 
     // Projection matrix will be dynamic based on camera FOV (for zoom)
     float aspectRatio = 1280.0f / 720.0f;
@@ -313,6 +329,7 @@ int main()
     bool showVectors = true;
     bool showTrajectoryMarkers = true;
     bool showShipTrajectory = true;
+    bool showCoordinateGrid = false;  // Grid starts hidden (toggle with 'G')
 
     // Time controls
     float timeScale = 1.0f;      // 1.0 = normal speed
@@ -364,6 +381,12 @@ int main()
                 {
                     showShipTrajectory = !showShipTrajectory;
                     std::cout << "Ship trajectory prediction: " << (showShipTrajectory ? "ON" : "OFF") << "\n";
+                }
+                if (event.key.code == sf::Keyboard::G)
+                {
+                    showCoordinateGrid = !showCoordinateGrid;
+                    coordinateGrid.setVisible(showCoordinateGrid);
+                    std::cout << "Coordinate grid: " << (showCoordinateGrid ? "ON" : "OFF") << "\n";
                 }
                 if (event.key.code == sf::Keyboard::C)
                 {
@@ -509,8 +532,11 @@ int main()
         // Update camera zoom (smooth interpolation)
         camera.updateZoom(rawDeltaTime);
 
-        // Update nebula background (gentle animation)
+        // Update visual systems
         nebula.update(deltaTime);
+        galaxy.update(deltaTime);
+        coordinateGrid.update(deltaTime);
+        narrator.update(deltaTime);
 
         // Emit engine particles when thrusting
         if (ship.getIsThrusting())
@@ -584,6 +610,19 @@ int main()
             {
                 std::cout << "!!! BLACK HOLE GRAVITY WELL DETECTED !!!\n";
                 std::cout << "!!! EXTREME GRAVITATIONAL FORCES !!!\n";
+                narrator.triggerEvent(StoryEvent::BLACK_HOLE_WARNING);
+            }
+
+            // Trigger story events based on proximity
+            if (nearestName == "Sun" && nearestDist < 15.0f)
+            {
+                narrator.triggerEvent(StoryEvent::NEAR_SUN);
+            }
+
+            // Collision warning story event
+            if (altitude < 5.0f && altitude > 0.0f)
+            {
+                narrator.triggerEvent(StoryEvent::COLLISION_WARNING);
             }
 
             std::cout << "Time scale: " << timeScale << "x " << (isPaused ? "[PAUSED]" : "[RUNNING]") << "\n";
@@ -736,11 +775,25 @@ int main()
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Reset blending
         glDepthMask(GL_TRUE);
 
-        // Render starfield (on top of nebula)
+        // Render starfield (basic background stars)
         starShader.use();
         starShader.setMat4("view", view);
         starShader.setMat4("projection", projection);
         starfield.render();
+
+        // Render MASSIVE galaxy background with 20,000 stars in realistic spiral arms!
+        galaxy.render();
+
+        // Render coordinate grid (mathematical visualization) - if enabled
+        if (showCoordinateGrid)
+        {
+            glDepthMask(GL_FALSE);
+            gridShader.use();
+            gridShader.setMat4("view", view);
+            gridShader.setMat4("projection", projection);
+            coordinateGrid.render();
+            glDepthMask(GL_TRUE);
+        }
 
         // Render orbital paths
         glDepthMask(GL_FALSE);
@@ -898,7 +951,7 @@ int main()
         // Render 3D prediction markers (spheres in 3D space)
         if (showTrajectoryMarkers)
         {
-            predictionMarkers.render(&shader, view, projection);
+            predictionMarkers.render(&planetShader, view, projection);
         }
 
         // Render velocity and force vectors

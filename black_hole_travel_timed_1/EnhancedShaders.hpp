@@ -54,8 +54,21 @@ void main()
 {
     if (isSun)
     {
-        // Sun with HDR glow
-        vec3 glow = objectColor * 1.5;
+        // Sun with INTENSE HDR glow and corona effect
+        vec3 glow = objectColor * 2.8;  // Brighter base glow
+
+        // Add radial gradient for corona effect
+        vec3 norm = normalize(Normal);
+        vec3 viewDir = normalize(ViewDir);
+        float corona = 1.0 - abs(dot(norm, viewDir));
+        corona = pow(corona, 0.5);  // Softer falloff
+
+        // Intense yellow-orange core that fades to bright yellow at edges
+        vec3 hotCore = vec3(1.0, 0.85, 0.3);  // Bright yellow-orange
+        vec3 coronaGlow = vec3(1.0, 0.7, 0.2);  // Deep orange glow
+        glow = mix(glow, hotCore, 0.3);  // Add hot core
+        glow = mix(glow, coronaGlow, corona * 0.5);  // Orange corona
+
         FragColor = vec4(glow, 1.0);
         return;
     }
@@ -291,5 +304,35 @@ uniform float alpha;
 void main()
 {
     FragColor = vec4(color, alpha);
+}
+)";
+
+// ===== COORDINATE GRID SHADER =====
+const char* gridVertexShader = R"(
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aColor;
+
+uniform mat4 view;
+uniform mat4 projection;
+
+out vec3 gridColor;
+
+void main()
+{
+    gl_Position = projection * view * vec4(aPos, 1.0);
+    gridColor = aColor;
+}
+)";
+
+const char* gridFragmentShader = R"(
+#version 460 core
+out vec4 FragColor;
+
+in vec3 gridColor;
+
+void main()
+{
+    FragColor = vec4(gridColor, 0.3);  // Semi-transparent grid
 }
 )";
