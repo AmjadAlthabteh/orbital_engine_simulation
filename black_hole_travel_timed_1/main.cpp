@@ -11,6 +11,7 @@
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "Renderer.hpp"
+#include "Sphere.hpp"
 #include "SolarSystemFactory.hpp"
 #include "PhysicsEngine.hpp"
 #include "StarField.hpp"
