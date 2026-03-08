@@ -26,6 +26,12 @@ Sphere::Sphere(float radius, int sectors, int stacks)
             vertices.push_back(y);
             vertices.push_back(z);
 
+            // TEXTURE COORDINATES (UV mapping)
+            float u = (float)j / sectors;
+            float v = (float)i / stacks;
+            vertices.push_back(u);
+            vertices.push_back(v);
+
             // NORMAL (important for lighting)
             vertices.push_back(x / radius);
             vertices.push_back(y / radius);
@@ -78,15 +84,21 @@ Sphere::Sphere(float radius, int sectors, int stacks)
 
     // POSITION (location 0)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-        6 * sizeof(float),
+        8 * sizeof(float),
         (void*)0);
     glEnableVertexAttribArray(0);
 
-    // NORMAL (location 1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-        6 * sizeof(float),
+    // TEXTURE COORDS (location 1)
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+        8 * sizeof(float),
         (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // NORMAL (location 2)
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE,
+        8 * sizeof(float),
+        (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
 }

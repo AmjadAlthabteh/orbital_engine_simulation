@@ -2,6 +2,7 @@
 // Advanced 3D Solar System Simulation with Orbital Mechanics
 // Features: Realistic gravity, collision prediction, orbital trails, starfield
 // Visual Physics: Velocity vectors, force vectors, prediction markers, trajectory points
+// ENHANCED VERSION: Atmospheric glow, rim lighting, nebula background, engine particles, planet textures
 #include <SFML/Window.hpp>
 #include <glad/glad.h>
 #include <iostream>
@@ -19,68 +20,13 @@
 #include "PredictionMarker.hpp"
 #include "VectorRenderer.hpp"
 #include "Spaceship.hpp"
+#include "EnhancedShaders.hpp"
+#include "NebulaBackground.hpp"
+#include "EngineParticles.hpp"
+#include "TextureLoader.hpp"
 
-const char* vertexShaderSource = R"(
-#version 460 core
-layout (location = 0) in vec3 aPos;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-out vec3 FragPos;
-out vec3 Normal;
-
-void main()
-{
-    FragPos = vec3(model * vec4(aPos, 1.0));
-    Normal = normalize(aPos);
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-}
-)";
-
-const char* fragmentShaderSource = R"(
-#version 460 core
-out vec4 FragColor;
-
-in vec3 FragPos;
-in vec3 Normal;
-
-uniform vec3 objectColor;
-uniform vec3 lightPos;
-uniform vec3 viewPos;
-uniform bool isSun;
-
-void main()
-{
-    if (isSun)
-    {
-        // Sun emits light with glow effect
-        vec3 glow = objectColor * 1.3;
-        FragColor = vec4(glow, 1.0);
-    }
-    else
-    {
-        // Ambient lighting
-        vec3 ambient = 0.15 * objectColor;
-
-        // Diffuse lighting
-        vec3 norm = normalize(Normal);
-        vec3 lightDir = normalize(lightPos - FragPos);
-        float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = diff * objectColor;
-
-        // Specular lighting
-        vec3 viewDir = normalize(viewPos - FragPos);
-        vec3 reflectDir = reflect(-lightDir, norm);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-        vec3 specular = 0.3 * spec * vec3(1.0, 1.0, 1.0);
-
-        vec3 result = ambient + diffuse + specular;
-        FragColor = vec4(result, 1.0);
-    }
-}
-)";
+// Using enhanced shaders from EnhancedShaders.hpp
+// Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
 
 // Line shader for trails and collision predictions
 const char* lineVertexShaderSource = R"(
@@ -204,19 +150,42 @@ int main()
     glEnable(GL_PROGRAM_POINT_SIZE);
     glLineWidth(2.0f);
 
-    // Create shaders
-    Shader shader(vertexShaderSource, fragmentShaderSource);
+    // Create ENHANCED shaders with atmospheric effects, rim lighting, and improved visuals
+    Shader planetShader(enhancedPlanetVertexShader, enhancedPlanetFragmentShader);
     Shader lineShader(lineVertexShaderSource, lineFragmentShaderSource);
-    Shader starShader(starVertexShaderSource, starFragmentShaderSource);
+    Shader starShader(enhancedStarVertexShader, enhancedStarFragmentShader);
     Shader vectorShader(vectorVertexShaderSource, vectorFragmentShaderSource);
+    Shader nebulaShader(nebulaVertexShader, nebulaFragmentShader);
+    Shader engineParticleShader(engineParticleVertexShader, engineParticleFragmentShader);
 
-    Renderer renderer(&shader);
+    // Create texture loader and load/generate planet textures
+    TextureLoader textureLoader;
+    std::cout << "Generating procedural planet textures...\n";
+    textureLoader.createProceduralPlanetTexture("Earth", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Mars", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Jupiter", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Saturn", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Sun", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Venus", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Mercury", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Uranus", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Neptune", 512, 512);
+    std::cout << "Textures generated successfully!\n";
+
+    // Create visual enhancement systems
+    NebulaBackground nebula;
+    EngineParticles engineParticles(1000);  // Max 1000 particles
+    std::cout << "Nebula background created with multiple colored regions\n";
+    std::cout << "Engine particle system initialized\n";
+
+    Renderer renderer(&planetShader);
     Camera camera;
     camera.position = Vec3(0, 30, 80);
 
     std::cout << "\n";
     std::cout << "╔════════════════════════════════════════════════════════════╗\n";
-    std::cout << "║   3D ORBITAL PHYSICS SIMULATOR WITH SPACESHIP             ║\n";
+    std::cout << "║   3D ORBITAL PHYSICS SIMULATOR - ENHANCED EDITION          ║\n";
+    std::cout << "║   With Atmospheric Glow, Nebula, Textures & Particles      ║\n";
     std::cout << "╚════════════════════════════════════════════════════════════╝\n\n";
 
     std::cout << "┌─ SPACESHIP CONTROLS ──────────────────────────────────────┐\n";
@@ -231,6 +200,7 @@ int main()
     std::cout << "┌─ CAMERA CONTROLS ─────────────────────────────────────────┐\n";
     std::cout << "│  WASD         │ Move camera (Free mode only)              │\n";
     std::cout << "│  Mouse        │ Look around (Free mode only)              │\n";
+    std::cout << "│  Mouse Wheel  │ Zoom in/out (FOV 10-120°)                 │\n";
     std::cout << "│  C            │ Toggle mode (Free/Follow/Chase)           │\n";
     std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
 
@@ -254,12 +224,17 @@ int main()
     std::cout << "  ✓ Enhanced planet colors and sizes\n";
     std::cout << "  ✓ Black hole gravity well detection\n\n";
 
-    Mat4 projection = Mat4::perspective(
-        45.0f * 0.0174533f,
-        1280.0f / 720.0f,
-        0.1f,
-        2000.0f
-    );
+    std::cout << "VISUAL ENHANCEMENTS:\n";
+    std::cout << "  ★ Atmospheric glow around planets (rim lighting)\n";
+    std::cout << "  ★ Procedural planet textures (Earth, Mars, Jupiter, etc.)\n";
+    std::cout << "  ★ Volumetric nebula background (6+ colored regions)\n";
+    std::cout << "  ★ Realistic engine particle effects\n";
+    std::cout << "  ★ Enhanced star rendering with halos\n";
+    std::cout << "  ★ Camera zoom with smooth transitions\n";
+    std::cout << "  ★ Improved lighting and specular highlights\n\n";
+
+    // Projection matrix will be dynamic based on camera FOV (for zoom)
+    float aspectRatio = 1280.0f / 720.0f;
 
     // Initialize solar system
     auto bodies = SolarSystemFactory::createSimpleSystem();
@@ -362,6 +337,16 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            // Mouse wheel for zoom
+            if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+                {
+                    float zoomAmount = event.mouseWheelScroll.delta * 5.0f;
+                    camera.zoom(zoomAmount);
+                }
+            }
 
             if (event.type == sf::Event::KeyPressed)
             {
@@ -520,6 +505,27 @@ int main()
 
         // Update spaceship
         ship.update(deltaTime);
+
+        // Update camera zoom (smooth interpolation)
+        camera.updateZoom(rawDeltaTime);
+
+        // Update nebula background (gentle animation)
+        nebula.update(deltaTime);
+
+        // Emit engine particles when thrusting
+        if (ship.getIsThrusting())
+        {
+            Vec3 shipPos = ship.getPhysicsBody().position;
+            Vec3 shipForward = ship.getForward();
+            Vec3 shipVel = ship.getPhysicsBody().velocity;
+
+            // Emit particles from behind the ship
+            Vec3 exhaustPos = shipPos - shipForward * (ship.getRadius() * 1.2f);
+            engineParticles.emit(exhaustPos, shipForward, shipVel, 1.0f, 8);
+        }
+
+        // Update engine particles
+        engineParticles.update(deltaTime);
 
         // *** REAL-TIME DISTANCE/ALTITUDE DISPLAY ***
         static float displayTimer = 0.0f;
@@ -707,12 +713,30 @@ int main()
         starfield.update(deltaTime);
 
         // -------- Rendering --------
-        glClearColor(0.0f, 0.0f, 0.02f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.01f, 1.0f);  // Darker for better nebula contrast
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Mat4 view = camera.getViewMatrix();
 
-        // Render starfield
+        // Dynamic projection matrix with camera FOV (for zoom)
+        Mat4 projection = Mat4::perspective(
+            camera.getFOV() * 0.0174533f,  // Convert degrees to radians
+            aspectRatio,
+            0.1f,
+            2000.0f
+        );
+
+        // Render nebula background (furthest back)
+        glDepthMask(GL_FALSE);  // Don't write to depth buffer
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);  // Additive blending for glow
+        nebulaShader.use();
+        nebulaShader.setMat4("view", view);
+        nebulaShader.setMat4("projection", projection);
+        nebula.render();
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Reset blending
+        glDepthMask(GL_TRUE);
+
+        // Render starfield (on top of nebula)
         starShader.use();
         starShader.setMat4("view", view);
         starShader.setMat4("projection", projection);
@@ -732,23 +756,84 @@ int main()
         }
         glDepthMask(GL_TRUE);
 
-        // Render planets with lighting
-        shader.use();
-        shader.setVec3("viewPos", camera.position);
-        shader.setVec3("lightPos", Vec3(0, 0, 0));
+        // Render planets with ENHANCED lighting (atmospheric glow, rim lighting, textures)
+        planetShader.use();
+        planetShader.setVec3("viewPos", camera.position);
+        planetShader.setVec3("lightPos", Vec3(0, 0, 0));
 
         for (auto* body : bodies)
         {
             Mat4 model = body->getModelMatrix();
             bool isSun = (body->getName() == "Sun");
-            shader.setBool("isSun", isSun);
+            planetShader.setBool("isSun", isSun);
+
+            // Set atmospheric parameters based on planet
+            std::string name = body->getName();
+            if (name == "Earth")
+            {
+                planetShader.setBool("hasAtmosphere", true);
+                planetShader.setVec3("atmosphereColor", Vec3(0.3f, 0.5f, 1.0f));  // Blue
+                planetShader.setFloat("atmosphereThickness", 0.8f);
+            }
+            else if (name == "Mars")
+            {
+                planetShader.setBool("hasAtmosphere", true);
+                planetShader.setVec3("atmosphereColor", Vec3(1.0f, 0.6f, 0.3f));  // Orange
+                planetShader.setFloat("atmosphereThickness", 0.3f);
+            }
+            else if (name == "Venus")
+            {
+                planetShader.setBool("hasAtmosphere", true);
+                planetShader.setVec3("atmosphereColor", Vec3(1.0f, 0.9f, 0.6f));  // Yellow
+                planetShader.setFloat("atmosphereThickness", 0.9f);
+            }
+            else if (name == "Jupiter" || name == "Saturn" || name == "Uranus" || name == "Neptune")
+            {
+                planetShader.setBool("hasAtmosphere", true);
+                planetShader.setVec3("atmosphereColor", body->getColor() * 1.2f);
+                planetShader.setFloat("atmosphereThickness", 0.6f);
+            }
+            else
+            {
+                planetShader.setBool("hasAtmosphere", false);
+                planetShader.setFloat("atmosphereThickness", 0.0f);
+            }
+
+            // Use texture if available, otherwise use solid color
+            GLuint texture = textureLoader.getTexture(name);
+            if (texture != 0 && !isSun)
+            {
+                planetShader.setBool("hasTexture", true);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, texture);
+            }
+            else
+            {
+                planetShader.setBool("hasTexture", false);
+            }
+
             renderer.render(model, view, projection, body->getColor());
         }
 
-        // Render spaceship with oriented model matrix
+        // Render spaceship with oriented model matrix and atmospheric effects
         Mat4 shipModel = ship.getOrientedModelMatrix();
-        shader.setBool("isSun", false);
+        planetShader.setBool("isSun", false);
+        planetShader.setBool("hasAtmosphere", false);
+        planetShader.setBool("hasTexture", false);
         renderer.render(shipModel, view, projection, ship.getColor());
+
+        // Render engine particles (glowing exhaust)
+        if (ship.getIsThrusting())
+        {
+            glDepthMask(GL_FALSE);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);  // Additive blending for glow
+            engineParticleShader.use();
+            engineParticleShader.setMat4("view", view);
+            engineParticleShader.setMat4("projection", projection);
+            engineParticles.render();
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Reset
+            glDepthMask(GL_TRUE);
+        }
 
         // *** RENDER COLLISION POINTS - RED PULSING SPHERES ***
         const auto& collisions = physics.getRecentCollisions();
@@ -774,7 +859,9 @@ int main()
             ) * Mat4::scale(markerSize);
 
             // Render as glowing sphere (like sun)
-            shader.setBool("isSun", true);  // Makes it glow!
+            planetShader.setBool("isSun", true);  // Makes it glow!
+            planetShader.setBool("hasAtmosphere", false);
+            planetShader.setBool("hasTexture", false);
             renderer.render(collisionModel, view, projection, collisionColor);
         }
 

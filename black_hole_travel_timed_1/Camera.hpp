@@ -23,6 +23,9 @@ public:
 
     float yaw;
     float pitch;
+    float fov;            // Field of view for zoom
+    float targetFov;      // Target FOV for smooth zoom
+    float zoomSpeed;      // Zoom interpolation speed
 
     CameraMode mode;
 
@@ -42,4 +45,10 @@ public:
     // Update camera based on mode
     void updateFollowMode(const Spaceship& ship);
     void updateChaseMode(const Spaceship& ship);
+
+    // Zoom functionality
+    void zoom(float amount);
+    void setZoom(float newFov);
+    float getFOV() const;
+    void updateZoom(float deltaTime);  // Smooth zoom interpolation
 };

@@ -12,6 +12,10 @@ Camera::Camera()
     yaw = -90.0f;
     pitch = 0.0f;
 
+    fov = 45.0f;          // Default field of view
+    targetFov = 45.0f;    // Default target FOV
+    zoomSpeed = 5.0f;     // Zoom interpolation speed
+
     mode = CameraMode::FREE;  // Start in free camera mode
 
     updateVectors();
@@ -134,4 +138,41 @@ void Camera::updateChaseMode(const Spaceship& ship)
     // Update yaw/pitch to match (for consistency)
     yaw = ship.getYaw();
     pitch = ship.getPitch();
+}
+
+void Camera::zoom(float amount)
+{
+    targetFov -= amount;
+
+    // Clamp FOV to reasonable range (10 to 120 degrees)
+    if (targetFov < 10.0f) targetFov = 10.0f;
+    if (targetFov > 120.0f) targetFov = 120.0f;
+}
+
+void Camera::setZoom(float newFov)
+{
+    targetFov = newFov;
+
+    // Clamp FOV
+    if (targetFov < 10.0f) targetFov = 10.0f;
+    if (targetFov > 120.0f) targetFov = 120.0f;
+}
+
+float Camera::getFOV() const
+{
+    return fov;
+}
+
+void Camera::updateZoom(float deltaTime)
+{
+    // Smoothly interpolate FOV toward target
+    if (std::abs(fov - targetFov) > 0.1f)
+    {
+        float diff = targetFov - fov;
+        fov += diff * zoomSpeed * deltaTime;
+    }
+    else
+    {
+        fov = targetFov;
+    }
 }
