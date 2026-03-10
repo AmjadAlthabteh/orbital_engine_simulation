@@ -67,6 +67,20 @@ find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
 set(GLAD_INCLUDE_DIR "C:/Dev/glad/include")
 set(GLAD_SOURCE "C:/Users/amjad/Downloads/glad/src/glad.c")
 
+# ImGui - adjust path as needed
+# Download from: https://github.com/ocornut/imgui
+set(IMGUI_DIR "C:/Dev/imgui")
+set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml")
+
+# ImGui source files
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_SFML_DIR}/imgui-SFML.cpp
+)
+
 # Source files
 set(SOURCES
     main.cpp
@@ -97,6 +111,7 @@ set(SOURCES
     Trail.cpp
     VectorRenderer.cpp
     ${GLAD_SOURCE}
+    ${IMGUI_SOURCES}
 )
 
 # Header files (for IDEs)
@@ -132,6 +147,11 @@ set(HEADERS
     Trail.hpp
     Vec3.hpp
     VectorRenderer.hpp
+    Framebuffer.hpp
+    PostProcessing.hpp
+    BlackHole.hpp
+    AccretionDisk.hpp
+    GUI.hpp
 )
 
 # Create executable
@@ -142,6 +162,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${GLAD_INCLUDE_DIR}
     ${SFML_INCLUDE_DIR}
+    ${IMGUI_DIR}
+    ${IMGUI_SFML_DIR}
 )
 
 # Link libraries
