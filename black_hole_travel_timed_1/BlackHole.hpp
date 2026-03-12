@@ -99,8 +99,8 @@ private:
     Sphere lensingEffectSphere;
 
 public:
-    BlackHole(float mass, float radius, const Vec3& color, const std::string& name)
-        : CelestialBody(mass, radius, color, name)
+    BlackHole(const std::string& name, float mass, float radius, const Vec3& color)
+        : CelestialBody(name, mass, radius, color)
     {
         // Calculate Schwarzschild radius (event horizon)
         // rs = 2GM/c^2, but we'll use simplified physics
@@ -116,19 +116,18 @@ public:
     {
         lensingShader->use();
 
+        Vec3 pos = getPhysicsBody().position;
+        float rad = getRadius();
+
         // Render lensing effect sphere (larger than event horizon)
-        Mat4 lensingModel = Mat4::translation(
-            physicsBody.position.x,
-            physicsBody.position.y,
-            physicsBody.position.z
-        ) * Mat4::scale(radius * 3.0f);  // Lensing effect extends beyond visible radius
+        Mat4 lensingModel = Mat4::translation(pos.x, pos.y, pos.z) * Mat4::scale(rad * 3.0f);
 
         lensingShader->setMat4("model", lensingModel);
         lensingShader->setMat4("view", view);
         lensingShader->setMat4("projection", projection);
         lensingShader->setVec3("viewPos", cameraPos);
-        lensingShader->setVec3("blackHolePos", physicsBody.position);
-        lensingShader->setFloat("blackHoleMass", physicsBody.mass);
+        lensingShader->setVec3("blackHolePos", pos);
+        lensingShader->setFloat("blackHoleMass", getPhysicsBody().mass);
         lensingShader->setFloat("schwarzschildRadius", schwarzschildRadius);
 
         // Render with transparency
@@ -146,12 +145,10 @@ public:
     {
         shader->use();
 
+        Vec3 pos = getPhysicsBody().position;
+
         // Render pure black event horizon
-        Mat4 horizonModel = Mat4::translation(
-            physicsBody.position.x,
-            physicsBody.position.y,
-            physicsBody.position.z
-        ) * Mat4::scale(schwarzschildRadius);
+        Mat4 horizonModel = Mat4::translation(pos.x, pos.y, pos.z) * Mat4::scale(schwarzschildRadius);
 
         shader->setMat4("model", horizonModel);
         shader->setMat4("view", view);

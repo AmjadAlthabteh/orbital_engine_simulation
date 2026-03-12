@@ -24,6 +24,11 @@ std::vector<CelestialBody*> SolarSystemFactory::createSimpleSystem()
     earth->getPhysicsBody().position = Vec3(18, 0, 0);
     earth->getPhysicsBody().velocity = Vec3(0, 3.6f, 0);
 
+    // Moon - Earth's natural satellite (gray, heavily cratered)
+    CelestialBody* moon = new CelestialBody("Moon", 0.012f, 0.27f, Vec3(0.7f, 0.7f, 0.7f));
+    moon->getPhysicsBody().position = Vec3(18, 0, 3.0f);  // 3 units from Earth
+    moon->getPhysicsBody().velocity = Vec3(0, 3.6f + 1.0f, 0);  // Orbital velocity around Earth
+
     // Mars - RUSTY red dusty terrain (MORE REALISTIC)
     CelestialBody* mars = new CelestialBody("Mars", 0.6f, 0.45f, Vec3(0.9f, 0.3f, 0.15f));
     mars->getPhysicsBody().position = Vec3(24, 0, 0);
@@ -72,6 +77,7 @@ std::vector<CelestialBody*> SolarSystemFactory::createSimpleSystem()
     system.push_back(mercury);
     system.push_back(venus);
     system.push_back(earth);
+    system.push_back(moon);  // Add Moon
     system.push_back(mars);
     system.push_back(jupiter);
     system.push_back(saturn);

@@ -62,24 +62,29 @@ find_package(OpenGL REQUIRED)
 # SFML - adjust path as needed
 set(SFML_DIR "C:/Dev/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
+# Note: If version mismatch occurs, remove version number or adjust SFML path
 
 # GLAD - adjust path as needed
 set(GLAD_INCLUDE_DIR "C:/Dev/glad/include")
 set(GLAD_SOURCE "C:/Users/amjad/Downloads/glad/src/glad.c")
 
-# ImGui - adjust path as needed
+# ImGui - OPTIONAL - uncomment after installing ImGui
 # Download from: https://github.com/ocornut/imgui
-set(IMGUI_DIR "C:/Dev/imgui")
-set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml")
+# set(IMGUI_DIR "C:/Dev/imgui")
+# set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml")
 
-# ImGui source files
-set(IMGUI_SOURCES
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_SFML_DIR}/imgui-SFML.cpp
-)
+# ImGui source files - OPTIONAL
+# Uncomment these after installing ImGui
+# set(IMGUI_SOURCES
+#     ${IMGUI_DIR}/imgui.cpp
+#     ${IMGUI_DIR}/imgui_draw.cpp
+#     ${IMGUI_DIR}/imgui_tables.cpp
+#     ${IMGUI_DIR}/imgui_widgets.cpp
+#     ${IMGUI_SFML_DIR}/imgui-SFML.cpp
+# )
+
+# For now, ImGui is disabled - using stub version
+set(IMGUI_SOURCES "")
 
 # Source files
 set(SOURCES
@@ -152,6 +157,7 @@ set(HEADERS
     BlackHole.hpp
     AccretionDisk.hpp
     GUI.hpp
+    GUI_NoImGui.hpp
 )
 
 # Create executable
@@ -162,8 +168,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${GLAD_INCLUDE_DIR}
     ${SFML_INCLUDE_DIR}
-    ${IMGUI_DIR}
-    ${IMGUI_SFML_DIR}
+    # Uncomment these after installing ImGui:
+    # ${IMGUI_DIR}
+    # ${IMGUI_SFML_DIR}
 )
 
 # Link libraries

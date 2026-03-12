@@ -4,6 +4,18 @@
 #include "Body.hpp"
 #include "Trail.hpp"
 #include <memory>
+#include <string>
+
+// Forward declaration
+class CelestialBody;
+
+// Landing state machine
+enum class LandingState
+{
+    FLYING,       // Normal flight mode
+    APPROACHING,  // Within landing range, velocity low enough
+    LANDED        // Landed on surface, physics disabled
+};
 
 class Spaceship : public Entity
 {
@@ -32,6 +44,13 @@ private:
     bool hasExhaustTrail;
     float exhaustTimer;
     float exhaustInterval;      // Time between exhaust trail points
+
+    // Landing system
+    LandingState landingState;
+    CelestialBody* landedOn;    // Which body we're landed on (nullptr if flying)
+    Vec3 landingOffset;         // Offset from planet surface when landed
+    float landingDistThreshold; // How close to land (2.0 * radius sum)
+    float landingVelThreshold;  // Max velocity to land (5.0 units/s)
 
 public:
     // Constructor
@@ -74,4 +93,12 @@ public:
     // Utility
     void setThrustPower(float power);       // Adjust thrust strength
     void setRotationSpeed(float speed);     // Adjust rotation rate
+
+    // Landing system
+    LandingState getLandingState() const;
+    CelestialBody* getLandedBody() const;
+    void checkLandingProximity(const std::vector<CelestialBody*>& bodies);  // Check if can land
+    void attemptLanding(CelestialBody* body);  // Try to land on body
+    void takeoff();                            // Leave surface
+    bool canLandOn(const CelestialBody* body) const;  // Is this body landable?
 };

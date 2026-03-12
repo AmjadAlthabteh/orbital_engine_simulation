@@ -36,7 +36,9 @@
 #include "PostProcessing.hpp"
 #include "BlackHole.hpp"
 #include "AccretionDisk.hpp"
-#include "GUI.hpp"
+// Temporarily using GUI_NoImGui.hpp until ImGui is installed
+// After installing ImGui, change this to: #include "GUI.hpp"
+#include "GUI_NoImGui.hpp"
 
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
@@ -179,6 +181,7 @@ int main()
     TextureLoader textureLoader;
     std::cout << "Generating procedural planet textures...\n";
     textureLoader.createProceduralPlanetTexture("Earth", 512, 512);
+    textureLoader.createProceduralPlanetTexture("Moon", 512, 512);
     textureLoader.createProceduralPlanetTexture("Mars", 512, 512);
     textureLoader.createProceduralPlanetTexture("Jupiter", 512, 512);
     textureLoader.createProceduralPlanetTexture("Saturn", 512, 512);
@@ -522,6 +525,56 @@ int main()
                     if (timeScale < 0.1f) timeScale = 0.1f;
                     std::cout << "Time scale: " << timeScale << "x\n";
                 }
+                if (event.key.code == sf::Keyboard::B)
+                {
+                    // Attempt landing if in approach range
+                    if (spaceship.getLandingState() == LandingState::APPROACHING)
+                    {
+                        // Find closest landable body
+                        CelestialBody* closestLandable = nullptr;
+                        float closestDist = 999999.0f;
+
+                        for (auto* body : bodies)
+                        {
+                            if (spaceship.canLandOn(body))
+                            {
+                                Vec3 toBody = body->getPhysicsBody().position - spaceship.getPhysicsBody().position;
+                                float dist = toBody.length();
+                                if (dist < closestDist)
+                                {
+                                    closestDist = dist;
+                                    closestLandable = body;
+                                }
+                            }
+                        }
+
+                        if (closestLandable)
+                        {
+                            spaceship.attemptLanding(closestLandable);
+                        }
+                    }
+                    else if (spaceship.getLandingState() == LandingState::FLYING)
+                    {
+                        std::cout << "Cannot land - not in approach range or moving too fast!\n";
+                        std::cout << "Slow down and get closer to a landable body (Earth, Moon, Mars).\n";
+                    }
+                    else
+                    {
+                        std::cout << "Already landed. Press N to take off.\n";
+                    }
+                }
+                if (event.key.code == sf::Keyboard::N)
+                {
+                    // Take off if currently landed
+                    if (spaceship.getLandingState() == LandingState::LANDED)
+                    {
+                        spaceship.takeoff();
+                    }
+                    else
+                    {
+                        std::cout << "Cannot take off - not currently landed!\n";
+                    }
+                }
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
@@ -634,12 +687,38 @@ int main()
         }
 
         // -------- Physics Update --------
-        physics.update(deltaTime);
+        // Only apply physics to ship if not landed
+        if (ship.getLandingState() != LandingState::LANDED)
+        {
+            physics.update(deltaTime);
+        }
+        else
+        {
+            // Still update celestial bodies even when landed
+            for (size_t i = 0; i < bodies.size(); i++)
+            {
+                for (size_t j = i + 1; j < bodies.size(); j++)
+                {
+                    physics.applyGravity(bodies[i]->getPhysicsBody(), bodies[j]->getPhysicsBody(), deltaTime);
+                }
+            }
+            for (auto* body : bodies)
+            {
+                physics.integrateMotion(body->getPhysicsBody(), deltaTime);
+            }
+        }
+
         for (auto* body : bodies)
             body->update(deltaTime);
 
         // Update spaceship
         ship.update(deltaTime);
+
+        // Check landing proximity (only when not landed)
+        if (ship.getLandingState() != LandingState::LANDED)
+        {
+            ship.checkLandingProximity(bodies);
+        }
 
         // Update camera zoom (smooth interpolation)
         camera.updateZoom(rawDeltaTime);
@@ -1020,6 +1099,8 @@ int main()
         if (blackHoleBody)
         {
             Vec3 blackHolePos = blackHoleBody->getPhysicsBody().position;
+            float blackHoleRadius = blackHoleBody->getRadius();
+            float blackHoleMass = blackHoleBody->getPhysicsBody().mass;
             Mat4 blackHoleModel = Mat4::translation(blackHolePos.x, blackHolePos.y, blackHolePos.z);
 
             // 1. Render accretion disk (with blending)
@@ -1038,11 +1119,11 @@ int main()
             lensingShader.setMat4("projection", projection);
             lensingShader.setVec3("viewPos", camera.position);
             lensingShader.setVec3("blackHolePos", blackHolePos);
-            lensingShader.setFloat("blackHoleMass", blackHoleBody->getPhysicsBody().mass);
-            lensingShader.setFloat("schwarzschildRadius", blackHoleBody->getRadius() * 0.8f);
+            lensingShader.setFloat("blackHoleMass", blackHoleMass);
+            lensingShader.setFloat("schwarzschildRadius", blackHoleRadius * 0.8f);
 
             Mat4 lensingModel = Mat4::translation(blackHolePos.x, blackHolePos.y, blackHolePos.z)
-                              * Mat4::scale(blackHoleBody->getRadius() * 2.5f);
+                              * Mat4::scale(blackHoleRadius * 2.5f);
             lensingShader.setMat4("model", lensingModel);
 
             // Would render lensing sphere here (need to create Sphere instance)

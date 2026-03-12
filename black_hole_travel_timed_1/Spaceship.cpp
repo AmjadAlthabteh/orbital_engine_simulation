@@ -1,5 +1,7 @@
 #include "Spaceship.hpp"
+#include "CelestialBody.hpp"
 #include <cmath>
+#include <iostream>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -19,7 +21,12 @@ Spaceship::Spaceship(float mass, float radius_, const Vec3& color_)
       right(1.0f, 0.0f, 0.0f),      // Initial right direction
       hasExhaustTrail(false),
       exhaustTimer(0.0f),
-      exhaustInterval(0.02f)        // Faster trail updates than planets
+      exhaustInterval(0.02f),       // Faster trail updates than planets
+      landingState(LandingState::FLYING),
+      landedOn(nullptr),
+      landingOffset(0.0f, 0.0f, 0.0f),
+      landingDistThreshold(3.0f),   // Distance multiplier for landing
+      landingVelThreshold(5.0f)     // Max velocity to land
 {
     setScale(Vec3(radius, radius, radius));
     updateDirectionVectors();
@@ -27,8 +34,24 @@ Spaceship::Spaceship(float mass, float radius_, const Vec3& color_)
 
 void Spaceship::update(float deltaTime)
 {
-    // NOTE: Physics integration is handled by PhysicsEngine, not here
-    // We just sync our position with the physics body
+    // If landed, stay locked to planet surface
+    if (landingState == LandingState::LANDED && landedOn != nullptr)
+    {
+        // Lock position to planet surface (at landing offset)
+        Vec3 planetPos = landedOn->getPhysicsBody().position;
+        Vec3 toPlanet = (planetPos - physicsBody.position).normalize();
+        float surfaceDistance = landedOn->getRadius() + radius + 0.1f;  // Slight hover above surface
+
+        physicsBody.position = planetPos - toPlanet * surfaceDistance;
+        physicsBody.velocity = Vec3(0, 0, 0);  // Zero velocity when landed
+        physicsBody.acceleration = Vec3(0, 0, 0);
+    }
+    else
+    {
+        // NOTE: Physics integration is handled by PhysicsEngine, not here
+        // We just sync our position with the physics body
+    }
+
     setPosition(physicsBody.position);
 
     // Update exhaust trail when thrusting
@@ -216,4 +239,115 @@ void Spaceship::setThrustPower(float power)
 void Spaceship::setRotationSpeed(float speed)
 {
     rotationSpeed = speed;
+}
+
+// Landing system implementation
+LandingState Spaceship::getLandingState() const
+{
+    return landingState;
+}
+
+CelestialBody* Spaceship::getLandedBody() const
+{
+    return landedOn;
+}
+
+bool Spaceship::canLandOn(const CelestialBody* body) const
+{
+    // Can only land on rocky planets with surfaces
+    const std::string& name = body->getName();
+
+    // Landable: Earth, Moon, Mars, Mercury (not gas giants, not Sun, not Black Hole)
+    return (name == "Earth" || name == "Moon" || name == "Mars" || name == "Mercury");
+}
+
+void Spaceship::checkLandingProximity(const std::vector<CelestialBody*>& bodies)
+{
+    // If already landed, don't check
+    if (landingState == LandingState::LANDED)
+        return;
+
+    float currentSpeed = getSpeed();
+    bool foundApproaching = false;
+
+    // Check all landable bodies
+    for (CelestialBody* body : bodies)
+    {
+        if (!canLandOn(body))
+            continue;
+
+        Vec3 toBody = body->getPhysicsBody().position - physicsBody.position;
+        float distance = toBody.length();
+        float surfaceDistance = distance - body->getRadius() - radius;
+
+        // Check if within landing range
+        float landingRange = landingDistThreshold * (body->getRadius() + radius);
+
+        if (surfaceDistance < landingRange && currentSpeed < landingVelThreshold)
+        {
+            landingState = LandingState::APPROACHING;
+            foundApproaching = true;
+            break;  // Only approach one body at a time
+        }
+    }
+
+    // If not approaching any body, set to flying
+    if (!foundApproaching && landingState == LandingState::APPROACHING)
+    {
+        landingState = LandingState::FLYING;
+    }
+}
+
+void Spaceship::attemptLanding(CelestialBody* body)
+{
+    if (landingState != LandingState::APPROACHING)
+    {
+        std::cout << "Cannot land - not in approach range or moving too fast!\n";
+        return;
+    }
+
+    if (!canLandOn(body))
+    {
+        std::cout << "Cannot land on " << body->getName() << " - no solid surface!\n";
+        return;
+    }
+
+    // Execute landing
+    landingState = LandingState::LANDED;
+    landedOn = body;
+
+    // Calculate landing offset (position relative to planet center)
+    Vec3 toPlanet = (body->getPhysicsBody().position - physicsBody.position).normalize();
+    landingOffset = toPlanet * (body->getRadius() + radius + 0.1f);
+
+    // Zero out velocity
+    physicsBody.velocity = Vec3(0, 0, 0);
+    physicsBody.acceleration = Vec3(0, 0, 0);
+
+    std::cout << "Successfully landed on " << body->getName() << "!\n";
+    std::cout << "Press T to take off.\n";
+}
+
+void Spaceship::takeoff()
+{
+    if (landingState != LandingState::LANDED)
+    {
+        std::cout << "Cannot take off - not currently landed!\n";
+        return;
+    }
+
+    // Apply upward impulse for takeoff
+    if (landedOn != nullptr)
+    {
+        Vec3 planetPos = landedOn->getPhysicsBody().position;
+        Vec3 awayFromPlanet = (physicsBody.position - planetPos).normalize();
+        physicsBody.velocity = awayFromPlanet * 3.0f;  // Launch velocity
+
+        std::cout << "Taking off from " << landedOn->getName() << "!\n";
+    }
+
+    // Reset landing state
+    landingState = LandingState::FLYING;
+    landedOn = nullptr;
+    landingOffset = Vec3(0, 0, 0);
 }
