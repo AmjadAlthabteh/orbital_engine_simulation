@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Body.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CelestialBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CollisionPredictor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CoordinateGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\EngineParticles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\GalaxyBackground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\HohmannTransfer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\LagrangePoints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\NebulaBackground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\OrbitalMechanicsHUD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\OrbitalPath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\PhysicsEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\PlanetaryRings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\PredictionMarker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\SolarSystemFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Spaceship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\StarField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\StoryNarrator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\TextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Trail.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\VectorRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\amjad\Downloads\glad\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Body.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Camera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CelestialBody.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CollisionPredictor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CoordinateGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\EngineParticles.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\EnhancedShaders.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Entity.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\GalaxyBackground.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\HohmannTransfer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\HUD.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\LagrangePoints.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Mat4.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\NebulaBackground.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\OrbitalMechanicsHUD.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\OrbitalPath.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\PhysicsEngine.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\PlanetaryRings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\PredictionMarker.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Shader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\SolarSystemFactory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Spaceship.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Sphere.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\StarField.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\StoryNarrator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\TextureLoader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Trail.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Vec3.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\VectorRenderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Framebuffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\PostProcessing.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\BlackHole.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\AccretionDisk.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\GUI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\GUI_NoImGui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{5B4E812E-0F25-39F1-A70E-135C48D03075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{71315CFB-984C-3A8D-B9F8-027B40F23AE5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -528,7 +528,7 @@ int main()
                 if (event.key.code == sf::Keyboard::B)
                 {
                     // Attempt landing if in approach range
-                    if (spaceship.getLandingState() == LandingState::APPROACHING)
+                    if (ship.getLandingState() == LandingState::APPROACHING)
                     {
                         // Find closest landable body
                         CelestialBody* closestLandable = nullptr;
@@ -536,9 +536,9 @@ int main()
 
                         for (auto* body : bodies)
                         {
-                            if (spaceship.canLandOn(body))
+                            if (ship.canLandOn(body))
                             {
-                                Vec3 toBody = body->getPhysicsBody().position - spaceship.getPhysicsBody().position;
+                                Vec3 toBody = body->getPhysicsBody().position - ship.getPhysicsBody().position;
                                 float dist = toBody.length();
                                 if (dist < closestDist)
                                 {
@@ -550,10 +550,10 @@ int main()
 
                         if (closestLandable)
                         {
-                            spaceship.attemptLanding(closestLandable);
+                            ship.attemptLanding(closestLandable);
                         }
                     }
-                    else if (spaceship.getLandingState() == LandingState::FLYING)
+                    else if (ship.getLandingState() == LandingState::FLYING)
                     {
                         std::cout << "Cannot land - not in approach range or moving too fast!\n";
                         std::cout << "Slow down and get closer to a landable body (Earth, Moon, Mars).\n";
@@ -566,9 +566,9 @@ int main()
                 if (event.key.code == sf::Keyboard::N)
                 {
                     // Take off if currently landed
-                    if (spaceship.getLandingState() == LandingState::LANDED)
+                    if (ship.getLandingState() == LandingState::LANDED)
                     {
-                        spaceship.takeoff();
+                        ship.takeoff();
                     }
                     else
                     {
@@ -687,26 +687,8 @@ int main()
         }
 
         // -------- Physics Update --------
-        // Only apply physics to ship if not landed
-        if (ship.getLandingState() != LandingState::LANDED)
-        {
-            physics.update(deltaTime);
-        }
-        else
-        {
-            // Still update celestial bodies even when landed
-            for (size_t i = 0; i < bodies.size(); i++)
-            {
-                for (size_t j = i + 1; j < bodies.size(); j++)
-                {
-                    physics.applyGravity(bodies[i]->getPhysicsBody(), bodies[j]->getPhysicsBody(), deltaTime);
-                }
-            }
-            for (auto* body : bodies)
-            {
-                physics.integrateMotion(body->getPhysicsBody(), deltaTime);
-            }
-        }
+        // Update physics (ship's update() will handle surface lock if landed)
+        physics.update(deltaTime);
 
         for (auto* body : bodies)
             body->update(deltaTime);

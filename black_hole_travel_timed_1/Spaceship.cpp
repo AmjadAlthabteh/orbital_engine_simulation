@@ -44,7 +44,7 @@ void Spaceship::update(float deltaTime)
 
         physicsBody.position = planetPos - toPlanet * surfaceDistance;
         physicsBody.velocity = Vec3(0, 0, 0);  // Zero velocity when landed
-        physicsBody.acceleration = Vec3(0, 0, 0);
+        physicsBody.clearForces();  // Clear all forces when landed
     }
     else
     {
@@ -320,9 +320,9 @@ void Spaceship::attemptLanding(CelestialBody* body)
     Vec3 toPlanet = (body->getPhysicsBody().position - physicsBody.position).normalize();
     landingOffset = toPlanet * (body->getRadius() + radius + 0.1f);
 
-    // Zero out velocity
+    // Zero out velocity and forces
     physicsBody.velocity = Vec3(0, 0, 0);
-    physicsBody.acceleration = Vec3(0, 0, 0);
+    physicsBody.clearForces();
 
     std::cout << "Successfully landed on " << body->getName() << "!\n";
     std::cout << "Press T to take off.\n";
