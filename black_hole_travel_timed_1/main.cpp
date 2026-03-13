@@ -36,9 +36,8 @@
 #include "PostProcessing.hpp"
 #include "BlackHole.hpp"
 #include "AccretionDisk.hpp"
-// Temporarily using GUI_NoImGui.hpp until ImGui is installed
-// After installing ImGui, change this to: #include "GUI.hpp"
-#include "GUI_NoImGui.hpp"
+// ImGui GUI System - Interactive control panels
+#include "GUI.hpp"
 
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
@@ -142,7 +141,7 @@ int main()
     settings.majorVersion = 4;
     settings.minorVersion = 6;
 
-    sf::Window window(
+    sf::RenderWindow window(
         sf::VideoMode(1280, 720),
         "Black Hole Engine",
         sf::Style::Default,
@@ -408,7 +407,7 @@ int main()
         while (window.pollEvent(event))
         {
             // Process GUI events first
-            gui.processEvent(event);
+            gui.processEvent(window, event);
 
             if (event.type == sf::Event::Closed)
                 window.close();
@@ -1281,12 +1280,7 @@ int main()
         }
 
         // 3. Render GUI on top of everything
-        gui.renderControlPanel();
-        gui.renderShipTelemetry(ship, bodies);
-        gui.renderVisualSettings(&postProcessing);
-        gui.renderOrbitalData(ship);
-        gui.renderPerformanceStats(1.0f / rawDeltaTime, rawDeltaTime);
-
+        gui.renderAllPanels(ship, bodies, &postProcessing, 1.0f / rawDeltaTime, rawDeltaTime);
         gui.render(window);
 
         window.display();

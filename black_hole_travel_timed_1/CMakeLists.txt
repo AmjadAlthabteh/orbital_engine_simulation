@@ -68,23 +68,18 @@ find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
 set(GLAD_INCLUDE_DIR "C:/Dev/glad/include")
 set(GLAD_SOURCE "C:/Users/amjad/Downloads/glad/src/glad.c")
 
-# ImGui - OPTIONAL - uncomment after installing ImGui
-# Download from: https://github.com/ocornut/imgui
-# set(IMGUI_DIR "C:/Dev/imgui")
-# set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml")
+# ImGui - Download from: https://github.com/ocornut/imgui
+set(IMGUI_DIR "C:/Dev/imgui")
+set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml")
 
-# ImGui source files - OPTIONAL
-# Uncomment these after installing ImGui
-# set(IMGUI_SOURCES
-#     ${IMGUI_DIR}/imgui.cpp
-#     ${IMGUI_DIR}/imgui_draw.cpp
-#     ${IMGUI_DIR}/imgui_tables.cpp
-#     ${IMGUI_DIR}/imgui_widgets.cpp
-#     ${IMGUI_SFML_DIR}/imgui-SFML.cpp
-# )
-
-# For now, ImGui is disabled - using stub version
-set(IMGUI_SOURCES "")
+# ImGui source files
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_SFML_DIR}/imgui-SFML.cpp
+)
 
 # Source files
 set(SOURCES
@@ -167,9 +162,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${GLAD_INCLUDE_DIR}
     ${SFML_INCLUDE_DIR}
-    # Uncomment these after installing ImGui:
-    # ${IMGUI_DIR}
-    # ${IMGUI_SFML_DIR}
+    ${IMGUI_DIR}
+    ${IMGUI_SFML_DIR}
 )
 
 # Link libraries

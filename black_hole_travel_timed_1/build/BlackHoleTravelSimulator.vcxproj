@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Dev/SFML-2.6.2/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -114,10 +114,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -144,7 +144,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Dev/SFML-2.6.2/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -173,10 +173,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -203,7 +203,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Dev/SFML-2.6.2/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -232,10 +232,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -262,7 +262,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Dev/SFML-2.6.2/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -290,10 +290,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1;C:\Dev\glad\include;C:\Dev\imgui;C:\Dev\imgui-sfml;C:\Dev\SFML-2.6.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -404,6 +404,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Trail.cpp" />
     <ClCompile Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\VectorRenderer.cpp" />
     <ClCompile Include="C:\Users\amjad\Downloads\glad\src\glad.c" />
+    <ClCompile Include="C:\Dev\imgui\imgui.cpp" />
+    <ClCompile Include="C:\Dev\imgui\imgui_draw.cpp" />
+    <ClCompile Include="C:\Dev\imgui\imgui_tables.cpp" />
+    <ClCompile Include="C:\Dev\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="C:\Dev\imgui-sfml\imgui-SFML.cpp" />
     <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Body.hpp" />
     <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\Camera.hpp" />
     <ClInclude Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\CelestialBody.hpp" />
