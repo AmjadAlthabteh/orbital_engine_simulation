@@ -2,7 +2,7 @@
 
 // ===== ENHANCED PLANET SHADER WITH ATMOSPHERIC GLOW AND RIM LIGHTING =====
 const char* enhancedPlanetVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
 layout (location = 2) in vec3 aNormal;
@@ -32,7 +32,7 @@ void main()
 )";
 
 const char* enhancedPlanetFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 FragPos;
@@ -129,7 +129,7 @@ void main()
 
 // ===== NEBULA PARTICLE SHADER =====
 const char* nebulaVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in float aSize;
@@ -154,7 +154,7 @@ void main()
 )";
 
 const char* nebulaFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 particleColor;
@@ -182,7 +182,7 @@ void main()
 
 // ===== ENGINE PARTICLE SHADER =====
 const char* engineParticleVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in float aSize;
@@ -204,7 +204,7 @@ void main()
 )";
 
 const char* engineParticleFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 particleColor;
@@ -228,7 +228,7 @@ void main()
 
 // ===== ENHANCED STAR SHADER WITH BETTER GLOW =====
 const char* enhancedStarVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in float aSize;
@@ -249,7 +249,7 @@ void main()
 )";
 
 const char* enhancedStarFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 starColor;
@@ -282,7 +282,7 @@ void main()
 
 // ===== HUD SHADER (2D OVERLAY) =====
 const char* hudVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec2 aPos;
 
 uniform vec2 position;
@@ -295,7 +295,7 @@ void main()
 )";
 
 const char* hudFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 uniform vec3 color;
@@ -309,7 +309,7 @@ void main()
 
 // ===== COORDINATE GRID SHADER =====
 const char* gridVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 
@@ -326,7 +326,7 @@ void main()
 )";
 
 const char* gridFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 gridColor;
@@ -339,7 +339,7 @@ void main()
 
 // ===== PLANETARY RINGS SHADER =====
 const char* ringVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
@@ -364,7 +364,7 @@ void main()
 )";
 
 const char* ringFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 FragPos;

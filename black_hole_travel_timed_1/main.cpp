@@ -44,7 +44,7 @@
 
 // Line shader for trails and collision predictions
 const char* lineVertexShaderSource = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 
 uniform mat4 view;
@@ -57,7 +57,7 @@ void main()
 )";
 
 const char* lineFragmentShaderSource = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 uniform vec3 lineColor;
@@ -71,7 +71,7 @@ void main()
 
 // Star shader for point rendering
 const char* starVertexShaderSource = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in float aSize;
@@ -90,7 +90,7 @@ void main()
 )";
 
 const char* starFragmentShaderSource = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 starColor;
@@ -106,7 +106,7 @@ void main()
 
 // Vector arrow shader for velocity/force visualization
 const char* vectorVertexShaderSource = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 
@@ -123,7 +123,7 @@ void main()
 )";
 
 const char* vectorFragmentShaderSource = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec3 vertexColor;

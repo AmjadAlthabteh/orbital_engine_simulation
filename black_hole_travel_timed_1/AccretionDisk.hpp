@@ -8,7 +8,7 @@
 
 // Accretion disk shader with heat glow and rotation
 const char* accretionDiskVertexShader = R"(
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoords;
 
@@ -41,7 +41,7 @@ void main()
 )";
 
 const char* accretionDiskFragmentShader = R"(
-#version 460 core
+#version 330 core
 out vec4 FragColor;
 
 in vec2 TexCoords;
