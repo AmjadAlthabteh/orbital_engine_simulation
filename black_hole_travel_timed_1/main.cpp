@@ -39,6 +39,14 @@
 // ImGui GUI System - Interactive control panels
 #include "GUI.hpp"
 
+// NEW ADVANCED SYSTEMS
+#include "AchievementSystem.hpp"
+#include "ScienceSystem.hpp"
+#include "WaypointSystem.hpp"
+#include "EnhancedLogger.hpp"
+#include "AdvancedTelemetry.hpp"
+#include "CosmicEventSystem.hpp"
+
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
 
@@ -219,6 +227,18 @@ int main()
     // Create GUI system
     GUI gui(window);
 
+    // ===== CREATE NEW ADVANCED SYSTEMS =====
+    AchievementSystem achievements;
+    ScienceSystem science;
+    WaypointSystem waypoints;
+    AdvancedTelemetry telemetry;
+    CosmicEventSystem cosmicEvents;
+
+    // Create preset waypoints
+    waypoints.createPresetWaypoints(bodies);
+
+    // Use enhanced logger for startup messages
+    gLogger.sectionHeader("SYSTEM INITIALIZATION COMPLETE");
     std::cout << "Nebula background created with multiple colored regions\n";
     std::cout << "Engine particle system initialized\n";
     std::cout << "Galaxy background created with 20,000 stars in spiral arms\n";
@@ -303,6 +323,27 @@ int main()
     std::cout << "  ★ BLACK HOLE ACCRETION DISK: Dynamic swirling matter with heat!\n";
     std::cout << "  ★ GRAVITATIONAL LENSING: Realistic light bending physics!\n";
     std::cout << "  ★ ImGui INTERFACE: Interactive panels for all controls!\n\n";
+
+    std::cout << "🆕 NEW ADVANCED FEATURES:\n";
+    std::cout << "  🏆 ACHIEVEMENT SYSTEM: Unlock accomplishments and earn points!\n";
+    std::cout << "  🔬 SCIENCE SYSTEM: Scan planets and collect research data!\n";
+    std::cout << "  📍 WAYPOINT SYSTEM: Create custom navigation markers!\n";
+    std::cout << "  📊 ADVANCED TELEMETRY: G-forces, acceleration, orbital analysis!\n";
+    std::cout << "  🌌 COSMIC EVENTS: Random space phenomena and challenges!\n";
+    std::cout << "  📝 ENHANCED LOGGING: Color-coded console messages!\n\n";
+
+    std::cout << "┌─ ADVANCED SYSTEM HOTKEYS ─────────────────────────────────┐\n";
+    std::cout << "│  F1           │ Toggle Help Overlay (ImGui)               │\n";
+    std::cout << "│  F2           │ Show Achievement Summary                  │\n";
+    std::cout << "│  F3           │ Show Science Data Summary                 │\n";
+    std::cout << "│  F4           │ Advanced Telemetry Display                │\n";
+    std::cout << "│  F5           │ List All Waypoints                        │\n";
+    std::cout << "│  F6           │ Create Waypoint at Current Position       │\n";
+    std::cout << "│  F7           │ Start Science Scan (nearest body)         │\n";
+    std::cout << "│  F8           │ Trigger Random Cosmic Event               │\n";
+    std::cout << "│  F9           │ Enhanced Logger Demo                      │\n";
+    std::cout << "│  F10          │ Show Complete Statistics                  │\n";
+    std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
 
     // Projection matrix will be dynamic based on camera FOV (for zoom)
     float aspectRatio = 1280.0f / 720.0f;
@@ -577,6 +618,75 @@ int main()
                         std::cout << "Cannot take off - not currently landed!\n";
                     }
                 }
+                // ===== NEW ADVANCED SYSTEM CONTROLS =====
+                if (event.key.code == sf::Keyboard::F2)
+                {
+                    // Display Achievement Summary
+                    achievements.displaySummary();
+                }
+                if (event.key.code == sf::Keyboard::F3)
+                {
+                    // Display Science Summary
+                    science.displaySummary();
+                }
+                if (event.key.code == sf::Keyboard::F4)
+                {
+                    // Display Advanced Telemetry
+                    telemetry.displayComprehensive(ship, bodies);
+                }
+                if (event.key.code == sf::Keyboard::F5)
+                {
+                    // List Waypoints
+                    waypoints.listWaypoints();
+                }
+                if (event.key.code == sf::Keyboard::F6)
+                {
+                    // Create waypoint at current position
+                    std::string waypointName = "Waypoint_" + std::to_string(waypoints.getWaypoints().size() + 1);
+                    waypoints.addWaypoint(waypointName, ship.getPhysicsBody().position, "Custom navigation marker");
+                }
+                if (event.key.code == sf::Keyboard::F7)
+                {
+                    // Start science scan on nearest body
+                    // Find nearest body
+                    float nearestDist = 999999.0f;
+                    std::string nearestName = "Unknown";
+                    Vec3 shipPos = ship.getPhysicsBody().position;
+
+                    for (auto* body : bodies)
+                    {
+                        Vec3 diff = body->getPhysicsBody().position - shipPos;
+                        float dist = diff.length();
+                        if (dist < nearestDist)
+                        {
+                            nearestDist = dist;
+                            nearestName = body->getName();
+                        }
+                    }
+
+                    science.startScan(nearestName, nearestDist);
+                }
+                if (event.key.code == sf::Keyboard::F8)
+                {
+                    // Trigger a random cosmic event (for testing)
+                    cosmicEvents.checkForNewEvent();
+                }
+                if (event.key.code == sf::Keyboard::F9)
+                {
+                    // Enhanced logger test
+                    gLogger.sectionHeader("SYSTEM STATUS REPORT");
+                    gLogger.success("All systems operational");
+                    gLogger.info("Current mission progress tracked");
+                    gLogger.warning("Approaching high radiation zone");
+                }
+                if (event.key.code == sf::Keyboard::F10)
+                {
+                    // Display all stats combined
+                    gLogger.sectionHeader("COMPLETE MISSION STATISTICS");
+                    achievements.displaySummary();
+                    science.displaySummary();
+                    telemetry.displayComprehensive(ship, bodies);
+                }
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
@@ -714,6 +824,52 @@ int main()
         narrator.update(deltaTime);
         lagrangePoints.update(deltaTime);
         accretionDisk.update(deltaTime);
+
+        // ===== UPDATE NEW ADVANCED SYSTEMS =====
+        // Update telemetry
+        telemetry.update(ship, deltaTime, bodies);
+
+        // Update science scan
+        science.updateScan(deltaTime);
+
+        // Update cosmic events
+        cosmicEvents.update(deltaTime);
+
+        // Update achievements based on gameplay
+        achievements.updateSpeed(ship.getSpeed());
+        achievements.updateDistance(ship.getSpeed() * deltaTime);
+
+        // Check for achievement triggers
+        Vec3 shipPos = ship.getPhysicsBody().position;
+        for (auto* body : bodies)
+        {
+            Vec3 diff = body->getPhysicsBody().position - shipPos;
+            float dist = diff.length();
+
+            // Record close calls
+            if (dist - body->getRadius() < 5.0f && dist - body->getRadius() > 0.0f)
+            {
+                achievements.recordCloseCall();
+            }
+
+            // Record black hole proximity
+            if (body->getName() == "Black Hole" && dist < 15.0f)
+            {
+                achievements.recordBlackHoleApproach();
+            }
+
+            // Record sun proximity
+            if (body->getName() == "Sun" && dist < 10.0f)
+            {
+                achievements.recordSunApproach();
+            }
+        }
+
+        // Record landing
+        if (ship.getLandingState() == LandingState::LANDED)
+        {
+            achievements.recordLanding();
+        }
 
         // Update GUI
         gui.update(window);
