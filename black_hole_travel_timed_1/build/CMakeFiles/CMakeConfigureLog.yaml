@@ -107,7 +107,7 @@ events:
       The output was:
       0
       MSBuild version 17.14.40+3e7442088 for .NET Framework
-      Build started 3/13/2026 10:40:03 AM.
+      Build started 3/15/2026 9:46:54 AM.
       
       Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\4.2.0\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -136,7 +136,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:00.42
+      Time Elapsed 00:00:00.43
       
       
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -1015,7 +1015,7 @@ events:
       The output was:
       0
       MSBuild version 17.14.40+3e7442088 for .NET Framework
-      Build started 3/13/2026 10:40:04 AM.
+      Build started 3/15/2026 9:46:55 AM.
       
       Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\4.2.0\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -1044,7 +1044,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:00.41
+      Time Elapsed 00:00:00.38
       
       
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -1332,9 +1332,9 @@ events:
       - "C:/Program Files/CMake/bin/"
       - "C:/Program Files/CMake/sbin/"
       - "C:/Program Files/CMake/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/bin/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/sbin/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/"
+      - "C:/Program Files/BlackHoleTravelSimulator/bin/"
+      - "C:/Program Files/BlackHoleTravelSimulator/sbin/"
+      - "C:/Program Files/BlackHoleTravelSimulator/"
     searched_directories:
       - "C:/Users/amjad/bin/rc.com"
       - "C:/Users/amjad/bin/rc.exe"
@@ -1459,15 +1459,15 @@ events:
       - "C:/Program Files/CMake/rc.com"
       - "C:/Program Files/CMake/rc.exe"
       - "C:/Program Files/CMake/rc"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/bin/rc.com"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/bin/rc.exe"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/bin/rc"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/sbin/rc.com"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/sbin/rc.exe"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/sbin/rc"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/rc.com"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/rc.exe"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/rc"
+      - "C:/Program Files/BlackHoleTravelSimulator/bin/rc.com"
+      - "C:/Program Files/BlackHoleTravelSimulator/bin/rc.exe"
+      - "C:/Program Files/BlackHoleTravelSimulator/bin/rc"
+      - "C:/Program Files/BlackHoleTravelSimulator/sbin/rc.com"
+      - "C:/Program Files/BlackHoleTravelSimulator/sbin/rc.exe"
+      - "C:/Program Files/BlackHoleTravelSimulator/sbin/rc"
+      - "C:/Program Files/BlackHoleTravelSimulator/rc.com"
+      - "C:/Program Files/BlackHoleTravelSimulator/rc.exe"
+      - "C:/Program Files/BlackHoleTravelSimulator/rc"
     found: false
     search_context:
       ENV{PATH}:
@@ -1527,12 +1527,12 @@ events:
         - "C:\\Users\\amjad\\AppData\\Local\\GitHubDesktop\\bin"
         - "C:\\Program Files\\Git\\usr\\bin\\vendor_perl"
         - "C:\\Program Files\\Git\\usr\\bin\\core_perl"
-      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/BlackHoleTravelSimulator"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files/BlackHoleTravelSimulator"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "C:/Program Files"
         - "C:/Program Files (x86)"
         - "C:/Program Files/CMake"
-        - "C:/Program Files (x86)/BlackHoleTravelSimulator"
+        - "C:/Program Files/BlackHoleTravelSimulator"
   -
     kind: "try_compile-v1"
     backtrace:
@@ -1542,8 +1542,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-0vywtu"
-      binary: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-0vywtu"
+      source: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-6gbjbt"
+      binary: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-6gbjbt"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -1552,39 +1552,39 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-0vywtu'
+        Change Dir: 'C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-6gbjbt'
         
-        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_56b83.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_62858.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.14.40+3e7442088 for .NET Framework
-        Build started 3/13/2026 10:40:05 AM.
+        Build started 3/15/2026 9:46:56 AM.
         
-        Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0vywtu\\cmTC_56b83.vcxproj" on node 1 (default targets).
+        Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6gbjbt\\cmTC_62858.vcxproj" on node 1 (default targets).
         PrepareForBuild:
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0vywtu\\Debug\\".
-          Creating directory "cmTC_56b83.dir\\Debug\\cmTC_56b83.tlog\\".
+          Creating directory "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6gbjbt\\Debug\\".
+          Creating directory "cmTC_62858.dir\\Debug\\cmTC_62858.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_56b83.dir\\Debug\\cmTC_56b83.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_56b83.dir\\Debug\\cmTC_56b83.tlog\\unsuccessfulbuild".
+          Creating "cmTC_62858.dir\\Debug\\cmTC_62858.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_62858.dir\\Debug\\cmTC_62858.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /Fo"cmTC_56b83.dir\\Debug\\\\" /Fd"cmTC_56b83.dir\\Debug\\vc143.pdb" /external:W1 /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCCompilerABI.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /Fo"cmTC_62858.dir\\Debug\\\\" /Fd"cmTC_62858.dir\\Debug\\vc143.pdb" /external:W1 /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCCompilerABI.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.38.33145 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /Fo"cmTC_56b83.dir\\Debug\\\\" /Fd"cmTC_56b83.dir\\Debug\\vc143.pdb" /external:W1 /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCCompilerABI.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /Fo"cmTC_62858.dir\\Debug\\\\" /Fd"cmTC_62858.dir\\Debug\\vc143.pdb" /external:W1 /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCCompilerABI.c"
           CMakeCCompilerABI.c
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\link.exe /OUT:"C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0vywtu\\Debug\\cmTC_56b83.exe" /INCREMENTAL /ILK:"cmTC_56b83.dir\\Debug\\cmTC_56b83.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-0vywtu/Debug/cmTC_56b83.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-0vywtu/Debug/cmTC_56b83.lib" /MACHINE:X64  /machine:x64 cmTC_56b83.dir\\Debug\\CMakeCCompilerABI.obj
-          cmTC_56b83.vcxproj -> C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0vywtu\\Debug\\cmTC_56b83.exe
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\link.exe /OUT:"C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6gbjbt\\Debug\\cmTC_62858.exe" /INCREMENTAL /ILK:"cmTC_62858.dir\\Debug\\cmTC_62858.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-6gbjbt/Debug/cmTC_62858.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-6gbjbt/Debug/cmTC_62858.lib" /MACHINE:X64  /machine:x64 cmTC_62858.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_62858.vcxproj -> C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6gbjbt\\Debug\\cmTC_62858.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_56b83.dir\\Debug\\cmTC_56b83.tlog\\unsuccessfulbuild".
-          Touching "cmTC_56b83.dir\\Debug\\cmTC_56b83.tlog\\cmTC_56b83.lastbuildstate".
-        Done Building Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0vywtu\\cmTC_56b83.vcxproj" (default targets).
+          Deleting file "cmTC_62858.dir\\Debug\\cmTC_62858.tlog\\unsuccessfulbuild".
+          Touching "cmTC_62858.dir\\Debug\\cmTC_62858.tlog\\cmTC_62858.lastbuildstate".
+        Done Building Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6gbjbt\\cmTC_62858.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:00.36
+        Time Elapsed 00:00:00.38
         
       exitCode: 0
   -
@@ -1624,8 +1624,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-e4f0us"
-      binary: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-e4f0us"
+      source: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-n1zysa"
+      binary: "C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-n1zysa"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -1635,39 +1635,39 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-e4f0us'
+        Change Dir: 'C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-n1zysa'
         
-        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_1eb43.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_3d542.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.14.40+3e7442088 for .NET Framework
-        Build started 3/13/2026 10:40:06 AM.
+        Build started 3/15/2026 9:46:57 AM.
         
-        Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e4f0us\\cmTC_1eb43.vcxproj" on node 1 (default targets).
+        Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n1zysa\\cmTC_3d542.vcxproj" on node 1 (default targets).
         PrepareForBuild:
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e4f0us\\Debug\\".
-          Creating directory "cmTC_1eb43.dir\\Debug\\cmTC_1eb43.tlog\\".
+          Creating directory "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n1zysa\\Debug\\".
+          Creating directory "cmTC_3d542.dir\\Debug\\cmTC_3d542.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_1eb43.dir\\Debug\\cmTC_1eb43.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_1eb43.dir\\Debug\\cmTC_1eb43.tlog\\unsuccessfulbuild".
+          Creating "cmTC_3d542.dir\\Debug\\cmTC_3d542.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_3d542.dir\\Debug\\cmTC_3d542.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_1eb43.dir\\Debug\\\\" /Fd"cmTC_1eb43.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCXXCompilerABI.cpp"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_3d542.dir\\Debug\\\\" /Fd"cmTC_3d542.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCXXCompilerABI.cpp"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.38.33145 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_1eb43.dir\\Debug\\\\" /Fd"cmTC_1eb43.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCXXCompilerABI.cpp"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_3d542.dir\\Debug\\\\" /Fd"cmTC_3d542.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-4.2\\Modules\\CMakeCXXCompilerABI.cpp"
           CMakeCXXCompilerABI.cpp
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\link.exe /OUT:"C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e4f0us\\Debug\\cmTC_1eb43.exe" /INCREMENTAL /ILK:"cmTC_1eb43.dir\\Debug\\cmTC_1eb43.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-e4f0us/Debug/cmTC_1eb43.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-e4f0us/Debug/cmTC_1eb43.lib" /MACHINE:X64  /machine:x64 cmTC_1eb43.dir\\Debug\\CMakeCXXCompilerABI.obj
-          cmTC_1eb43.vcxproj -> C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e4f0us\\Debug\\cmTC_1eb43.exe
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\HostX64\\x64\\link.exe /OUT:"C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n1zysa\\Debug\\cmTC_3d542.exe" /INCREMENTAL /ILK:"cmTC_3d542.dir\\Debug\\cmTC_3d542.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-n1zysa/Debug/cmTC_3d542.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"C:/Dev/C++Code/update_orderbook_02/black_hole_travel_timed_1/black_hole_travel_timed_1/build/CMakeFiles/CMakeScratch/TryCompile-n1zysa/Debug/cmTC_3d542.lib" /MACHINE:X64  /machine:x64 cmTC_3d542.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_3d542.vcxproj -> C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n1zysa\\Debug\\cmTC_3d542.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_1eb43.dir\\Debug\\cmTC_1eb43.tlog\\unsuccessfulbuild".
-          Touching "cmTC_1eb43.dir\\Debug\\cmTC_1eb43.tlog\\cmTC_1eb43.lastbuildstate".
-        Done Building Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e4f0us\\cmTC_1eb43.vcxproj" (default targets).
+          Deleting file "cmTC_3d542.dir\\Debug\\cmTC_3d542.tlog\\unsuccessfulbuild".
+          Touching "cmTC_3d542.dir\\Debug\\cmTC_3d542.tlog\\cmTC_3d542.lastbuildstate".
+        Done Building Project "C:\\Dev\\C++Code\\update_orderbook_02\\black_hole_travel_timed_1\\black_hole_travel_timed_1\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n1zysa\\cmTC_3d542.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:00.35
+        Time Elapsed 00:00:00.40
         
       exitCode: 0
   -
@@ -1831,12 +1831,12 @@ events:
       - "C:/Program Files/CMake/SFML/doc/"
       - "C:/Program Files/CMake/share/doc/SFML/"
       - "C:/Program Files/CMake/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/include/SFML/doc/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/include/share/doc/SFML/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/include/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/SFML/doc/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/share/doc/SFML/"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/"
+      - "C:/Program Files/BlackHoleTravelSimulator/include/SFML/doc/"
+      - "C:/Program Files/BlackHoleTravelSimulator/include/share/doc/SFML/"
+      - "C:/Program Files/BlackHoleTravelSimulator/include/"
+      - "C:/Program Files/BlackHoleTravelSimulator/SFML/doc/"
+      - "C:/Program Files/BlackHoleTravelSimulator/share/doc/SFML/"
+      - "C:/Program Files/BlackHoleTravelSimulator/"
       - "C:/Dev/SFML-2.6.2/lib/SFML/doc/"
       - "C:/Dev/SFML-2.6.2/lib/share/doc/SFML/"
       - "C:/Dev/SFML-2.6.2/lib/"
@@ -1979,12 +1979,12 @@ events:
       - "C:/Program Files/CMake/SFML/doc/SFML.tag"
       - "C:/Program Files/CMake/share/doc/SFML/SFML.tag"
       - "C:/Program Files/CMake/SFML.tag"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/include/SFML/doc/SFML.tag"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/include/share/doc/SFML/SFML.tag"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/include/SFML.tag"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/SFML/doc/SFML.tag"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/share/doc/SFML/SFML.tag"
-      - "C:/Program Files (x86)/BlackHoleTravelSimulator/SFML.tag"
+      - "C:/Program Files/BlackHoleTravelSimulator/include/SFML/doc/SFML.tag"
+      - "C:/Program Files/BlackHoleTravelSimulator/include/share/doc/SFML/SFML.tag"
+      - "C:/Program Files/BlackHoleTravelSimulator/include/SFML.tag"
+      - "C:/Program Files/BlackHoleTravelSimulator/SFML/doc/SFML.tag"
+      - "C:/Program Files/BlackHoleTravelSimulator/share/doc/SFML/SFML.tag"
+      - "C:/Program Files/BlackHoleTravelSimulator/SFML.tag"
       - "C:/Dev/SFML-2.6.2/lib/SFML/doc/SFML.tag"
       - "C:/Dev/SFML-2.6.2/lib/share/doc/SFML/SFML.tag"
       - "C:/Dev/SFML-2.6.2/lib/SFML.tag"
@@ -2071,10 +2071,10 @@ events:
         - "C:\\Users\\amjad\\AppData\\Local\\GitHubDesktop\\bin"
         - "C:\\Program Files\\Git\\usr\\bin\\vendor_perl"
         - "C:\\Program Files\\Git\\usr\\bin\\core_perl"
-      CMAKE_INSTALL_PREFIX: "C:/Program Files (x86)/BlackHoleTravelSimulator"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files/BlackHoleTravelSimulator"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "C:/Program Files"
         - "C:/Program Files (x86)"
         - "C:/Program Files/CMake"
-        - "C:/Program Files (x86)/BlackHoleTravelSimulator"
+        - "C:/Program Files/BlackHoleTravelSimulator"
 ...

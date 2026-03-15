@@ -138,8 +138,10 @@ int main()
 {
     sf::ContextSettings settings;
     settings.depthBits = 24;
-    settings.majorVersion = 4;
-    settings.minorVersion = 6;
+    // Don't force OpenGL 4.6 Core - let SFML use compatibility mode for ImGui
+    // GLAD will still load modern OpenGL functions
+    // settings.majorVersion = 4;
+    // settings.minorVersion = 6;
 
     sf::RenderWindow window(
         sf::VideoMode(1280, 720),
@@ -149,8 +151,9 @@ int main()
     );
 
     window.setVerticalSyncEnabled(true);
-    window.setMouseCursorGrabbed(true);
-    window.setMouseCursorVisible(false);
+    // Don't hide/grab cursor for GUI interaction
+    window.setMouseCursorGrabbed(false);
+    window.setMouseCursorVisible(true);
 
     if (!gladLoadGL())
     {
@@ -1267,6 +1270,10 @@ int main()
         // Reset viewport to window size
         glViewport(0, 0, 1280, 720);
 
+        // Clear the default framebuffer
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         // Apply bloom and HDR tone mapping
         if (guiState.bloomEnabled)
         {
@@ -1279,7 +1286,13 @@ int main()
             postProcessing.process(sceneFramebuffer.getColorTexture());
         }
 
-        // 3. Render GUI on top of everything
+        // 3. Reset OpenGL state for GUI rendering
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // 4. Render GUI on top of everything
         gui.renderAllPanels(ship, bodies, &postProcessing, 1.0f / rawDeltaTime, rawDeltaTime);
         gui.render(window);
 
