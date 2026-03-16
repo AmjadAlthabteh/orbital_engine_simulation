@@ -1,3 +1,7 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #pragma once
 
 #include <iostream>
@@ -46,11 +50,12 @@ private:
     std::string getTimestamp() const
     {
         time_t now = time(0);
-        tm* ltm = localtime(&now);
+        tm ltm;
+        localtime_s(&ltm, &now);
         std::stringstream ss;
-        ss << std::setfill('0') << std::setw(2) << ltm->tm_hour << ":"
-           << std::setw(2) << ltm->tm_min << ":"
-           << std::setw(2) << ltm->tm_sec;
+        ss << std::setfill('0') << std::setw(2) << ltm.tm_hour << ":"
+           << std::setw(2) << ltm.tm_min << ":"
+           << std::setw(2) << ltm.tm_sec;
         return ss.str();
     }
 
