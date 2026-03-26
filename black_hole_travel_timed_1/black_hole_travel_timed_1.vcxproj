@@ -192,10 +192,25 @@
     <ClInclude Include="LagrangePoints.hpp" />
     <ClInclude Include="PlanetaryRings.hpp" />
     <ClInclude Include="OrbitalMechanicsHUD.hpp" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="OrbitalEngine_Design.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="black_hole_icon.ico" />
+    <None Include="create_icon.py" />
+    <None Include="create_saturn_icon.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app_icon.rc" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="if not exist &quot;$(ProjectDir)black_hole_icon.ico&quot; python &quot;$(ProjectDir)create_icon.py&quot;" />
+  </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
