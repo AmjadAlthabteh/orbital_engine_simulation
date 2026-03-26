@@ -17,6 +17,21 @@ enum class ExperimentType
     ORBITAL_STUDY       // Study from orbit
 };
 
+// Helper function to get experiment type name
+inline std::string getExperimentTypeName(ExperimentType type)
+{
+    switch (type)
+    {
+        case ExperimentType::VISUAL_SURVEY: return "Visual Survey";
+        case ExperimentType::ATMOSPHERIC_SCAN: return "Atmospheric Scan";
+        case ExperimentType::GRAVITY_MEASUREMENT: return "Gravity Measurement";
+        case ExperimentType::MAGNETIC_FIELD: return "Magnetic Field Study";
+        case ExperimentType::CLOSE_FLYBY: return "Close Flyby";
+        case ExperimentType::ORBITAL_STUDY: return "Orbital Study";
+        default: return "Unknown";
+    }
+}
+
 struct ScienceData
 {
     std::string planetName;
@@ -266,4 +281,35 @@ public:
     bool getIsScanning() const { return isScanning; }
     float getScanProgress() const { return scanProgress; }
     std::string getCurrentScanTarget() const { return currentScanTarget; }
+
+    // Get experiments for a specific planet
+    std::vector<ScienceData> getExperimentsForPlanet(const std::string& planetName) const
+    {
+        std::vector<ScienceData> planetExperiments;
+        for (const auto& exp : availableExperiments)
+        {
+            if (exp.planetName == planetName)
+            {
+                planetExperiments.push_back(exp);
+            }
+        }
+        return planetExperiments;
+    }
+
+    // Get total potential science from a planet
+    int getPotentialScience(const std::string& planetName) const
+    {
+        int total = 0;
+        for (const auto& exp : availableExperiments)
+        {
+            if (exp.planetName == planetName && !exp.collected)
+            {
+                total += exp.scienceValue;
+            }
+        }
+        return total;
+    }
+
+    // Alias for compatibility
+    float getTotalScience() const { return getTotalSciencePoints(); }
 };
