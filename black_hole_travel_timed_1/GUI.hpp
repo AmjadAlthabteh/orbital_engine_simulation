@@ -1036,6 +1036,24 @@ public:
     GUIState& getState() { return state; }
     const GUIState& getState() const { return state; }
 
+    // Get locked target information
+    bool isTargetLocked() const { return state.lockTarget && state.selectedTarget >= 0; }
+
+    CelestialBody* getLockedTarget(const std::vector<CelestialBody*>& bodies) const
+    {
+        if (!state.lockTarget || state.selectedTarget < 0 || state.selectedTarget >= static_cast<int>(cachedTargets.size()))
+            return nullptr;
+
+        // Find the body in the bodies list matching the cached target name
+        std::string targetName = cachedTargets[state.selectedTarget].name;
+        for (auto* body : bodies)
+        {
+            if (body->getName() == targetName)
+                return body;
+        }
+        return nullptr;
+    }
+
     // Update mission progress
     void updateMissionProgress(int index, float progress)
     {
