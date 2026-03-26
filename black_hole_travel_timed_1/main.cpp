@@ -46,6 +46,9 @@
 #include "EnhancedLogger.hpp"
 #include "AdvancedTelemetry.hpp"
 #include "CosmicEventSystem.hpp"
+#include "EnhancedStatistics.hpp"
+#include "PlanetInformationPanel.hpp"
+#include "AdvancedHUD.hpp"
 
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
@@ -233,9 +236,9 @@ int main()
     WaypointSystem waypoints;
     AdvancedTelemetry telemetry;
     CosmicEventSystem cosmicEvents;
-
-    // Create preset waypoints
-    waypoints.createPresetWaypoints(bodies);
+    EnhancedStatistics statistics;
+    PlanetInformationPanel planetPanel;
+    AdvancedHUD advancedHUD;
 
     // Use enhanced logger for startup messages
     gLogger.sectionHeader("SYSTEM INITIALIZATION COMPLETE");
@@ -351,6 +354,9 @@ int main()
     // Initialize solar system
     auto bodies = SolarSystemFactory::createSimpleSystem();
     PhysicsEngine physics(0.1f);
+
+    // Create preset waypoints now that bodies exist
+    waypoints.createPresetWaypoints(bodies);
 
     // Enable trails for all planets (not sun or black hole)
     for (auto* body : bodies)
@@ -554,17 +560,20 @@ int main()
                 if (event.key.code == sf::Keyboard::P)
                 {
                     isPaused = !isPaused;
+                    statistics.recordPause();
                     std::cout << "Simulation: " << (isPaused ? "PAUSED" : "RUNNING") << "\n";
                 }
                 if (event.key.code == sf::Keyboard::Equal || event.key.code == sf::Keyboard::Add)
                 {
                     timeScale *= 1.5f;
                     if (timeScale > 10.0f) timeScale = 10.0f;
+                    statistics.recordTimeWarp();
                     std::cout << "Time scale: " << timeScale << "x\n";
                 }
                 if (event.key.code == sf::Keyboard::Hyphen || event.key.code == sf::Keyboard::Subtract)
                 {
                     timeScale /= 1.5f;
+                    statistics.recordTimeWarp();
                     if (timeScale < 0.1f) timeScale = 0.1f;
                     std::cout << "Time scale: " << timeScale << "x\n";
                 }
@@ -594,6 +603,12 @@ int main()
                         if (closestLandable)
                         {
                             ship.attemptLanding(closestLandable);
+                            bool landingSuccess = (ship.getLandingState() == LandingState::LANDED);
+                            statistics.recordLandingAttempt(landingSuccess);
+                            if (landingSuccess)
+                            {
+                                statistics.recordPlanetVisit();
+                            }
                         }
                     }
                     else if (ship.getLandingState() == LandingState::FLYING)
@@ -644,6 +659,7 @@ int main()
                     // Create waypoint at current position
                     std::string waypointName = "Waypoint_" + std::to_string(waypoints.getWaypoints().size() + 1);
                     waypoints.addWaypoint(waypointName, ship.getPhysicsBody().position, "Custom navigation marker");
+                    statistics.recordWaypoint();
                 }
                 if (event.key.code == sf::Keyboard::F7)
                 {
@@ -681,11 +697,24 @@ int main()
                 }
                 if (event.key.code == sf::Keyboard::F10)
                 {
-                    // Display all stats combined
-                    gLogger.sectionHeader("COMPLETE MISSION STATISTICS");
-                    achievements.displaySummary();
-                    science.displaySummary();
-                    telemetry.displayComprehensive(ship, bodies);
+                    // Display comprehensive statistics with comparisons
+                    statistics.displayComplete();
+                }
+                if (event.key.code == sf::Keyboard::F11)
+                {
+                    // Open planet information panel for locked target
+                    if (gui.isTargetLocked())
+                    {
+                        CelestialBody* target = gui.getLockedTarget(bodies);
+                        if (target != nullptr)
+                        {
+                            planetPanel.open(target);
+                        }
+                    }
+                    else
+                    {
+                        gLogger.warning("No target locked! Use GUI to lock a target first, then press F11.");
+                    }
                 }
                 if (event.key.code == sf::Keyboard::Escape)
                 {
@@ -839,6 +868,14 @@ int main()
         achievements.updateSpeed(ship.getSpeed());
         achievements.updateDistance(ship.getSpeed() * deltaTime);
 
+        // Update enhanced statistics
+        statistics.updateFlightTime(deltaTime);
+        statistics.updateDistance(ship.getSpeed() * deltaTime);
+        statistics.updateMaxSpeed(ship.getSpeed());
+        statistics.updateMaxGForce(telemetry.getCurrentGForce());
+        statistics.updateSciencePoints(science.getTotalScience());
+        statistics.updateAchievements(achievements.getTotalPoints(), achievements.getUnlockedCount());
+
         // Check for achievement triggers
         Vec3 shipPos = ship.getPhysicsBody().position;
         for (auto* body : bodies)
@@ -850,18 +887,21 @@ int main()
             if (dist - body->getRadius() < 5.0f && dist - body->getRadius() > 0.0f)
             {
                 achievements.recordCloseCall();
+                statistics.recordCloseCall();
             }
 
             // Record black hole proximity
             if (body->getName() == "Black Hole" && dist < 15.0f)
             {
                 achievements.recordBlackHoleApproach();
+                statistics.updateBlackHoleDistance(dist);
             }
 
             // Record sun proximity
             if (body->getName() == "Sun" && dist < 10.0f)
             {
                 achievements.recordSunApproach();
+                statistics.updateSunDistance(dist);
             }
         }
 
@@ -869,6 +909,18 @@ int main()
         if (ship.getLandingState() == LandingState::LANDED)
         {
             achievements.recordLanding();
+        }
+
+        // Record cosmic events for statistics
+        if (cosmicEvents.getActiveEvents().size() > 0)
+        {
+            static size_t lastEventCount = 0;
+            size_t currentCount = cosmicEvents.getActiveEvents().size();
+            if (currentCount > lastEventCount)
+            {
+                statistics.recordCosmicEvent();
+            }
+            lastEventCount = currentCount;
         }
 
         // Update GUI
@@ -1451,6 +1503,14 @@ int main()
         // 4. Render GUI on top of everything
         gui.renderAllPanels(ship, bodies, &postProcessing, 1.0f / rawDeltaTime, rawDeltaTime);
         gui.render(window);
+
+        // 5. Render Advanced HUD overlay (targeting reticle, speed vectors, etc.)
+        if (!planetPanel.isActive()) {  // Don't show HUD when planet panel is open
+            advancedHUD.render(ship, bodies, gui.getLockedTarget(bodies), gui.isTargetLocked());
+        }
+
+        // 6. Render Planet Information Panel (full-screen when active)
+        planetPanel.render(science);
 
         window.display();
     }
