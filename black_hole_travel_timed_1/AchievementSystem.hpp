@@ -1,3 +1,7 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #pragma once
 
 #include <string>
@@ -232,7 +236,9 @@ public:
 
                 // Get current time
                 time_t now = time(0);
-                ach.unlockedTime = ctime(&now);
+                char timeBuffer[26];
+                ctime_s(timeBuffer, sizeof(timeBuffer), &now);
+                ach.unlockedTime = timeBuffer;
 
                 // Display unlock notification
                 std::cout << "\n";
