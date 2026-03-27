@@ -49,6 +49,11 @@
 #include "EnhancedStatistics.hpp"
 #include "PlanetInformationPanel.hpp"
 #include "AdvancedHUD.hpp"
+#include "SaveSystem.hpp"
+#include "ResourceSystem.hpp"
+#include "DamageSystem.hpp"
+#include "AudioManager.hpp"
+#include "MissionSystem.hpp"
 
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
@@ -239,6 +244,11 @@ int main()
     EnhancedStatistics statistics;
     PlanetInformationPanel planetPanel;
     AdvancedHUD advancedHUD;
+    SaveSystem saveSystem;
+    ResourceSystem resourceSystem;
+    DamageSystem damageSystem;
+    AudioManager audioManager;
+    MissionSystem missionSystem;
 
     // Use enhanced logger for startup messages
     gLogger.sectionHeader("SYSTEM INITIALIZATION COMPLETE");
@@ -716,6 +726,69 @@ int main()
                         gLogger.warning("No target locked! Use GUI to lock a target first, then press F11.");
                     }
                 }
+                if (event.key.code == sf::Keyboard::F12)
+                {
+                    // Quick save
+                    SaveData data;
+                    data.shipPosition = ship.getPosition();
+                    data.shipVelocity = ship.getVelocity();
+                    data.shipYaw = ship.getYaw();
+                    data.shipPitch = ship.getPitch();
+                    data.fuel = resourceSystem.getFuel();
+                    data.maxFuel = resourceSystem.getMaxFuel();
+                    data.power = resourceSystem.getPower();
+                    data.maxPower = resourceSystem.getMaxPower();
+                    data.oxygen = resourceSystem.getOxygen();
+                    data.maxOxygen = resourceSystem.getMaxOxygen();
+                    data.health = damageSystem.getHealth();
+                    data.maxHealth = damageSystem.getMaxHealth();
+                    data.totalGameTime = statistics.getSession().totalFlightTime;
+                    data.timeScale = timeScale;
+                    saveSystem.quickSave(data);
+                    audioManager.playSound(SoundEffect::UI_CLICK);
+                }
+                if (event.key.code == sf::Keyboard::L && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    // Quick load
+                    SaveData data;
+                    if (saveSystem.quickLoad(data))
+                    {
+                        ship.setPosition(data.shipPosition);
+                        ship.setVelocity(data.shipVelocity);
+                        ship.setYaw(data.shipYaw);
+                        ship.setPitch(data.shipPitch);
+                        resourceSystem.setFuel(data.fuel);
+                        resourceSystem.setMaxFuel(data.maxFuel);
+                        resourceSystem.setPower(data.power);
+                        resourceSystem.setMaxPower(data.maxPower);
+                        resourceSystem.setOxygen(data.oxygen);
+                        resourceSystem.setMaxOxygen(data.maxOxygen);
+                        damageSystem.setHealth(data.health);
+                        damageSystem.setMaxHealth(data.maxHealth);
+                        timeScale = data.timeScale;
+                        audioManager.playSound(SoundEffect::UI_CLICK);
+                    }
+                }
+                if (event.key.code == sf::Keyboard::R && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    // Display resource status
+                    resourceSystem.displayStatus();
+                }
+                if (event.key.code == sf::Keyboard::D && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    // Display damage report
+                    damageSystem.displayDamageReport();
+                }
+                if (event.key.code == sf::Keyboard::M && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    // Display missions
+                    missionSystem.displayAllMissions();
+                }
+                if (event.key.code == sf::Keyboard::A && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    // Display audio status
+                    audioManager.displayStatus();
+                }
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
@@ -788,10 +861,24 @@ int main()
         ship.stopThrust();
 
         // Thrust controls (I/K or Up/Down arrows)
+        bool thrusting = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::I) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
-            ship.applyThrust(deltaTime);
+            if (resourceSystem.canThrust())
+            {
+                ship.applyThrust(deltaTime);
+                thrusting = true;
+                audioManager.playLoopingSound(SoundEffect::ENGINE_THRUST, 1.0f);
+            }
+            else
+            {
+                gLogger.warning("Cannot thrust! Insufficient fuel or power!");
+            }
+        }
+        else
+        {
+            audioManager.stopLoopingSound(SoundEffect::ENGINE_THRUST);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::K) ||
@@ -875,6 +962,51 @@ int main()
         statistics.updateMaxGForce(telemetry.getCurrentGForce());
         statistics.updateSciencePoints(science.getTotalScience());
         statistics.updateAchievements(achievements.getTotalPoints(), achievements.getUnlockedCount());
+
+        // ===== UPDATE NEW RESOURCE/DAMAGE/MISSION SYSTEMS =====
+        // Update resource system
+        resourceSystem.update(deltaTime, thrusting, ship.getLandingState() == LandingState::LANDED,
+                             ship.getPosition(), bodies);
+
+        // Update damage system
+        damageSystem.update(deltaTime);
+
+        // Check for G-force damage
+        float currentGForce = telemetry.getCurrentGForce();
+        if (currentGForce > 10.0f)
+        {
+            damageSystem.takeGForceDamage(currentGForce);
+        }
+
+        // Update audio manager
+        audioManager.update(deltaTime);
+
+        // Update mission system
+        missionSystem.update(deltaTime);
+
+        // Auto-resupply when landing on suitable planets
+        if (ship.getLandingState() == LandingState::LANDED)
+        {
+            static bool landedLastFrame = false;
+            if (!landedLastFrame)
+            {
+                // Just landed - trigger resupply and repair
+                resourceSystem.fullResupply();
+                damageSystem.fullRepair();
+                audioManager.playSound(SoundEffect::LANDING_SUCCESS);
+                audioManager.playSound(SoundEffect::REFUEL);
+                landedLastFrame = true;
+            }
+        }
+        else
+        {
+            static bool landedLastFrame = false;
+            if (landedLastFrame)
+            {
+                audioManager.playSound(SoundEffect::TAKEOFF);
+            }
+            landedLastFrame = false;
+        }
 
         // Check for achievement triggers
         Vec3 shipPos = ship.getPhysicsBody().position;
@@ -1506,7 +1638,11 @@ int main()
 
         // 5. Render Advanced HUD overlay (targeting reticle, speed vectors, etc.)
         if (!planetPanel.isActive()) {  // Don't show HUD when planet panel is open
-            advancedHUD.render(ship, bodies, gui.getLockedTarget(bodies), gui.isTargetLocked());
+            advancedHUD.render(ship, bodies, gui.getLockedTarget(bodies), gui.isTargetLocked(),
+                              resourceSystem.getFuel(), resourceSystem.getMaxFuel(),
+                              resourceSystem.getPower(), resourceSystem.getMaxPower(),
+                              resourceSystem.getOxygen(), resourceSystem.getMaxOxygen(),
+                              damageSystem.getHealth(), damageSystem.getMaxHealth());
         }
 
         // 6. Render Planet Information Panel (full-screen when active)

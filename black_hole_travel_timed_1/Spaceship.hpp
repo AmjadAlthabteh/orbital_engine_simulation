@@ -101,4 +101,13 @@ public:
     void attemptLanding(CelestialBody* body);  // Try to land on body
     void takeoff();                            // Leave surface
     bool canLandOn(const CelestialBody* body) const;  // Is this body landable?
+
+    // Resource & Damage integration helpers
+    // Note: Actual ResourceSystem and DamageSystem are stored in main.cpp
+    // These methods provide convenient accessors for ship state
+    Vec3 getPosition() const { return physicsBody.position; }
+    void setPosition(const Vec3& pos) { physicsBody.position = pos; }
+    void setVelocity(const Vec3& vel) { physicsBody.velocity = vel; }
+    void setYaw(float y) { yaw = y; updateDirectionVectors(); }
+    void setPitch(float p) { pitch = p; updateDirectionVectors(); }
 };

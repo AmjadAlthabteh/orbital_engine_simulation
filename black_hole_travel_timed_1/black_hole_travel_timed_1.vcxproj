@@ -192,6 +192,11 @@
     <ClInclude Include="LagrangePoints.hpp" />
     <ClInclude Include="PlanetaryRings.hpp" />
     <ClInclude Include="OrbitalMechanicsHUD.hpp" />
+    <ClInclude Include="SaveSystem.hpp" />
+    <ClInclude Include="ResourceSystem.hpp" />
+    <ClInclude Include="DamageSystem.hpp" />
+    <ClInclude Include="AudioManager.hpp" />
+    <ClInclude Include="MissionSystem.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

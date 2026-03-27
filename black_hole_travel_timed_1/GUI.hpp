@@ -19,7 +19,8 @@
 
 class CelestialBody;
 
-struct MissionObjective
+// Simple tutorial objective for GUI (separate from full MissionSystem)
+struct TutorialObjective
 {
     std::string description;
     bool completed;
@@ -82,8 +83,8 @@ struct GUIState
     float fps = 0.0f;
     float frameTime = 0.0f;
 
-    // Mission data
-    std::vector<MissionObjective> objectives;
+    // Tutorial objectives data
+    std::vector<TutorialObjective> objectives;
     int currentMissionIndex = 0;
 
     // Radar settings
@@ -802,7 +803,7 @@ public:
 
         for (size_t i = 0; i < state.objectives.size(); ++i)
         {
-            const MissionObjective& obj = state.objectives[i];
+            const TutorialObjective& obj = state.objectives[i];
 
             // Checkbox for completion
             bool completed = obj.completed;
@@ -840,7 +841,7 @@ public:
 
         // Count completed objectives
         int completed = 0;
-        for (const auto& obj : state.objectives)
+        for (const TutorialObjective& obj : state.objectives)
             if (obj.completed) completed++;
 
         ImGui::Text("Overall Progress:");

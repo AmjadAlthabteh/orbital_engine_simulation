@@ -36,7 +36,11 @@ public:
 
     // Main HUD render function
     void render(const Spaceship& ship, const std::vector<CelestialBody*>& bodies,
-                CelestialBody* lockedTarget, bool targetLocked)
+                CelestialBody* lockedTarget, bool targetLocked,
+                float fuel = -1.0f, float maxFuel = 1.0f,
+                float power = -1.0f, float maxPower = 1.0f,
+                float oxygen = -1.0f, float maxOxygen = 1.0f,
+                float health = -1.0f, float maxHealth = 1.0f)
     {
         ImDrawList* drawList = ImGui::GetForegroundDrawList();
         ImVec2 screenCenter(640, 360);  // 1280x720 / 2
@@ -65,6 +69,12 @@ public:
         renderSpeedIndicator(drawList, ImVec2(100, 650), ship);
         renderAltitudeIndicator(drawList, ImVec2(100, 100), ship, bodies);
         renderGForceIndicator(drawList, ImVec2(1180, 100), ship);
+
+        // Resource and health bars (if valid data provided)
+        if (fuel >= 0.0f)
+            renderResourceBars(drawList, ImVec2(320, 650), fuel, maxFuel, power, maxPower, oxygen, maxOxygen);
+        if (health >= 0.0f)
+            renderHealthBar(drawList, ImVec2(640, 30), health, maxHealth);
     }
 
     // Targeting reticle - professional crosshair
@@ -428,6 +438,121 @@ public:
         // Placeholder value
         drawList->AddText(ImVec2(pos.x - 140, pos.y + 20), colorNormal, "1.2 G");
         drawList->AddText(ImVec2(pos.x - 140, pos.y + 40), IM_COL32(150, 150, 150, 255), "NOMINAL");
+    }
+
+    // Resource bars (fuel, power, oxygen) - bottom center
+    void renderResourceBars(ImDrawList* drawList, ImVec2 pos,
+                           float fuel, float maxFuel,
+                           float power, float maxPower,
+                           float oxygen, float maxOxygen)
+    {
+        const float barWidth = 200.0f;
+        const float barHeight = 18.0f;
+        const float spacing = 25.0f;
+
+        // Background panel
+        drawList->AddRectFilled(ImVec2(pos.x - 10, pos.y - 90),
+                               ImVec2(pos.x + barWidth + 10, pos.y + 10),
+                               IM_COL32(0, 0, 0, 200));
+
+        // === FUEL BAR ===
+        float fuelPercent = (fuel / maxFuel);
+        ImU32 fuelColor = fuelPercent < 0.2f ? IM_COL32(255, 50, 50, 255) :
+                         fuelPercent < 0.5f ? IM_COL32(255, 200, 0, 255) :
+                         IM_COL32(0, 200, 255, 255);
+
+        drawList->AddText(ImVec2(pos.x, pos.y - 85), IM_COL32(200, 200, 200, 255), "FUEL");
+        drawList->AddRect(ImVec2(pos.x, pos.y - 65),
+                         ImVec2(pos.x + barWidth, pos.y - 65 + barHeight),
+                         IM_COL32(100, 100, 100, 255), 0.0f, 0, 2.0f);
+        drawList->AddRectFilled(ImVec2(pos.x + 2, pos.y - 63),
+                               ImVec2(pos.x + 2 + (barWidth - 4) * fuelPercent, pos.y - 65 + barHeight - 2),
+                               fuelColor);
+
+        // Fuel percentage text
+        char fuelText[32];
+        snprintf(fuelText, sizeof(fuelText), "%.0f%%", fuelPercent * 100.0f);
+        drawList->AddText(ImVec2(pos.x + barWidth - 35, pos.y - 62), IM_COL32(255, 255, 255, 255), fuelText);
+
+        // === POWER BAR ===
+        float powerPercent = (power / maxPower);
+        ImU32 powerColor = powerPercent < 0.15f ? IM_COL32(255, 50, 50, 255) :
+                          powerPercent < 0.4f ? IM_COL32(255, 200, 0, 255) :
+                          IM_COL32(0, 255, 100, 255);
+
+        drawList->AddText(ImVec2(pos.x, pos.y - 60 + spacing), IM_COL32(200, 200, 200, 255), "POWER");
+        drawList->AddRect(ImVec2(pos.x, pos.y - 40 + spacing),
+                         ImVec2(pos.x + barWidth, pos.y - 40 + spacing + barHeight),
+                         IM_COL32(100, 100, 100, 255), 0.0f, 0, 2.0f);
+        drawList->AddRectFilled(ImVec2(pos.x + 2, pos.y - 38 + spacing),
+                               ImVec2(pos.x + 2 + (barWidth - 4) * powerPercent, pos.y - 40 + spacing + barHeight - 2),
+                               powerColor);
+
+        char powerText[32];
+        snprintf(powerText, sizeof(powerText), "%.0f%%", powerPercent * 100.0f);
+        drawList->AddText(ImVec2(pos.x + barWidth - 35, pos.y - 37 + spacing), IM_COL32(255, 255, 255, 255), powerText);
+
+        // === OXYGEN BAR ===
+        float oxygenPercent = (oxygen / maxOxygen);
+        ImU32 oxygenColor = oxygenPercent < 0.25f ? IM_COL32(255, 50, 50, 255) :
+                           oxygenPercent < 0.5f ? IM_COL32(255, 200, 0, 255) :
+                           IM_COL32(100, 200, 255, 255);
+
+        drawList->AddText(ImVec2(pos.x, pos.y - 35 + spacing * 2), IM_COL32(200, 200, 200, 255), "OXYGEN");
+        drawList->AddRect(ImVec2(pos.x, pos.y - 15 + spacing * 2),
+                         ImVec2(pos.x + barWidth, pos.y - 15 + spacing * 2 + barHeight),
+                         IM_COL32(100, 100, 100, 255), 0.0f, 0, 2.0f);
+        drawList->AddRectFilled(ImVec2(pos.x + 2, pos.y - 13 + spacing * 2),
+                               ImVec2(pos.x + 2 + (barWidth - 4) * oxygenPercent, pos.y - 15 + spacing * 2 + barHeight - 2),
+                               oxygenColor);
+
+        char oxygenText[32];
+        snprintf(oxygenText, sizeof(oxygenText), "%.0f%%", oxygenPercent * 100.0f);
+        drawList->AddText(ImVec2(pos.x + barWidth - 35, pos.y - 12 + spacing * 2), IM_COL32(255, 255, 255, 255), oxygenText);
+    }
+
+    // Health bar - top center
+    void renderHealthBar(ImDrawList* drawList, ImVec2 centerPos, float health, float maxHealth)
+    {
+        const float barWidth = 300.0f;
+        const float barHeight = 22.0f;
+
+        ImVec2 pos(centerPos.x - barWidth / 2, centerPos.y);
+
+        float healthPercent = (health / maxHealth);
+        ImU32 healthColor = healthPercent < 0.25f ? IM_COL32(255, 0, 0, 255) :
+                           healthPercent < 0.5f ? IM_COL32(255, 150, 0, 255) :
+                           healthPercent < 0.75f ? IM_COL32(255, 255, 0, 255) :
+                           IM_COL32(0, 255, 0, 255);
+
+        // Background panel
+        drawList->AddRectFilled(ImVec2(pos.x - 10, pos.y - 10),
+                               ImVec2(pos.x + barWidth + 10, pos.y + barHeight + 15),
+                               IM_COL32(0, 0, 0, 200));
+
+        // Label
+        drawList->AddText(ImVec2(pos.x + barWidth / 2 - 30, pos.y - 5), IM_COL32(255, 255, 255, 255), "HULL INTEGRITY");
+
+        // Health bar
+        drawList->AddRect(ImVec2(pos.x, pos.y + 15),
+                         ImVec2(pos.x + barWidth, pos.y + 15 + barHeight),
+                         IM_COL32(150, 150, 150, 255), 0.0f, 0, 2.0f);
+        drawList->AddRectFilled(ImVec2(pos.x + 2, pos.y + 17),
+                               ImVec2(pos.x + 2 + (barWidth - 4) * healthPercent, pos.y + 15 + barHeight - 2),
+                               healthColor);
+
+        // Health percentage text
+        char healthText[32];
+        snprintf(healthText, sizeof(healthText), "%.0f / %.0f (%.0f%%)", health, maxHealth, healthPercent * 100.0f);
+        drawList->AddText(ImVec2(pos.x + barWidth / 2 - 50, pos.y + 19), IM_COL32(255, 255, 255, 255), healthText);
+
+        // Critical warning
+        if (healthPercent < 0.25f)
+        {
+            float pulse = 0.5f + 0.5f * std::sin(ImGui::GetTime() * 6.0f);
+            ImU32 warningColor = IM_COL32(255, 0, 0, static_cast<int>(255 * pulse));
+            drawList->AddText(ImVec2(pos.x + barWidth + 20, pos.y + 19), warningColor, "CRITICAL!");
+        }
     }
 
     // Toggle functions
