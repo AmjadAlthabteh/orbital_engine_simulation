@@ -789,6 +789,47 @@ int main()
                     // Display audio status
                     audioManager.displayStatus();
                 }
+
+                // ===== NEW FEATURE CONTROLS =====
+                // Quick time control hotkeys (1-5 keys)
+                if (event.key.code == sf::Keyboard::Num1)
+                {
+                    timeScale = 0.1f;
+                    std::cout << "Time scale set to 0.1x (slow motion)\n";
+                }
+                if (event.key.code == sf::Keyboard::Num2)
+                {
+                    timeScale = 1.0f;
+                    std::cout << "Time scale set to 1.0x (normal)\n";
+                }
+                if (event.key.code == sf::Keyboard::Num3)
+                {
+                    timeScale = 2.0f;
+                    std::cout << "Time scale set to 2.0x (fast)\n";
+                }
+                if (event.key.code == sf::Keyboard::Num4)
+                {
+                    timeScale = 5.0f;
+                    std::cout << "Time scale set to 5.0x (faster)\n";
+                }
+                if (event.key.code == sf::Keyboard::Num5)
+                {
+                    timeScale = 10.0f;
+                    std::cout << "Time scale set to 10.0x (fastest)\n";
+                }
+
+                // Auto-stabilization toggle (Ctrl+S)
+                if (event.key.code == sf::Keyboard::S && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    ship.toggleAutoStabilization();
+                }
+
+                // Speed limiter toggle (Ctrl+V)
+                if (event.key.code == sf::Keyboard::V && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    ship.toggleSpeedLimiter();
+                }
+
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();

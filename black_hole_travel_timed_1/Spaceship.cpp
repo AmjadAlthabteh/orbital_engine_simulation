@@ -19,6 +19,12 @@ Spaceship::Spaceship(float mass, float radius_, const Vec3& color_)
       forward(0.0f, 0.0f, 1.0f),    // Initial forward direction
       up(0.0f, 1.0f, 0.0f),         // Initial up direction
       right(1.0f, 0.0f, 0.0f),      // Initial right direction
+      autoStabilizationEnabled(false), // Auto-stabilization off by default
+      angularVelocityYaw(0.0f),
+      angularVelocityPitch(0.0f),
+      rotationDamping(0.95f),       // 95% damping per second
+      speedLimiterEnabled(false),   // Speed limiter off by default
+      maxSpeedLimit(100.0f),        // Default max speed: 100 units/s
       hasExhaustTrail(false),
       exhaustTimer(0.0f),
       exhaustInterval(0.02f),       // Faster trail updates than planets
@@ -50,6 +56,18 @@ void Spaceship::update(float deltaTime)
     {
         // NOTE: Physics integration is handled by PhysicsEngine, not here
         // We just sync our position with the physics body
+
+        // Apply auto-stabilization if enabled
+        if (autoStabilizationEnabled)
+        {
+            applyRotationDamping(deltaTime);
+        }
+
+        // Apply speed limiter if enabled
+        if (speedLimiterEnabled)
+        {
+            applySpeedLimit();
+        }
     }
 
     setPosition(physicsBody.position);
@@ -89,6 +107,10 @@ void Spaceship::stopThrust()
 
 void Spaceship::rotate(float yawDelta, float pitchDelta)
 {
+    // Track angular velocities for auto-stabilization
+    angularVelocityYaw = yawDelta;
+    angularVelocityPitch = pitchDelta;
+
     // Update yaw and pitch angles
     yaw += yawDelta;
     pitch += pitchDelta;
@@ -350,4 +372,87 @@ void Spaceship::takeoff()
     landingState = LandingState::FLYING;
     landedOn = nullptr;
     landingOffset = Vec3(0, 0, 0);
+}
+
+// Auto-stabilization system implementation
+void Spaceship::toggleAutoStabilization()
+{
+    autoStabilizationEnabled = !autoStabilizationEnabled;
+    if (autoStabilizationEnabled)
+    {
+        std::cout << "Auto-stabilization ENABLED - Ship will auto-dampen rotation\n";
+    }
+    else
+    {
+        std::cout << "Auto-stabilization DISABLED - Manual control only\n";
+    }
+}
+
+bool Spaceship::isAutoStabilizationEnabled() const
+{
+    return autoStabilizationEnabled;
+}
+
+void Spaceship::applyRotationDamping(float deltaTime)
+{
+    // Apply exponential damping to angular velocities
+    float dampingFactor = std::pow(rotationDamping, deltaTime);
+    angularVelocityYaw *= dampingFactor;
+    angularVelocityPitch *= dampingFactor;
+
+    // Apply residual rotation (decaying over time)
+    yaw += angularVelocityYaw;
+    pitch += angularVelocityPitch;
+
+    // Clamp pitch to avoid gimbal lock
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+
+    // Normalize yaw to [0, 360]
+    while (yaw >= 360.0f) yaw -= 360.0f;
+    while (yaw < 0.0f) yaw += 360.0f;
+
+    // Update direction vectors
+    updateDirectionVectors();
+}
+
+// Speed limiter system implementation
+void Spaceship::toggleSpeedLimiter()
+{
+    speedLimiterEnabled = !speedLimiterEnabled;
+    if (speedLimiterEnabled)
+    {
+        std::cout << "Speed limiter ENABLED - Max speed: " << maxSpeedLimit << " units/s\n";
+    }
+    else
+    {
+        std::cout << "Speed limiter DISABLED - No speed cap\n";
+    }
+}
+
+bool Spaceship::isSpeedLimiterEnabled() const
+{
+    return speedLimiterEnabled;
+}
+
+void Spaceship::applySpeedLimit()
+{
+    float currentSpeed = getSpeed();
+    if (currentSpeed > maxSpeedLimit)
+    {
+        // Scale velocity down to max limit
+        Vec3 velocityDirection = physicsBody.velocity.normalize();
+        physicsBody.velocity = velocityDirection * maxSpeedLimit;
+    }
+}
+
+void Spaceship::setSpeedLimit(float limit)
+{
+    maxSpeedLimit = limit;
+    std::cout << "Speed limit set to: " << maxSpeedLimit << " units/s\n";
+}
+
+float Spaceship::getSpeedLimit() const
+{
+    return maxSpeedLimit;
 }

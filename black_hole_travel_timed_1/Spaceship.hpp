@@ -39,6 +39,16 @@ private:
     Vec3 up;                    // Up direction vector
     Vec3 right;                 // Right direction vector
 
+    // Auto-stabilization system
+    bool autoStabilizationEnabled;  // Auto-dampen rotation when no input
+    float angularVelocityYaw;       // Current yaw rotation velocity
+    float angularVelocityPitch;     // Current pitch rotation velocity
+    float rotationDamping;          // Damping factor (0.0 to 1.0)
+
+    // Speed limiter system
+    bool speedLimiterEnabled;       // Cap maximum speed
+    float maxSpeedLimit;            // Maximum allowed speed
+
     // Visual effects
     std::unique_ptr<Trail> exhaustTrail;
     bool hasExhaustTrail;
@@ -93,6 +103,18 @@ public:
     // Utility
     void setThrustPower(float power);       // Adjust thrust strength
     void setRotationSpeed(float speed);     // Adjust rotation rate
+
+    // Auto-stabilization system
+    void toggleAutoStabilization();         // Toggle rotation damping on/off
+    bool isAutoStabilizationEnabled() const; // Check if stabilization is on
+    void applyRotationDamping(float deltaTime); // Apply damping to rotation
+
+    // Speed limiter system
+    void toggleSpeedLimiter();              // Toggle speed cap on/off
+    bool isSpeedLimiterEnabled() const;     // Check if limiter is on
+    void applySpeedLimit();                 // Cap velocity if needed
+    void setSpeedLimit(float limit);        // Set max speed limit
+    float getSpeedLimit() const;            // Get current speed limit
 
     // Landing system
     LandingState getLandingState() const;
