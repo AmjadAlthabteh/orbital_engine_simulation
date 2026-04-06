@@ -1026,9 +1026,9 @@ int main()
         missionSystem.update(deltaTime);
 
         // Auto-resupply when landing on suitable planets
+        static bool landedLastFrame = false;
         if (ship.getLandingState() == LandingState::LANDED)
         {
-            static bool landedLastFrame = false;
             if (!landedLastFrame)
             {
                 // Just landed - trigger resupply and repair
@@ -1041,7 +1041,6 @@ int main()
         }
         else
         {
-            static bool landedLastFrame = false;
             if (landedLastFrame)
             {
                 audioManager.playSound(SoundEffect::TAKEOFF);
