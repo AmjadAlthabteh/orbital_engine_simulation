@@ -13,6 +13,7 @@ struct Particle
     float lifetime;
     float maxLifetime;
     float alpha;
+    bool active;  // OPTIMIZATION: Track if particle is active for pooling
 };
 
 // Particle system for spaceship engine exhaust effects

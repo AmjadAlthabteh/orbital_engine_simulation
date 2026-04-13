@@ -5,7 +5,12 @@
 
 EngineParticles::EngineParticles(int maxCount) : maxParticles(maxCount)
 {
-    particles.reserve(maxCount);
+    // OPTIMIZATION: Pre-allocate particle pool
+    particles.resize(maxCount);
+    for (auto& p : particles)
+    {
+        p.active = false;
+    }
     setupBuffers();
 }
 
@@ -25,56 +30,70 @@ void EngineParticles::emit(const Vec3& position, const Vec3& direction,
     std::uniform_real_distribution<float> sizeDis(0.2f, 0.6f);
     std::uniform_real_distribution<float> lifeDis(0.5f, 1.5f);
 
-    for (int i = 0; i < count; i++)
+    // OPTIMIZATION: Reuse inactive particles from pool instead of allocating new ones
+    int emitted = 0;
+    for (size_t i = 0; i < particles.size() && emitted < count; i++)
     {
-        if (particles.size() >= maxParticles)
-            break;  // Don't exceed max particles
-
-        Particle p;
-        p.position = position;
-
-        // Emit in opposite direction of thrust with some spread
-        Vec3 emitDir = direction * -1.0f;
-        emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
-        emitDir = emitDir / emitDir.length();  // Normalize
-
-        // Particle velocity = ship velocity + emission velocity
-        float emitSpeed = speedDis(gen) * intensity;
-        p.velocity = shipVelocity + emitDir * emitSpeed;
-
-        p.size = sizeDis(gen) * intensity;
-        p.maxLifetime = lifeDis(gen);
-        p.lifetime = p.maxLifetime;
-        p.alpha = 1.0f;
-
-        // Engine exhaust colors: hot orange/yellow to cooler red
-        float heatValue = std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
-        if (heatValue > 0.7f)
+        if (!particles[i].active)
         {
-            // Hot core (yellow-white)
-            p.color = Vec3(1.0f, 1.0f, 0.7f + heatValue * 0.3f);
-        }
-        else if (heatValue > 0.3f)
-        {
-            // Medium (orange)
-            p.color = Vec3(1.0f, 0.5f + heatValue * 0.5f, 0.2f);
-        }
-        else
-        {
-            // Cool edges (red)
-            p.color = Vec3(1.0f, 0.3f, 0.1f);
-        }
+            Particle& p = particles[i];
+            p.active = true;
+            p.position = position;
 
-        particles.push_back(p);
+            // Emit in opposite direction of thrust with some spread
+            Vec3 emitDir = direction * -1.0f;
+            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir = emitDir / emitDir.length();  // Normalize
+
+            // Particle velocity = ship velocity + emission velocity
+            float emitSpeed = speedDis(gen) * intensity;
+            p.velocity = shipVelocity + emitDir * emitSpeed;
+
+            p.size = sizeDis(gen) * intensity;
+            p.maxLifetime = lifeDis(gen);
+            p.lifetime = p.maxLifetime;
+            p.alpha = 1.0f;
+
+            // Engine exhaust colors: hot orange/yellow to cooler red
+            float heatValue = std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
+            if (heatValue > 0.7f)
+            {
+                // Hot core (yellow-white)
+                p.color = Vec3(1.0f, 1.0f, 0.7f + heatValue * 0.3f);
+            }
+            else if (heatValue > 0.3f)
+            {
+                // Medium (orange)
+                p.color = Vec3(1.0f, 0.5f + heatValue * 0.5f, 0.2f);
+            }
+            else
+            {
+                // Cool edges (red)
+                p.color = Vec3(1.0f, 0.3f, 0.1f);
+            }
+
+            emitted++;
+        }
     }
 }
 
 void EngineParticles::update(float deltaTime)
 {
-    // Update existing particles
+    // OPTIMIZATION: Update only active particles, mark dead ones as inactive
     for (auto& p : particles)
     {
+        if (!p.active)
+            continue;
+
         p.lifetime -= deltaTime;
+
+        // Mark dead particles as inactive for reuse
+        if (p.lifetime <= 0.0f)
+        {
+            p.active = false;
+            continue;
+        }
+
         p.position = p.position + p.velocity * deltaTime;
 
         // Fade out as lifetime decreases
@@ -92,23 +111,16 @@ void EngineParticles::update(float deltaTime)
         p.size = std::max(0.05f, p.size - deltaTime * 0.3f);
     }
 
-    // Remove dead particles
-    particles.erase(
-        std::remove_if(particles.begin(), particles.end(),
-                      [](const Particle& p) { return p.lifetime <= 0.0f; }),
-        particles.end()
-    );
-
     updateBuffers();
 }
 
 void EngineParticles::render()
 {
-    if (particles.empty())
+    if (vertexData.empty())
         return;
 
     glBindVertexArray(VAO);
-    glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(particles.size()));
+    glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(vertexData.size() / 8));
     glBindVertexArray(0);
 }
 
@@ -140,10 +152,13 @@ void EngineParticles::setupBuffers()
 void EngineParticles::updateBuffers()
 {
     vertexData.clear();
-    vertexData.reserve(particles.size() * 8);
 
+    // OPTIMIZATION: Only buffer active particles
     for (const auto& p : particles)
     {
+        if (!p.active)
+            continue;
+
         vertexData.push_back(p.position.x);
         vertexData.push_back(p.position.y);
         vertexData.push_back(p.position.z);
@@ -153,6 +168,9 @@ void EngineParticles::updateBuffers()
         vertexData.push_back(p.size);
         vertexData.push_back(p.alpha);
     }
+
+    if (vertexData.empty())
+        return;
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER,
