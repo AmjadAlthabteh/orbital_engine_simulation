@@ -4,6 +4,7 @@
 #include <vector>
 
 Sphere::Sphere(float radius, int sectors, int stacks)
+    : sectorCount(sectors), stackCount(stacks)
 {
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
@@ -107,4 +108,27 @@ void Sphere::draw() const
 {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+}
+
+// OPTIMIZATION: Get sector/stack counts for different LOD levels
+void Sphere::getLODCounts(SphereLOD lod, int& outSectors, int& outStacks)
+{
+    switch (lod)
+    {
+        case SphereLOD::HIGH:
+            outSectors = 36;
+            outStacks = 18;
+            break;
+        case SphereLOD::MEDIUM:
+            outSectors = 24;
+            outStacks = 12;
+            break;
+        case SphereLOD::LOW:
+            outSectors = 12;
+            outStacks = 6;
+            break;
+        default:
+            outSectors = 24;
+            outStacks = 12;
+    }
 } 
