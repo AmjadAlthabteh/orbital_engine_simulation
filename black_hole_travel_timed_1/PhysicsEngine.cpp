@@ -2,6 +2,18 @@
 #include <cmath>
 #include <iostream>
 
+// OPTIMIZATION: Fast inverse square root (Quake III style) for distance calculations
+// Only about 1% less accurate than std::sqrt but significantly faster
+inline float fastInvSqrt(float x)
+{
+    float halfx = 0.5f * x;
+    int i = *(int*)&x;
+    i = 0x5f3759df - (i >> 1);
+    x = *(float*)&i;
+    x = x * (1.5f - halfx * x * x);  // One Newton iteration
+    return x;
+}
+
 PhysicsEngine::PhysicsEngine(float G)
 {
     gravitationalConstant = G;
@@ -74,16 +86,25 @@ void PhysicsEngine::applyGravity()
             if (bodies[j] == nullptr) continue;
 
             Vec3 direction = bodies[j]->position - bodies[i]->position;
-            float distance = direction.length();
 
-            if (distance < 0.01f) continue;
+            // OPTIMIZATION: Calculate distance squared to avoid sqrt when possible
+            float distanceSquared = direction.x * direction.x +
+                                   direction.y * direction.y +
+                                   direction.z * direction.z;
+
+            if (distanceSquared < 0.0001f) continue;  // 0.01^2
+
+            // OPTIMIZATION: Use inverse distance for normalization and gravity in one go
+            float distance = std::sqrt(distanceSquared);
+            float invDistance = 1.0f / distance;
 
             float forceMagnitude =
                 gravitationalConstant *
-                (bodies[i]->mass * bodies[j]->mass) /
-                (distance * distance);
+                (bodies[i]->mass * bodies[j]->mass) *
+                invDistance * invDistance;
 
-            Vec3 force = direction.normalize() * forceMagnitude;
+            // Normalize using cached inverse distance
+            Vec3 force = direction * (invDistance * forceMagnitude);
 
             bodies[i]->applyForce(force);
             bodies[j]->applyForce(force * -1.0f);
