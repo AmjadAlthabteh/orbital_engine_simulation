@@ -176,3 +176,34 @@ void Camera::updateZoom(float deltaTime)
         fov = targetFov;
     }
 }
+
+// OPTIMIZATION: Frustum culling - check if sphere is visible in camera view
+bool Camera::isSphereInFrustum(const Vec3& center, float radius, float aspectRatio) const
+{
+    // Calculate vector from camera to sphere
+    Vec3 toCenter = center - position;
+
+    // Check if behind camera (with radius tolerance)
+    float distanceAlongFront = toCenter.dot(front);
+    if (distanceAlongFront < -radius)
+        return false;
+
+    // Calculate half-angles for frustum
+    float fovRadians = fov * DEG2RAD;
+    float halfVFov = fovRadians * 0.5f;
+    float halfHFov = std::atan(std::tan(halfVFov) * aspectRatio);
+
+    // Check vertical frustum bounds
+    float distanceAlongUp = toCenter.dot(up);
+    float verticalExtent = distanceAlongFront * std::tan(halfVFov) + radius;
+    if (std::abs(distanceAlongUp) > verticalExtent)
+        return false;
+
+    // Check horizontal frustum bounds
+    float distanceAlongRight = toCenter.dot(right);
+    float horizontalExtent = distanceAlongFront * std::tan(halfHFov) + radius;
+    if (std::abs(distanceAlongRight) > horizontalExtent)
+        return false;
+
+    return true;
+}

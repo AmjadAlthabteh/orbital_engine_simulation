@@ -51,4 +51,7 @@ public:
     void setZoom(float newFov);
     float getFOV() const;
     void updateZoom(float deltaTime);  // Smooth zoom interpolation
+
+    // OPTIMIZATION: Frustum culling - check if sphere is visible
+    bool isSphereInFrustum(const Vec3& center, float radius, float aspectRatio) const;
 };
