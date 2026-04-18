@@ -3,6 +3,16 @@
 #include <vector>
 #include <glad/glad.h>
 
+// Particle effect types
+enum class ParticleMode
+{
+    NORMAL,          // Standard orange exhaust
+    RAINBOW,         // Rainbow-colored particles
+    SPARKS,          // Sparks for barrel rolls
+    WARP_TRAIL,      // Hyperdrive warp streaks
+    TURBO_FLAMES     // Intense turbo boost fire
+};
+
 // Individual particle for engine exhaust
 struct Particle
 {
@@ -32,6 +42,14 @@ public:
     // Emit particles from engine position in opposite direction of thrust
     void emit(const Vec3& position, const Vec3& direction, const Vec3& shipVelocity,
               float intensity, int count = 5);
+
+    // CRAZY PARTICLE MODES!
+    void emitRainbow(const Vec3& position, const Vec3& direction, const Vec3& shipVelocity,
+                     float colorPhase, int count = 5);
+    void emitSparks(const Vec3& position, int count = 10);  // Barrel roll sparks!
+    void emitWarpTrail(const Vec3& position, const Vec3& direction, int count = 20); // Hyperdrive!
+    void emitTurboFlames(const Vec3& position, const Vec3& direction, const Vec3& shipVelocity,
+                         int count = 15);  // Turbo boost fire!
 
     void update(float deltaTime);
     void render();

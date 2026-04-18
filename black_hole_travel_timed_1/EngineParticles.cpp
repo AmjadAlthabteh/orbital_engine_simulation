@@ -179,3 +179,186 @@ void EngineParticles::updateBuffers()
                  GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+// ============================================
+// CRAZY PARTICLE EFFECTS!
+// ============================================
+
+void EngineParticles::emitRainbow(const Vec3& position, const Vec3& direction,
+                                   const Vec3& shipVelocity, float colorPhase, int count)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> spreadDis(-0.3f, 0.3f);
+    std::uniform_real_distribution<float> speedDis(5.0f, 15.0f);
+    std::uniform_real_distribution<float> sizeDis(0.3f, 0.8f);
+    std::uniform_real_distribution<float> lifeDis(0.7f, 1.8f);
+
+    int emitted = 0;
+    for (size_t i = 0; i < particles.size() && emitted < count; i++)
+    {
+        if (!particles[i].active)
+        {
+            Particle& p = particles[i];
+            p.active = true;
+            p.position = position;
+
+            Vec3 emitDir = direction * -1.0f;
+            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir = emitDir / emitDir.length();
+
+            float emitSpeed = speedDis(gen);
+            p.velocity = shipVelocity + emitDir * emitSpeed;
+
+            p.size = sizeDis(gen);
+            p.maxLifetime = lifeDis(gen);
+            p.lifetime = p.maxLifetime;
+            p.alpha = 1.0f;
+
+            // RAINBOW COLOR based on phase + random offset
+            float hue = colorPhase + std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
+            while (hue > 6.28318f) hue -= 6.28318f;
+
+            // HSV to RGB conversion for rainbow
+            float c = 1.0f;
+            float x = c * (1.0f - std::abs(std::fmod(hue / 1.047197f, 2.0f) - 1.0f));
+
+            if (hue < 1.047197f)
+                p.color = Vec3(c, x, 0);
+            else if (hue < 2.094395f)
+                p.color = Vec3(x, c, 0);
+            else if (hue < 3.141593f)
+                p.color = Vec3(0, c, x);
+            else if (hue < 4.188790f)
+                p.color = Vec3(0, x, c);
+            else if (hue < 5.235988f)
+                p.color = Vec3(x, 0, c);
+            else
+                p.color = Vec3(c, 0, x);
+
+            emitted++;
+        }
+    }
+}
+
+void EngineParticles::emitSparks(const Vec3& position, int count)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> velDis(-8.0f, 8.0f);
+    std::uniform_real_distribution<float> sizeDis(0.15f, 0.4f);
+    std::uniform_real_distribution<float> lifeDis(0.3f, 0.8f);
+
+    int emitted = 0;
+    for (size_t i = 0; i < particles.size() && emitted < count; i++)
+    {
+        if (!particles[i].active)
+        {
+            Particle& p = particles[i];
+            p.active = true;
+            p.position = position;
+
+            // Random velocity in all directions (sparks fly everywhere!)
+            p.velocity = Vec3(velDis(gen), velDis(gen), velDis(gen));
+
+            p.size = sizeDis(gen);
+            p.maxLifetime = lifeDis(gen);
+            p.lifetime = p.maxLifetime;
+            p.alpha = 1.0f;
+
+            // Bright white/yellow sparks
+            p.color = Vec3(1.0f, 0.9f + velDis(gen) * 0.01f, 0.6f);
+
+            emitted++;
+        }
+    }
+}
+
+void EngineParticles::emitWarpTrail(const Vec3& position, const Vec3& direction, int count)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> spreadDis(-0.5f, 0.5f);
+    std::uniform_real_distribution<float> sizeDis(0.5f, 1.5f);
+    std::uniform_real_distribution<float> lifeDis(0.2f, 0.6f);
+
+    int emitted = 0;
+    for (size_t i = 0; i < particles.size() && emitted < count; i++)
+    {
+        if (!particles[i].active)
+        {
+            Particle& p = particles[i];
+            p.active = true;
+            p.position = position;
+
+            // Warp trail streaks backwards
+            Vec3 emitDir = direction * -1.0f;
+            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            p.velocity = emitDir * 30.0f;  // Fast streaks!
+
+            p.size = sizeDis(gen);
+            p.maxLifetime = lifeDis(gen);
+            p.lifetime = p.maxLifetime;
+            p.alpha = 1.0f;
+
+            // Bright blue/cyan warp colors
+            p.color = Vec3(0.3f, 0.7f + spreadDis(gen) * 0.2f, 1.0f);
+
+            emitted++;
+        }
+    }
+}
+
+void EngineParticles::emitTurboFlames(const Vec3& position, const Vec3& direction,
+                                       const Vec3& shipVelocity, int count)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> spreadDis(-0.2f, 0.2f);
+    std::uniform_real_distribution<float> speedDis(10.0f, 25.0f);
+    std::uniform_real_distribution<float> sizeDis(0.5f, 1.2f);
+    std::uniform_real_distribution<float> lifeDis(0.4f, 1.2f);
+
+    int emitted = 0;
+    for (size_t i = 0; i < particles.size() && emitted < count; i++)
+    {
+        if (!particles[i].active)
+        {
+            Particle& p = particles[i];
+            p.active = true;
+            p.position = position;
+
+            Vec3 emitDir = direction * -1.0f;
+            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir = emitDir / emitDir.length();
+
+            float emitSpeed = speedDis(gen);
+            p.velocity = shipVelocity + emitDir * emitSpeed;
+
+            p.size = sizeDis(gen);
+            p.maxLifetime = lifeDis(gen);
+            p.lifetime = p.maxLifetime;
+            p.alpha = 1.0f;
+
+            // INTENSE turbo colors: bright white, blue, and purple flames
+            float intensity = std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
+            if (intensity > 0.7f)
+            {
+                // White-hot core
+                p.color = Vec3(1.0f, 1.0f, 1.0f);
+            }
+            else if (intensity > 0.4f)
+            {
+                // Blue flames
+                p.color = Vec3(0.5f, 0.7f, 1.0f);
+            }
+            else
+            {
+                // Purple flames
+                p.color = Vec3(0.8f, 0.4f, 1.0f);
+            }
+
+            emitted++;
+        }
+    }
+}
