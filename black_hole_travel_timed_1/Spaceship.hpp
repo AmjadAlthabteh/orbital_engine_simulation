@@ -34,10 +34,16 @@ private:
     // Rotation/Orientation
     float yaw;                  // Rotation around Y axis (degrees)
     float pitch;                // Rotation around X axis (degrees)
+    float roll;                 // BARREL ROLL! Rotation around Z axis (degrees)
     float rotationSpeed;        // Rotation rate (degrees per second)
     Vec3 forward;               // Forward direction vector
     Vec3 up;                    // Up direction vector
     Vec3 right;                 // Right direction vector
+
+    // CRAZY BARREL ROLL SYSTEM!
+    bool isBarrelRolling;       // Currently doing a sick barrel roll
+    float barrelRollProgress;   // Progress through the roll (0.0 to 360.0)
+    float barrelRollSpeed;      // How fast we spin (degrees per second)
 
     // Auto-stabilization system
     bool autoStabilizationEnabled;  // Auto-dampen rotation when no input
@@ -49,11 +55,21 @@ private:
     bool speedLimiterEnabled;       // Cap maximum speed
     float maxSpeedLimit;            // Maximum allowed speed
 
+    // TURBO BOOST SYSTEM - GOTTA GO FAST!
+    bool isTurboBoostActive;        // Is turbo boost engaged?
+    float turboBoostMultiplier;     // Thrust multiplier during boost (3x!)
+    float turboBoostDuration;       // How long boost lasts
+    float turboBoostTimer;          // Current boost timer
+    float turboBoostCooldown;       // Cooldown before next boost
+    float turboBoostCooldownTimer;  // Current cooldown timer
+
     // Visual effects
     std::unique_ptr<Trail> exhaustTrail;
     bool hasExhaustTrail;
     float exhaustTimer;
     float exhaustInterval;      // Time between exhaust trail points
+    bool rainbowExhaustMode;    // RAINBOW POWER MODE!
+    float exhaustColorPhase;    // Color animation phase
 
     // Landing system
     LandingState landingState;
@@ -75,6 +91,14 @@ public:
     void stopThrust();                      // Stop thrusting
     void rotate(float yawDelta, float pitchDelta); // Rotate ship
     void updateDirectionVectors();          // Update forward/up/right from yaw/pitch
+
+    // CRAZY NEW FEATURES!
+    void initiateBarrelRoll();              // DO A BARREL ROLL!
+    void updateBarrelRoll(float deltaTime); // Update barrel roll animation
+    void activateTurboBoost();              // ENGAGE TURBO BOOST!
+    void updateTurboBoost(float deltaTime); // Update boost timer
+    void toggleRainbowExhaust();            // Toggle rainbow exhaust mode
+    Vec3 getRainbowColor();                 // Get current rainbow color
 
     // Physics integration
     Body& getPhysicsBody();

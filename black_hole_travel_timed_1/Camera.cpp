@@ -14,7 +14,12 @@ Camera::Camera()
 
     fov = 45.0f;          // Default field of view
     targetFov = 45.0f;    // Default target FOV
-    zoomSpeed = 5.0f;     // Zoom interpolation speed
+    zoomSpeed = 8.0f;     // Zoom interpolation speed - increased for more responsive zoom
+
+    // Camera shake initialization
+    shakeIntensity = 0.0f;
+    shakeDecay = 5.0f;    // Shake fades quickly
+    shakeOffset = Vec3(0, 0, 0);
 
     mode = CameraMode::FREE;  // Start in free camera mode
 
@@ -35,7 +40,10 @@ void Camera::updateVectors()
 
 Mat4 Camera::getViewMatrix() const
 {
-    Vec3 zaxis = (position - (position + front)).normalize();
+    // Apply camera shake offset for extra juice!
+    Vec3 shakenPosition = position + shakeOffset;
+
+    Vec3 zaxis = (shakenPosition - (shakenPosition + front)).normalize();
     Vec3 xaxis = worldUp.cross(zaxis).normalize();
     Vec3 yaxis = zaxis.cross(xaxis);
 
@@ -53,9 +61,9 @@ Mat4 Camera::getViewMatrix() const
     view.m[9] = yaxis.z;
     view.m[10] = zaxis.z;
 
-    view.m[12] = -xaxis.dot(position);
-    view.m[13] = -yaxis.dot(position);
-    view.m[14] = -zaxis.dot(position);
+    view.m[12] = -xaxis.dot(shakenPosition);
+    view.m[13] = -yaxis.dot(shakenPosition);
+    view.m[14] = -zaxis.dot(shakenPosition);
 
     return view;
 }
@@ -206,4 +214,42 @@ bool Camera::isSphereInFrustum(const Vec3& center, float radius, float aspectRat
         return false;
 
     return true;
+}
+
+// ============================================
+// CAMERA SHAKE IMPLEMENTATION - MAKE IT JUICY!
+// ============================================
+
+void Camera::addShake(float intensity)
+{
+    shakeIntensity += intensity;
+    // Cap max shake intensity
+    if (shakeIntensity > 2.0f) shakeIntensity = 2.0f;
+}
+
+void Camera::updateShake(float deltaTime)
+{
+    if (shakeIntensity > 0.01f)
+    {
+        // Generate random shake offset
+        float randX = ((float)rand() / RAND_MAX - 0.5f) * 2.0f;
+        float randY = ((float)rand() / RAND_MAX - 0.5f) * 2.0f;
+        float randZ = ((float)rand() / RAND_MAX - 0.5f) * 2.0f;
+
+        shakeOffset = Vec3(randX, randY, randZ) * shakeIntensity;
+
+        // Decay shake over time
+        shakeIntensity -= shakeDecay * deltaTime;
+        if (shakeIntensity < 0.0f) shakeIntensity = 0.0f;
+    }
+    else
+    {
+        shakeOffset = Vec3(0, 0, 0);
+        shakeIntensity = 0.0f;
+    }
+}
+
+Vec3 Camera::getShakeOffset() const
+{
+    return shakeOffset;
 }

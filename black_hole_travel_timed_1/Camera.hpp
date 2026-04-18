@@ -27,6 +27,11 @@ public:
     float targetFov;      // Target FOV for smooth zoom
     float zoomSpeed;      // Zoom interpolation speed
 
+    // CAMERA SHAKE - Makes things feel INTENSE!
+    float shakeIntensity;     // Current shake strength
+    float shakeDecay;         // How fast shake fades (per second)
+    Vec3 shakeOffset;         // Random offset for shake effect
+
     CameraMode mode;
 
     Camera();
@@ -54,4 +59,9 @@ public:
 
     // OPTIMIZATION: Frustum culling - check if sphere is visible
     bool isSphereInFrustum(const Vec3& center, float radius, float aspectRatio) const;
+
+    // CAMERA SHAKE - Add some juice to the game!
+    void addShake(float intensity);         // Add shake effect
+    void updateShake(float deltaTime);      // Update shake animation
+    Vec3 getShakeOffset() const;            // Get current shake offset
 };

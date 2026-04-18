@@ -15,19 +15,31 @@ Spaceship::Spaceship(float mass, float radius_, const Vec3& color_)
       isThrusting(false),
       yaw(0.0f),                    // Start facing forward (+Z)
       pitch(0.0f),                  // Level orientation
-      rotationSpeed(90.0f),         // 90 degrees per second
+      roll(0.0f),                   // No initial roll
+      rotationSpeed(120.0f),        // 120 degrees per second - increased for better maneuverability
       forward(0.0f, 0.0f, 1.0f),    // Initial forward direction
       up(0.0f, 1.0f, 0.0f),         // Initial up direction
       right(1.0f, 0.0f, 0.0f),      // Initial right direction
+      isBarrelRolling(false),       // Not barrel rolling yet!
+      barrelRollProgress(0.0f),
+      barrelRollSpeed(720.0f),      // 2 full rotations per second - CRAZY FAST!
       autoStabilizationEnabled(false), // Auto-stabilization off by default
       angularVelocityYaw(0.0f),
       angularVelocityPitch(0.0f),
       rotationDamping(0.95f),       // 95% damping per second
       speedLimiterEnabled(false),   // Speed limiter off by default
       maxSpeedLimit(100.0f),        // Default max speed: 100 units/s
+      isTurboBoostActive(false),    // Boost not active
+      turboBoostMultiplier(3.0f),   // 3x thrust during boost!
+      turboBoostDuration(2.0f),     // 2 seconds of pure power
+      turboBoostTimer(0.0f),
+      turboBoostCooldown(5.0f),     // 5 second cooldown
+      turboBoostCooldownTimer(0.0f),
       hasExhaustTrail(false),
       exhaustTimer(0.0f),
       exhaustInterval(0.02f),       // Faster trail updates than planets
+      rainbowExhaustMode(false),    // Start with normal exhaust
+      exhaustColorPhase(0.0f),      // Color animation starts at 0
       landingState(LandingState::FLYING),
       landedOn(nullptr),
       landingOffset(0.0f, 0.0f, 0.0f),
@@ -40,6 +52,22 @@ Spaceship::Spaceship(float mass, float radius_, const Vec3& color_)
 
 void Spaceship::update(float deltaTime)
 {
+    // Update CRAZY barrel roll animation!
+    if (isBarrelRolling)
+    {
+        updateBarrelRoll(deltaTime);
+    }
+
+    // Update TURBO BOOST timer!
+    updateTurboBoost(deltaTime);
+
+    // Update rainbow exhaust color phase
+    if (rainbowExhaustMode)
+    {
+        exhaustColorPhase += deltaTime * 2.0f;  // Cycle through colors
+        if (exhaustColorPhase > 6.28318f) exhaustColorPhase = 0.0f;  // Wrap at 2*PI
+    }
+
     // If landed, stay locked to planet surface
     if (landingState == LandingState::LANDED && landedOn != nullptr)
     {
@@ -87,7 +115,15 @@ void Spaceship::update(float deltaTime)
 void Spaceship::applyThrust(float deltaTime)
 {
     // Apply thrust force in the forward direction
-    Vec3 thrustForce = forward * thrustPower;
+    float effectiveThrust = thrustPower;
+
+    // TURBO BOOST MULTIPLIER!
+    if (isTurboBoostActive)
+    {
+        effectiveThrust *= turboBoostMultiplier;
+    }
+
+    Vec3 thrustForce = forward * effectiveThrust;
     physicsBody.applyForce(thrustForce);
     isThrusting = true;
 }
@@ -455,4 +491,126 @@ void Spaceship::setSpeedLimit(float limit)
 float Spaceship::getSpeedLimit() const
 {
     return maxSpeedLimit;
+}
+
+// ============================================
+// CRAZY NEW FEATURES IMPLEMENTATION!
+// ============================================
+
+void Spaceship::initiateBarrelRoll()
+{
+    if (!isBarrelRolling)
+    {
+        isBarrelRolling = true;
+        barrelRollProgress = 0.0f;
+        std::cout << "DO A BARREL ROLL!!!\n";
+    }
+}
+
+void Spaceship::updateBarrelRoll(float deltaTime)
+{
+    if (isBarrelRolling)
+    {
+        barrelRollProgress += barrelRollSpeed * deltaTime;
+
+        if (barrelRollProgress >= 360.0f)
+        {
+            // Complete the barrel roll!
+            barrelRollProgress = 0.0f;
+            isBarrelRolling = false;
+            roll = 0.0f;
+            std::cout << "Barrel roll complete! Nice moves!\n";
+        }
+        else
+        {
+            roll = barrelRollProgress;
+        }
+
+        // Update direction vectors to account for roll
+        updateDirectionVectors();
+    }
+}
+
+void Spaceship::activateTurboBoost()
+{
+    if (!isTurboBoostActive && turboBoostCooldownTimer <= 0.0f)
+    {
+        isTurboBoostActive = true;
+        turboBoostTimer = turboBoostDuration;
+        std::cout << "TURBO BOOST ACTIVATED! GOTTA GO FAST!!!\n";
+    }
+    else if (turboBoostCooldownTimer > 0.0f)
+    {
+        std::cout << "Turbo boost on cooldown... " << turboBoostCooldownTimer << "s remaining\n";
+    }
+}
+
+void Spaceship::updateTurboBoost(float deltaTime)
+{
+    if (isTurboBoostActive)
+    {
+        turboBoostTimer -= deltaTime;
+        if (turboBoostTimer <= 0.0f)
+        {
+            isTurboBoostActive = false;
+            turboBoostCooldownTimer = turboBoostCooldown;
+            std::cout << "Turbo boost depleted! Starting cooldown...\n";
+        }
+    }
+    else if (turboBoostCooldownTimer > 0.0f)
+    {
+        turboBoostCooldownTimer -= deltaTime;
+        if (turboBoostCooldownTimer < 0.0f)
+        {
+            turboBoostCooldownTimer = 0.0f;
+        }
+    }
+}
+
+void Spaceship::toggleRainbowExhaust()
+{
+    rainbowExhaustMode = !rainbowExhaustMode;
+    if (rainbowExhaustMode)
+    {
+        std::cout << "RAINBOW EXHAUST MODE ACTIVATED! Taste the rainbow!\n";
+    }
+    else
+    {
+        std::cout << "Rainbow exhaust mode disabled. Back to normal.\n";
+    }
+}
+
+Vec3 Spaceship::getRainbowColor()
+{
+    if (!rainbowExhaustMode)
+    {
+        return Vec3(1.0f, 0.5f, 0.1f);  // Normal orange exhaust
+    }
+
+    // Generate rainbow color using HSV -> RGB conversion
+    // Hue cycles from 0 to 360 degrees (0 to 2*PI radians)
+    float hue = exhaustColorPhase;
+    float saturation = 1.0f;
+    float value = 1.0f;
+
+    // Simple HSV to RGB conversion
+    float c = value * saturation;
+    float x = c * (1.0f - std::abs(std::fmod(hue / 1.047197f, 2.0f) - 1.0f));  // 1.047197 = PI/3
+    float m = value - c;
+
+    Vec3 rgb;
+    if (hue < 1.047197f)
+        rgb = Vec3(c, x, 0);
+    else if (hue < 2.094395f)
+        rgb = Vec3(x, c, 0);
+    else if (hue < 3.141593f)
+        rgb = Vec3(0, c, x);
+    else if (hue < 4.188790f)
+        rgb = Vec3(0, x, c);
+    else if (hue < 5.235988f)
+        rgb = Vec3(x, 0, c);
+    else
+        rgb = Vec3(c, 0, x);
+
+    return Vec3(rgb.x + m, rgb.y + m, rgb.z + m);
 }
