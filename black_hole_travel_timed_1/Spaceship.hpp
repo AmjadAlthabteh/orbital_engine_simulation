@@ -63,6 +63,17 @@ private:
     float turboBoostCooldown;       // Cooldown before next boost
     float turboBoostCooldownTimer;  // Current cooldown timer
 
+    // HYPERDRIVE SYSTEM - LUDICROUS SPEED!
+    bool isHyperdriveActive;        // Currently in hyperspace?
+    float hyperdriveSpeed;          // Target speed during hyperdrive
+    float hyperdriveChargeTime;     // Time to charge hyperdrive
+    float hyperdriveChargeProgress; // Current charge progress
+    bool hyperdriveCharging;        // Is hyperdrive charging?
+
+    // DRIFT MODE - Tokyo Drift in Space!
+    bool isDriftMode;               // Drift mode enabled?
+    Vec3 driftVelocity;             // Stored velocity for drifting
+
     // Visual effects
     std::unique_ptr<Trail> exhaustTrail;
     bool hasExhaustTrail;
@@ -70,6 +81,12 @@ private:
     float exhaustInterval;      // Time between exhaust trail points
     bool rainbowExhaustMode;    // RAINBOW POWER MODE!
     float exhaustColorPhase;    // Color animation phase
+
+    // COMBO SYSTEM - Style points!
+    int comboCounter;           // Current combo count
+    float comboTimer;           // Time since last combo action
+    float comboTimeout;         // How long combo lasts (3 seconds)
+    int totalStylePoints;       // Total accumulated style points
 
     // Landing system
     LandingState landingState;
@@ -99,6 +116,22 @@ public:
     void updateTurboBoost(float deltaTime); // Update boost timer
     void toggleRainbowExhaust();            // Toggle rainbow exhaust mode
     Vec3 getRainbowColor();                 // Get current rainbow color
+
+    // EVEN MORE INSANE FEATURES!
+    void activateHyperdrive();              // JUMP TO LIGHTSPEED!
+    void updateHyperdrive(float deltaTime); // Update hyperdrive state
+    void cancelHyperdrive();                // Emergency exit from hyperspace
+    bool isInHyperspace() const { return isHyperdriveActive; }
+
+    void toggleDriftMode();                 // Toggle space drifting
+    void updateDriftMode();                 // Update drift physics
+    bool isDrifting() const { return isDriftMode; }
+
+    // COMBO SYSTEM
+    void addComboAction(const std::string& action); // Add action to combo
+    void updateCombo(float deltaTime);      // Update combo timer
+    int getComboCount() const { return comboCounter; }
+    int getStylePoints() const { return totalStylePoints; }
 
     // Physics integration
     Body& getPhysicsBody();

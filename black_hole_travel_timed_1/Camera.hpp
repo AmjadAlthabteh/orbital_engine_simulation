@@ -32,6 +32,11 @@ public:
     float shakeDecay;         // How fast shake fades (per second)
     Vec3 shakeOffset;         // Random offset for shake effect
 
+    // SPEED-BASED FOV - Feel the speed!
+    float baseFov;            // Normal FOV when stationary
+    float maxSpeedFov;        // Max FOV at high speeds (60 degrees)
+    float speedFovTransition; // How quickly FOV changes with speed
+
     CameraMode mode;
 
     Camera();
@@ -64,4 +69,8 @@ public:
     void addShake(float intensity);         // Add shake effect
     void updateShake(float deltaTime);      // Update shake animation
     Vec3 getShakeOffset() const;            // Get current shake offset
+
+    // SPEED-BASED FOV - Dynamic field of view
+    void updateSpeedFOV(float currentSpeed, float deltaTime);  // Adjust FOV based on speed
+    void setBaseFOV(float fov) { baseFov = fov; }              // Set normal FOV
 };

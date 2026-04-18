@@ -21,6 +21,11 @@ Camera::Camera()
     shakeDecay = 5.0f;    // Shake fades quickly
     shakeOffset = Vec3(0, 0, 0);
 
+    // Speed-based FOV initialization
+    baseFov = 45.0f;              // Normal FOV
+    maxSpeedFov = 75.0f;          // Wide FOV at high speeds
+    speedFovTransition = 2.0f;    // Smooth transition speed
+
     mode = CameraMode::FREE;  // Start in free camera mode
 
     updateVectors();
@@ -252,4 +257,25 @@ void Camera::updateShake(float deltaTime)
 Vec3 Camera::getShakeOffset() const
 {
     return shakeOffset;
+}
+
+// ============================================
+// SPEED-BASED FOV - Dynamic field of view!
+// ============================================
+
+void Camera::updateSpeedFOV(float currentSpeed, float deltaTime)
+{
+    // Map speed to FOV (0 to 200 speed -> baseFov to maxSpeedFov)
+    float speedNormalized = std::min(currentSpeed / 200.0f, 1.0f);  // Clamp to 0-1
+    float desiredFov = baseFov + (maxSpeedFov - baseFov) * speedNormalized;
+
+    // Smooth FOV transition
+    float fovDiff = desiredFov - targetFov;
+    targetFov += fovDiff * speedFovTransition * deltaTime;
+
+    // Extra FOV boost during hyperdrive!
+    if (currentSpeed > 400.0f)
+    {
+        targetFov = std::min(targetFov + 10.0f, 90.0f);  // Extra wide FOV for warp!
+    }
 }

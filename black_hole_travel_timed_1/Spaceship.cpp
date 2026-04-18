@@ -35,11 +35,22 @@ Spaceship::Spaceship(float mass, float radius_, const Vec3& color_)
       turboBoostTimer(0.0f),
       turboBoostCooldown(5.0f),     // 5 second cooldown
       turboBoostCooldownTimer(0.0f),
+      isHyperdriveActive(false),    // Not in hyperspace
+      hyperdriveSpeed(500.0f),      // LUDICROUS SPEED!
+      hyperdriveChargeTime(1.5f),   // 1.5 seconds to charge
+      hyperdriveChargeProgress(0.0f),
+      hyperdriveCharging(false),
+      isDriftMode(false),           // Drift mode off
+      driftVelocity(0, 0, 0),
       hasExhaustTrail(false),
       exhaustTimer(0.0f),
       exhaustInterval(0.02f),       // Faster trail updates than planets
       rainbowExhaustMode(false),    // Start with normal exhaust
       exhaustColorPhase(0.0f),      // Color animation starts at 0
+      comboCounter(0),              // No combo yet
+      comboTimer(0.0f),
+      comboTimeout(3.0f),           // 3 second combo window
+      totalStylePoints(0),          // No style points yet
       landingState(LandingState::FLYING),
       landedOn(nullptr),
       landingOffset(0.0f, 0.0f, 0.0f),
@@ -60,6 +71,18 @@ void Spaceship::update(float deltaTime)
 
     // Update TURBO BOOST timer!
     updateTurboBoost(deltaTime);
+
+    // Update HYPERDRIVE system!
+    updateHyperdrive(deltaTime);
+
+    // Update drift mode physics
+    if (isDriftMode)
+    {
+        updateDriftMode();
+    }
+
+    // Update combo system
+    updateCombo(deltaTime);
 
     // Update rainbow exhaust color phase
     if (rainbowExhaustMode)
@@ -504,6 +527,7 @@ void Spaceship::initiateBarrelRoll()
         isBarrelRolling = true;
         barrelRollProgress = 0.0f;
         std::cout << "DO A BARREL ROLL!!!\n";
+        addComboAction("Barrel Roll");
     }
 }
 
@@ -538,6 +562,7 @@ void Spaceship::activateTurboBoost()
         isTurboBoostActive = true;
         turboBoostTimer = turboBoostDuration;
         std::cout << "TURBO BOOST ACTIVATED! GOTTA GO FAST!!!\n";
+        addComboAction("Turbo Boost");
     }
     else if (turboBoostCooldownTimer > 0.0f)
     {
@@ -613,4 +638,146 @@ Vec3 Spaceship::getRainbowColor()
         rgb = Vec3(c, 0, x);
 
     return Vec3(rgb.x + m, rgb.y + m, rgb.z + m);
+}
+
+// ============================================
+// HYPERDRIVE SYSTEM - JUMP TO LIGHTSPEED!
+// ============================================
+
+void Spaceship::activateHyperdrive()
+{
+    if (!isHyperdriveActive && !hyperdriveCharging)
+    {
+        hyperdriveCharging = true;
+        hyperdriveChargeProgress = 0.0f;
+        std::cout << "HYPERDRIVE CHARGING... Prepare for jump to lightspeed!\n";
+        addComboAction("Hyperdrive Charge");
+    }
+}
+
+void Spaceship::updateHyperdrive(float deltaTime)
+{
+    if (hyperdriveCharging)
+    {
+        hyperdriveChargeProgress += deltaTime;
+
+        if (hyperdriveChargeProgress >= hyperdriveChargeTime)
+        {
+            // ENGAGE HYPERDRIVE!
+            hyperdriveCharging = false;
+            isHyperdriveActive = true;
+
+            // Instant massive acceleration!
+            Vec3 hyperVelocity = forward * hyperdriveSpeed;
+            physicsBody.velocity = hyperVelocity;
+
+            std::cout << "*** HYPERSPACE ENGAGED! ***\n";
+            std::cout << "Speed: " << hyperdriveSpeed << " units/s - IT'S LUDICROUS SPEED!\n";
+            addComboAction("Hyperdrive Jump");
+        }
+    }
+
+    // Auto-deactivate hyperdrive after a moment (you need to reactivate for next jump)
+    if (isHyperdriveActive && getSpeed() < hyperdriveSpeed * 0.5f)
+    {
+        isHyperdriveActive = false;
+        std::cout << "Hyperdrive disengaged. Back to normal space.\n";
+    }
+}
+
+void Spaceship::cancelHyperdrive()
+{
+    if (hyperdriveCharging || isHyperdriveActive)
+    {
+        hyperdriveCharging = false;
+        isHyperdriveActive = false;
+        hyperdriveChargeProgress = 0.0f;
+        std::cout << "Hyperdrive cancelled! Emergency exit from hyperspace!\n";
+    }
+}
+
+// ============================================
+// DRIFT MODE - Tokyo Drift in SPACE!
+// ============================================
+
+void Spaceship::toggleDriftMode()
+{
+    isDriftMode = !isDriftMode;
+
+    if (isDriftMode)
+    {
+        // Store current velocity for drifting
+        driftVelocity = physicsBody.velocity;
+        std::cout << "DRIFT MODE ENGAGED! You can now rotate independently!\n";
+        std::cout << "Your velocity is locked - slide through space with style!\n";
+        addComboAction("Drift Start");
+    }
+    else
+    {
+        std::cout << "Drift mode disabled. Back to normal flight.\n";
+    }
+}
+
+void Spaceship::updateDriftMode()
+{
+    if (isDriftMode)
+    {
+        // In drift mode, velocity doesn't follow ship rotation
+        // This creates that "drifting" feeling where you slide sideways
+        // Keep the velocity locked unless thrust is applied
+        if (!isThrusting)
+        {
+            physicsBody.velocity = driftVelocity;
+        }
+        else
+        {
+            // Update drift velocity when thrusting
+            driftVelocity = physicsBody.velocity;
+        }
+    }
+}
+
+// ============================================
+// COMBO SYSTEM - Style Points!
+// ============================================
+
+void Spaceship::addComboAction(const std::string& action)
+{
+    comboCounter++;
+    comboTimer = comboTimeout;  // Reset timer
+
+    // Calculate style points (more combo = more points!)
+    int points = comboCounter * 100;
+    totalStylePoints += points;
+
+    std::cout << ">>> " << action << "! <<<\n";
+    std::cout << "COMBO x" << comboCounter << " | +" << points << " Style Points!\n";
+
+    if (comboCounter >= 5)
+    {
+        std::cout << "*** INSANE COMBO! YOU'RE A LEGEND! ***\n";
+    }
+    else if (comboCounter >= 3)
+    {
+        std::cout << "** SICK COMBO! Keep it going! **\n";
+    }
+}
+
+void Spaceship::updateCombo(float deltaTime)
+{
+    if (comboTimer > 0.0f)
+    {
+        comboTimer -= deltaTime;
+
+        if (comboTimer <= 0.0f)
+        {
+            // Combo expired
+            if (comboCounter > 0)
+            {
+                std::cout << "Combo ended. Total: " << totalStylePoints << " style points.\n";
+            }
+            comboCounter = 0;
+            comboTimer = 0.0f;
+        }
+    }
 }
