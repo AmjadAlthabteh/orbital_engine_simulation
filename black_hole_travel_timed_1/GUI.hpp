@@ -261,9 +261,9 @@ public:
     {
         if (!state.showTopHUD) return;
 
-        // Transparent overlay at top of screen
-        ImGui::SetNextWindowPos(ImVec2(10, 10));
-        ImGui::SetNextWindowSize(ImVec2(1260, 90));
+        // Transparent overlay at top of screen - always locked in place
+        ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(1260, 90), ImGuiCond_Always);
         ImGui::SetNextWindowBgAlpha(0.75f);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -360,10 +360,12 @@ public:
     {
         if (!state.showLeftPanel) return;
 
-        ImGui::SetNextWindowPos(ImVec2(10, 110), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(420, 610), ImGuiCond_FirstUseEver);
+        // Lock panel position and size (cannot be moved or resized)
+        ImGui::SetNextWindowPos(ImVec2(10, 110), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(420, 610), ImGuiCond_Always);
 
-        ImGui::Begin("Ship Operations", &state.showLeftPanel);
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+        ImGui::Begin("Ship Operations", &state.showLeftPanel, flags);
 
         Vec3 pos = ship.getPhysicsBody().position;
         Vec3 vel = ship.getPhysicsBody().velocity;
@@ -531,10 +533,12 @@ public:
     {
         if (!state.showRightPanel) return;
 
-        ImGui::SetNextWindowPos(ImVec2(850, 110), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(420, 610), ImGuiCond_FirstUseEver);
+        // Lock panel position and size (cannot be moved or resized)
+        ImGui::SetNextWindowPos(ImVec2(850, 110), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(420, 610), ImGuiCond_Always);
 
-        ImGui::Begin("Navigation & Radar", &state.showRightPanel);
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+        ImGui::Begin("Navigation & Radar", &state.showRightPanel, flags);
 
         Vec3 shipPos = ship.getPhysicsBody().position;
 
@@ -792,10 +796,12 @@ public:
     {
         if (!state.showMissions) return;
 
-        ImGui::SetNextWindowPos(ImVec2(440, 110), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+        // Lock panel position and size (cannot be moved or resized)
+        ImGui::SetNextWindowPos(ImVec2(440, 110), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Always);
 
-        ImGui::Begin("Mission Objectives", &state.showMissions);
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+        ImGui::Begin("Mission Objectives", &state.showMissions, flags);
 
         ImGui::TextColored(colorInfo, "Current Objectives:");
         ImGui::Separator();
@@ -856,11 +862,13 @@ public:
     {
         if (!state.showKeybindOverlay) return;
 
-        ImGui::SetNextWindowPos(ImVec2(400, 200), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(500, 520), ImGuiCond_FirstUseEver);
+        // Lock panel position and size (cannot be moved or resized)
+        ImGui::SetNextWindowPos(ImVec2(400, 200), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(500, 520), ImGuiCond_Always);
         ImGui::SetNextWindowBgAlpha(0.95f);
 
-        ImGui::Begin("Controls & Keybinds", &state.showKeybindOverlay);
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+        ImGui::Begin("Controls & Keybinds", &state.showKeybindOverlay, flags);
 
         ImGui::TextColored(colorInfo, "Press F1 to toggle this overlay");
         ImGui::Separator();
@@ -953,10 +961,12 @@ public:
     {
         if (!state.showSettings) return;
 
-        ImGui::SetNextWindowPos(ImVec2(440, 420), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+        // Lock panel position and size (cannot be moved or resized)
+        ImGui::SetNextWindowPos(ImVec2(440, 420), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Always);
 
-        ImGui::Begin("Visual Settings", &state.showSettings);
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+        ImGui::Begin("Visual Settings", &state.showSettings, flags);
 
         ImGui::TextColored(colorInfo, "Post-Processing Effects");
         ImGui::Separator();
