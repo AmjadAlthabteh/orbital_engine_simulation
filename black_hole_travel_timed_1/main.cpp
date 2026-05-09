@@ -283,6 +283,11 @@ int main()
     std::cout << "│  L / → Arrow  │ Rotate right (yaw)                        │\n";
     std::cout << "│  U            │ Pitch up                                  │\n";
     std::cout << "│  O            │ Pitch down                                │\n";
+    std::cout << "│  Q            │ TURBO BOOST (3x thrust power!)            │\n";
+    std::cout << "│  E            │ DO A BARREL ROLL!                         │\n";
+    std::cout << "│  Z            │ HYPERDRIVE (ludicrous speed!)             │\n";
+    std::cout << "│  V            │ Toggle drift mode (space drifting!)       │\n";
+    std::cout << "│  X            │ Toggle rainbow exhaust trail              │\n";
     std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
 
     std::cout << "┌─ CAMERA CONTROLS ─────────────────────────────────────────┐\n";
@@ -335,7 +340,9 @@ int main()
     std::cout << "  ★ BLOOM & HDR POST-PROCESSING: Cinematic glow and tone mapping!\n";
     std::cout << "  ★ BLACK HOLE ACCRETION DISK: Dynamic swirling matter with heat!\n";
     std::cout << "  ★ GRAVITATIONAL LENSING: Realistic light bending physics!\n";
-    std::cout << "  ★ ImGui INTERFACE: Interactive panels for all controls!\n\n";
+    std::cout << "  ★ ImGui INTERFACE: Interactive panels for all controls!\n";
+    std::cout << "  ★ CAMERA SHAKE: Rumble effects on boost and barrel rolls!\n";
+    std::cout << "  ★ SPEED-BASED FOV: Dynamic field of view - feel the speed!\n\n";
 
     std::cout << "🆕 NEW ADVANCED FEATURES:\n";
     std::cout << "  🏆 ACHIEVEMENT SYSTEM: Unlock accomplishments and earn points!\n";
@@ -830,6 +837,45 @@ int main()
                     ship.toggleSpeedLimiter();
                 }
 
+                // ===== AWESOME NEW FEATURES! =====
+                // Turbo Boost (Q key) - GOTTA GO FAST!
+                if (event.key.code == sf::Keyboard::Q)
+                {
+                    ship.activateTurboBoost();
+                    camera.addShake(0.5f);  // Camera shake for intensity!
+                    std::cout << "*** TURBO BOOST ACTIVATED! ***\n";
+                }
+
+                // Barrel Roll (E key) - DO A BARREL ROLL!
+                if (event.key.code == sf::Keyboard::E)
+                {
+                    ship.initiateBarrelRoll();
+                    camera.addShake(0.3f);  // Shake it!
+                    std::cout << "*** BARREL ROLL! ***\n";
+                }
+
+                // Rainbow Exhaust Mode (X key) - STYLE POINTS!
+                if (event.key.code == sf::Keyboard::X)
+                {
+                    ship.toggleRainbowExhaust();
+                    std::cout << "Rainbow exhaust mode " << (ship.getIsThrusting() ? "ON" : "toggled") << "!\n";
+                }
+
+                // Hyperdrive (Z key) - LUDICROUS SPEED!
+                if (event.key.code == sf::Keyboard::Z)
+                {
+                    ship.activateHyperdrive();
+                    camera.addShake(1.0f);  // BIG SHAKE!
+                    std::cout << "*** HYPERDRIVE CHARGING... ***\n";
+                }
+
+                // Drift Mode (V key alone) - TOKYO DRIFT IN SPACE!
+                if (event.key.code == sf::Keyboard::V && !sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                {
+                    ship.toggleDriftMode();
+                    std::cout << "Drift mode " << (ship.isDrifting() ? "ON" : "OFF") << "!\n";
+                }
+
                 if (event.key.code == sf::Keyboard::Escape)
                 {
                     window.close();
@@ -973,6 +1019,19 @@ int main()
 
         // Update camera zoom (smooth interpolation)
         camera.updateZoom(rawDeltaTime);
+
+        // ===== AMAZING CAMERA EFFECTS! =====
+        // Update camera shake (for explosions, boost, barrel rolls!)
+        camera.updateShake(rawDeltaTime);
+
+        // Update speed-based FOV - wider FOV at high speeds for that racing game feel!
+        camera.updateSpeedFOV(ship.getSpeed(), rawDeltaTime);
+
+        // Add subtle camera shake when thrusting at high speeds
+        if (ship.getIsThrusting() && ship.getSpeed() > 50.0f)
+        {
+            camera.addShake(0.02f * rawDeltaTime);  // Subtle continuous shake
+        }
 
         // Update visual systems
         nebula.update(deltaTime);
