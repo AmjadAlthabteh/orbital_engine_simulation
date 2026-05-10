@@ -122,10 +122,18 @@ public:
     void updateHyperdrive(float deltaTime); // Update hyperdrive state
     void cancelHyperdrive();                // Emergency exit from hyperspace
     bool isInHyperspace() const { return isHyperdriveActive; }
+    bool isHyperdriveCharging() const { return hyperdriveCharging; }
+    float getHyperdriveCharge() const { return hyperdriveChargeProgress / hyperdriveChargeTime; }
 
     void toggleDriftMode();                 // Toggle space drifting
     void updateDriftMode();                 // Update drift physics
     bool isDrifting() const { return isDriftMode; }
+
+    // Status queries for special modes
+    bool isTurboBoostActive() const { return isTurboBoostActive; }
+    bool isDoingBarrelRoll() const { return isBarrelRolling; }
+    float getBarrelRollProgress() const { return barrelRollProgress; }
+    bool isRainbowExhaustActive() const { return rainbowExhaustMode; }
 
     // COMBO SYSTEM
     void addComboAction(const std::string& action); // Add action to combo
