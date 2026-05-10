@@ -319,7 +319,9 @@ int main()
     std::cout << "  ✓ Ship telemetry display (updates every 1 sec)\n";
     std::cout << "  ✓ 5000+ star background field\n";
     std::cout << "  ✓ Enhanced planet colors and sizes\n";
-    std::cout << "  ✓ Black hole gravity well detection\n\n";
+    std::cout << "  ✓ Black hole gravity well detection\n";
+    std::cout << "  ✓ Frustum culling optimization (auto-skip off-screen objects)\n";
+    std::cout << "  ✓ Special modes status display (turbo, barrel roll, etc.)\n\n";
 
     std::cout << "VISUAL ENHANCEMENTS:\n";
     std::cout << "  ★ Atmospheric glow around planets (rim lighting)\n";
@@ -1185,6 +1187,8 @@ int main()
 
         // *** REAL-TIME DISTANCE/ALTITUDE DISPLAY ***
         static float displayTimer = 0.0f;
+        static int lastBodiesRendered = 0;
+        static int lastBodiesCulled = 0;
         displayTimer += rawDeltaTime;
         if (displayTimer > 1.0f)  // Update every second
         {
@@ -1257,6 +1261,82 @@ int main()
 
             std::cout << "Time scale: " << timeScale << "x " << (isPaused ? "[PAUSED]" : "[RUNNING]") << "\n";
             std::cout << "Camera mode: " << camera.getModeName() << "\n";
+
+            // ===== SPECIAL MODES STATUS DISPLAY =====
+            std::cout << "\n--- SPECIAL MODES ---\n";
+
+            // Check if any special mode is active
+            bool anyModeActive = false;
+
+            if (ship.isTurboBoostActive())
+            {
+                std::cout << "🔥 TURBO BOOST ACTIVE - 3X POWER!\n";
+                anyModeActive = true;
+            }
+
+            if (ship.isDoingBarrelRoll())
+            {
+                int progress = (int)(ship.getBarrelRollProgress() * 100.0f / 360.0f);
+                std::cout << "🌀 BARREL ROLL IN PROGRESS (" << progress << "%)\n";
+                anyModeActive = true;
+            }
+
+            if (ship.isHyperdriveCharging())
+            {
+                int chargePercent = (int)(ship.getHyperdriveCharge() * 100.0f);
+                std::cout << "⚡ HYPERDRIVE CHARGING... [" << chargePercent << "%]\n";
+                anyModeActive = true;
+            }
+            else if (ship.isInHyperspace())
+            {
+                std::cout << "⚡ HYPERDRIVE ACTIVE - LUDICROUS SPEED!\n";
+                anyModeActive = true;
+            }
+
+            if (ship.isDrifting())
+            {
+                std::cout << "💨 DRIFT MODE - Tokyo Drift in Space!\n";
+                anyModeActive = true;
+            }
+
+            if (ship.isRainbowExhaustActive())
+            {
+                std::cout << "🌈 RAINBOW EXHAUST MODE - Style points!\n";
+                anyModeActive = true;
+            }
+
+            if (ship.getComboCount() > 0)
+            {
+                std::cout << "🎯 COMBO: x" << ship.getComboCount()
+                          << " | Style Points: " << ship.getStylePoints() << "\n";
+                anyModeActive = true;
+            }
+
+            if (!anyModeActive)
+            {
+                std::cout << "All systems normal\n";
+            }
+
+            // ===== PERFORMANCE STATS =====
+            std::cout << "\n--- PERFORMANCE ---\n";
+            int totalBodies = lastBodiesRendered + lastBodiesCulled;
+            float cullPercentage = totalBodies > 0 ? (lastBodiesCulled * 100.0f / totalBodies) : 0.0f;
+
+            std::cout << "Bodies Rendered: " << lastBodiesRendered << "/" << totalBodies
+                      << " (" << (int)cullPercentage << "% culled)\n";
+
+            if (lastBodiesCulled > 0)
+            {
+                std::cout << "⚡ Frustum Culling Active - Performance Boost!\n";
+            }
+
+            std::cout << "FOV: " << (int)camera.getFOV() << "°";
+            if (camera.getFOV() > 50.0f)
+            {
+                std::cout << " (Speed boost active!)";
+            }
+            std::cout << "\n";
+
             std::cout << "=====================\n";
         }
 
@@ -1451,8 +1531,27 @@ int main()
         bool foundSaturn = false;
         CelestialBody* blackHoleBody = nullptr;
 
+        // PERFORMANCE OPTIMIZATION: Frustum culling stats
+        int bodiesRendered = 0;
+        int bodiesCulled = 0;
+
         for (auto* body : bodies)
         {
+            // FRUSTUM CULLING: Skip rendering objects outside camera view!
+            Vec3 bodyPos = body->getPhysicsBody().position;
+            float bodyRadius = body->getRadius();
+
+            // Always render Sun and Black Hole (they're important landmarks)
+            bool isImportant = (body->getName() == "Sun" || body->getName() == "Black Hole");
+
+            if (!isImportant && !camera.isSphereInFrustum(bodyPos, bodyRadius * 2.0f, aspectRatio))
+            {
+                bodiesCulled++;
+                continue;  // Skip rendering this body - it's not visible!
+            }
+
+            bodiesRendered++;
+
             Mat4 model = body->getModelMatrix();
             bool isSun = (body->getName() == "Sun");
             planetShader.setBool("isSun", isSun);
@@ -1517,6 +1616,10 @@ int main()
                 blackHoleBody = body;
             }
         }
+
+        // ===== SAVE PERFORMANCE STATS =====
+        lastBodiesRendered = bodiesRendered;
+        lastBodiesCulled = bodiesCulled;
 
         // Render Black Hole with accretion disk and lensing effect
         if (blackHoleBody)
