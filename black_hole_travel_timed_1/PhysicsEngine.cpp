@@ -18,6 +18,12 @@ PhysicsEngine::PhysicsEngine(float G)
 {
     gravitationalConstant = G;
     recentCollisions.reserve(100);  // Pre-allocate for performance
+
+    // Initialize adaptive substepping parameters
+    maxTimeStep = 0.016f;         // ~60 FPS timestep maximum
+    maxSubsteps = 8;              // Up to 8 substeps for high-speed scenarios
+    velocityThreshold = 100.0f;   // Activate adaptive stepping above 100 m/s
+    lastSubstepCount = 1;
 }
 
 void PhysicsEngine::addBody(Body* body)
@@ -27,18 +33,41 @@ void PhysicsEngine::addBody(Body* body)
 
 void PhysicsEngine::update(float deltaTime)
 {
-    applyGravity();
-    handleCollisions();
-    updateCollisionMarkers(deltaTime);
+    // ADAPTIVE SUBSTEPPING: Subdivide large timesteps for stability
+    // This prevents physics tunneling at high speeds and improves accuracy
 
-    // Integrate all bodies (with null pointer safety check)
-    for (auto* body : bodies)
+    // Determine if we need adaptive substepping
+    bool useAdaptive = needsAdaptiveStepping();
+
+    // Calculate number of substeps needed
+    int substeps = 1;
+    if (useAdaptive || deltaTime > maxTimeStep)
     {
-        if (body != nullptr)
+        substeps = static_cast<int>(std::ceil(deltaTime / maxTimeStep));
+        substeps = std::min(substeps, maxSubsteps);  // Clamp to max substeps
+    }
+
+    lastSubstepCount = substeps;
+    float subDeltaTime = deltaTime / static_cast<float>(substeps);
+
+    // Perform physics update in substeps
+    for (int step = 0; step < substeps; ++step)
+    {
+        applyGravity();
+        handleCollisions();
+
+        // Integrate all bodies (with null pointer safety check)
+        for (auto* body : bodies)
         {
-            body->integrate(deltaTime);
+            if (body != nullptr)
+            {
+                body->integrate(subDeltaTime);
+            }
         }
     }
+
+    // Update collision markers once per frame (not per substep)
+    updateCollisionMarkers(deltaTime);
 }
 
 const std::vector<CollisionEvent>& PhysicsEngine::getRecentCollisions() const
@@ -143,6 +172,23 @@ float PhysicsEngine::predictCollisionTime(const Body* a, const Body* b) const
     return -1.0f;
 }
 
+bool PhysicsEngine::needsAdaptiveStepping() const
+{
+    // Check if any body is moving fast enough to require adaptive stepping
+    for (const auto* body : bodies)
+    {
+        if (body != nullptr)
+        {
+            float speed = body->velocity.length();
+            if (speed > velocityThreshold)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void PhysicsEngine::handleCollisions()
 {
     // SAFETY: Check bodies vector is valid
@@ -194,20 +240,36 @@ void PhysicsEngine::handleCollisions()
                 bodies[i]->position = bodies[i]->position - separation;
                 bodies[j]->position = bodies[j]->position + separation;
 
-                // Record collision event for visualization
-                CollisionEvent event;
-                event.position = collisionPoint;
-                event.timestamp = 0.0f;  // Will be updated by timer
-                event.intensity = collisionSpeed;
-                event.bodyA = bodies[i];
-                event.bodyB = bodies[j];
-                recentCollisions.push_back(event);
+                // Record collision event for visualization (only once, not per substep)
+                // Check if we recently recorded this collision to avoid duplicates
+                bool isDuplicate = false;
+                for (const auto& existing : recentCollisions)
+                {
+                    if (existing.timestamp < 0.1f &&  // Recent collision
+                        (existing.bodyA == bodies[i] || existing.bodyA == bodies[j]) &&
+                        (existing.bodyB == bodies[i] || existing.bodyB == bodies[j]))
+                    {
+                        isDuplicate = true;
+                        break;
+                    }
+                }
 
-                // Console output for debugging
-                std::cout << "*** COLLISION DETECTED ***\n";
-                std::cout << "  Position: (" << collisionPoint.x << ", " << collisionPoint.y << ", " << collisionPoint.z << ")\n";
-                std::cout << "  Impact speed: " << collisionSpeed << " m/s\n";
-                std::cout << "  Bodies: Mass " << bodies[i]->mass << " vs Mass " << bodies[j]->mass << "\n";
+                if (!isDuplicate)
+                {
+                    CollisionEvent event;
+                    event.position = collisionPoint;
+                    event.timestamp = 0.0f;  // Will be updated by timer
+                    event.intensity = collisionSpeed;
+                    event.bodyA = bodies[i];
+                    event.bodyB = bodies[j];
+                    recentCollisions.push_back(event);
+
+                    // Console output for debugging
+                    std::cout << "*** COLLISION DETECTED ***\n";
+                    std::cout << "  Position: (" << collisionPoint.x << ", " << collisionPoint.y << ", " << collisionPoint.z << ")\n";
+                    std::cout << "  Impact speed: " << collisionSpeed << " m/s\n";
+                    std::cout << "  Bodies: Mass " << bodies[i]->mass << " vs Mass " << bodies[j]->mass << "\n";
+                }
             }
         }
     }
