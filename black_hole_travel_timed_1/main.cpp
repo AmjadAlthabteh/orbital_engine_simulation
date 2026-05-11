@@ -344,7 +344,8 @@ int main()
     std::cout << "  ★ GRAVITATIONAL LENSING: Realistic light bending physics!\n";
     std::cout << "  ★ ImGui INTERFACE: Interactive panels for all controls!\n";
     std::cout << "  ★ CAMERA SHAKE: Rumble effects on boost and barrel rolls!\n";
-    std::cout << "  ★ SPEED-BASED FOV: Dynamic field of view - feel the speed!\n\n";
+    std::cout << "  ★ SPEED-BASED FOV: Dynamic field of view - feel the speed!\n";
+    std::cout << "  ★ CINEMATIC CAMERA ROLL: Banking on turns like racing games!\n\n";
 
     std::cout << "🆕 NEW ADVANCED FEATURES:\n";
     std::cout << "  🏆 ACHIEVEMENT SYSTEM: Unlock accomplishments and earn points!\n";
@@ -980,16 +981,21 @@ int main()
         // Use rawDeltaTime for ship controls so they're responsive even when paused/slowed
         float rotationAmount = ship.getRotationSpeed() * rawDeltaTime;
 
+        // Track rotation input for cinematic camera roll
+        float rotationInput = 0.0f;
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
             ship.rotate(-rotationAmount, 0.0f);  // Rotate left (negative yaw)
+            rotationInput = -1.0f;  // Turning left
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
             ship.rotate(rotationAmount, 0.0f);  // Rotate right (positive yaw)
+            rotationInput = 1.0f;  // Turning right
         }
 
         // Pitch controls (U/O for up/down)
@@ -1002,6 +1008,9 @@ int main()
         {
             ship.rotate(0.0f, -rotationAmount);  // Pitch down
         }
+
+        // Update cinematic camera roll based on rotation input (racing game effect!)
+        camera.updateCinematicRoll(rotationInput, rawDeltaTime);
 
         // -------- Physics Update --------
         // Update physics (ship's update() will handle surface lock if landed)

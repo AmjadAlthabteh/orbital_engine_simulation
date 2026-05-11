@@ -37,6 +37,12 @@ public:
     float maxSpeedFov;        // Max FOV at high speeds (60 degrees)
     float speedFovTransition; // How quickly FOV changes with speed
 
+    // CINEMATIC CAMERA ROLL - Banking in turns like racing games!
+    float roll;               // Current camera roll angle (degrees)
+    float targetRoll;         // Target roll angle
+    float rollSpeed;          // How fast roll changes (smoothing)
+    float maxRollAngle;       // Maximum roll angle (default 15 degrees)
+
     CameraMode mode;
 
     Camera();
@@ -73,4 +79,9 @@ public:
     // SPEED-BASED FOV - Dynamic field of view
     void updateSpeedFOV(float currentSpeed, float deltaTime);  // Adjust FOV based on speed
     void setBaseFOV(float fov) { baseFov = fov; }              // Set normal FOV
+
+    // CINEMATIC CAMERA ROLL - Banking during turns!
+    void updateCinematicRoll(float rotationInput, float deltaTime);  // Update roll based on rotation
+    void setMaxRollAngle(float angle) { maxRollAngle = angle; }      // Set max roll angle
+    float getRoll() const { return roll; }                           // Get current roll angle
 };

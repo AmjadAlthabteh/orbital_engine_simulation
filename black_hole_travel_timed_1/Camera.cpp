@@ -26,6 +26,12 @@ Camera::Camera()
     maxSpeedFov = 75.0f;          // Wide FOV at high speeds
     speedFovTransition = 2.0f;    // Smooth transition speed
 
+    // Cinematic camera roll initialization
+    roll = 0.0f;                  // Start level
+    targetRoll = 0.0f;
+    rollSpeed = 8.0f;             // Fast but smooth response
+    maxRollAngle = 15.0f;         // 15 degrees max tilt (like racing games)
+
     mode = CameraMode::FREE;  // Start in free camera mode
 
     updateVectors();
@@ -51,6 +57,21 @@ Mat4 Camera::getViewMatrix() const
     Vec3 zaxis = (shakenPosition - (shakenPosition + front)).normalize();
     Vec3 xaxis = worldUp.cross(zaxis).normalize();
     Vec3 yaxis = zaxis.cross(xaxis);
+
+    // CINEMATIC ROLL: Apply camera roll for that racing game feel!
+    if (std::abs(roll) > 0.01f)
+    {
+        float rollRadians = roll * DEG2RAD;
+        float cosRoll = std::cos(rollRadians);
+        float sinRoll = std::sin(rollRadians);
+
+        // Rotate the up and right vectors around the front (z) axis
+        Vec3 newXaxis = xaxis * cosRoll + yaxis * sinRoll;
+        Vec3 newYaxis = yaxis * cosRoll - xaxis * sinRoll;
+
+        xaxis = newXaxis;
+        yaxis = newYaxis;
+    }
 
     Mat4 view = Mat4::identity();
 
@@ -277,5 +298,32 @@ void Camera::updateSpeedFOV(float currentSpeed, float deltaTime)
     if (currentSpeed > 400.0f)
     {
         targetFov = std::min(targetFov + 10.0f, 90.0f);  // Extra wide FOV for warp!
+    }
+}
+
+// ============================================
+// CINEMATIC CAMERA ROLL - Banking on turns!
+// ============================================
+
+void Camera::updateCinematicRoll(float rotationInput, float deltaTime)
+{
+    // rotationInput: positive = rotating right, negative = rotating left
+    // We want to tilt INTO the turn (right turn = right tilt)
+
+    // Calculate target roll based on rotation input
+    targetRoll = rotationInput * maxRollAngle;
+
+    // Clamp target roll
+    if (targetRoll > maxRollAngle) targetRoll = maxRollAngle;
+    if (targetRoll < -maxRollAngle) targetRoll = -maxRollAngle;
+
+    // Smoothly interpolate current roll toward target
+    float rollDiff = targetRoll - roll;
+    roll += rollDiff * rollSpeed * deltaTime;
+
+    // Snap to zero if very close (prevent jitter)
+    if (std::abs(roll) < 0.1f && std::abs(targetRoll) < 0.1f)
+    {
+        roll = 0.0f;
     }
 }
