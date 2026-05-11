@@ -19,6 +19,11 @@ private:
     float gravitationalConstant;
     std::vector<CollisionEvent> recentCollisions;  // Track recent collisions
 
+    // Adaptive substepping parameters for improved stability
+    float maxTimeStep;         // Maximum timestep before subdivision (default 0.016f)
+    int maxSubsteps;           // Maximum substeps per frame (default 8)
+    float velocityThreshold;   // Velocity threshold for adaptive stepping (default 100.0f)
+
 public:
     PhysicsEngine(float G = 0.1f);
 
@@ -31,7 +36,15 @@ public:
     const std::vector<CollisionEvent>& getRecentCollisions() const;
     void updateCollisionMarkers(float deltaTime);  // Fade out old collisions
 
+    // Adaptive substepping configuration
+    void setMaxTimeStep(float maxStep) { maxTimeStep = maxStep; }
+    void setMaxSubsteps(int maxSteps) { maxSubsteps = maxSteps; }
+    void setVelocityThreshold(float threshold) { velocityThreshold = threshold; }
+    int getLastSubstepCount() const { return lastSubstepCount; }
+
 private:
     void applyGravity();
     void handleCollisions();
+    bool needsAdaptiveStepping() const;  // Check if adaptive stepping is needed
+    mutable int lastSubstepCount;        // Track substeps for diagnostics
 };
