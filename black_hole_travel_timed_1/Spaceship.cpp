@@ -543,7 +543,13 @@ void Spaceship::updateBarrelRoll(float deltaTime)
             barrelRollProgress = 0.0f;
             isBarrelRolling = false;
             roll = 0.0f;
-            std::cout << "Barrel roll complete! Nice moves!\n";
+
+            // Award style points and combo bonus!
+            comboCounter++;
+            comboTimer = 0.0f;  // Reset combo timer
+            int bonusPoints = 100 * comboCounter;  // Multiplier based on combo!
+            totalStylePoints += bonusPoints;
+            std::cout << "Barrel roll complete! +" << bonusPoints << " STYLE POINTS! (Combo x" << comboCounter << ")\n";
         }
         else
         {
