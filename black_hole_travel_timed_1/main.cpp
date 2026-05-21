@@ -459,6 +459,9 @@ int main()
     float timeScale = 1.0f;      // 1.0 = normal speed
     bool isPaused = false;
 
+    // G-force damage threshold - forces above this cause ship damage
+    const float GFORCE_DAMAGE_THRESHOLD = 10.0f;
+
     sf::Clock clock;
     float collisionPredictTimer = 0.0f;
     float vectorUpdateTimer = 0.0f;
@@ -1084,7 +1087,7 @@ int main()
 
         // Check for G-force damage
         float currentGForce = telemetry.getCurrentGForce();
-        if (currentGForce > 10.0f)
+        if (currentGForce > GFORCE_DAMAGE_THRESHOLD)
         {
             damageSystem.takeGForceDamage(currentGForce);
         }
@@ -1448,6 +1451,7 @@ int main()
                     shipTrajectoryPoints
                 );
 
+                // Safety check: ensure shipTrajectoryPoints is not empty
                 // Add markers for every 3rd point (more frequent for ship)
                 if (!shipTrajectoryPoints.empty())
                 {
