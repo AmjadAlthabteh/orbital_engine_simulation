@@ -151,6 +151,16 @@ void main()
 )";
 
 // ============================================================================
+// SIMULATION CONFIGURATION CONSTANTS
+// ============================================================================
+// All magic numbers have been extracted to named constants for:
+//   - Easier tuning and tweaking of simulation parameters
+//   - Better code readability and self-documentation
+//   - Single source of truth for configuration values
+//   - Future extensibility (e.g., loading from config files)
+// ============================================================================
+
+// ============================================================================
 // PERFORMANCE OPTIMIZATION: Body Lookup Helpers
 // These functions eliminate redundant loops over the bodies vector.
 // Previously, code would loop multiple times to find bodies - this centralizes
