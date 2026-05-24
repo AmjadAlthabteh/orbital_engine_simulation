@@ -166,10 +166,12 @@ constexpr int WINDOW_HEIGHT = 720;
 constexpr float ASPECT_RATIO = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
 
 // Physics simulation constants
-constexpr float PHYSICS_TIMESTEP = 0.1f;        // Physics update interval in seconds
-constexpr float MIN_TIME_SCALE = 0.1f;          // Minimum allowed time scale multiplier
-constexpr float VECTOR_UPDATE_INTERVAL = 0.1f;  // Refresh rate for velocity/force vector display
-constexpr float COLLISION_PREDICTION_TIME = 50.0f;  // How far ahead to predict collisions (seconds)
+constexpr float PHYSICS_TIMESTEP = 0.1f;           // Physics update interval in seconds
+constexpr float MIN_TIME_SCALE = 0.1f;             // Minimum allowed time scale multiplier
+constexpr float VECTOR_UPDATE_INTERVAL = 0.1f;     // Refresh rate for velocity/force vector display
+constexpr float COLLISION_PREDICTION_TIME = 50.0f; // How far ahead to predict collisions (seconds)
+constexpr float COLLISION_UPDATE_INTERVAL = 0.5f;  // How often to recalculate collision predictions
+constexpr float TRAJECTORY_UPDATE_INTERVAL = 1.0f; // How often to recalculate trajectory points
 
 // Trajectory visualization constants
 constexpr size_t BODY_TRAJECTORY_POINT_SKIP = 5;  // Display every Nth point for body trajectories
@@ -1395,7 +1397,7 @@ int main()
 
         // Update collision predictions and markers every 0.5 seconds
         collisionPredictTimer += deltaTime;
-        if (collisionPredictTimer > 0.5f)
+        if (collisionPredictTimer > COLLISION_UPDATE_INTERVAL)
         {
             std::vector<Body*> physBodies;
             for (auto* body : bodies)
@@ -1438,9 +1440,9 @@ int main()
             vectorUpdateTimer = 0.0f;
         }
 
-        // Update trajectory prediction points every 1 second
+        // Update trajectory prediction points periodically
         trajectoryUpdateTimer += deltaTime;
-        if (trajectoryUpdateTimer > 1.0f)
+        if (trajectoryUpdateTimer > TRAJECTORY_UPDATE_INTERVAL)
         {
             // Calculate and show trajectory points for selected bodies
             std::vector<Body*> allBodies;
