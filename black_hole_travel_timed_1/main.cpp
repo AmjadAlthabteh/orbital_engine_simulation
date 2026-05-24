@@ -171,6 +171,10 @@ constexpr float MIN_TIME_SCALE = 0.1f;          // Minimum allowed time scale mu
 constexpr float VECTOR_UPDATE_INTERVAL = 0.1f;  // Refresh rate for velocity/force vector display
 constexpr float COLLISION_PREDICTION_TIME = 50.0f;  // How far ahead to predict collisions (seconds)
 
+// Trajectory visualization constants
+constexpr size_t BODY_TRAJECTORY_POINT_SKIP = 5;  // Display every Nth point for body trajectories
+constexpr size_t SHIP_TRAJECTORY_POINT_SKIP = 3;  // Display every Nth point for ship trajectory
+
 /**
  * Find a celestial body by name in O(n) time.
  * This replaces 6+ duplicate linear search patterns throughout the codebase.
@@ -1459,7 +1463,7 @@ int main()
                         // Safety check: ensure trajectoryPoints is not empty
                         if (!trajectoryPoints.empty())
                         {
-                            for (size_t i = 0; i < trajectoryPoints.size(); i += 5)
+                            for (size_t i = 0; i < trajectoryPoints.size(); i += BODY_TRAJECTORY_POINT_SKIP)
                             {
                                 predictionMarkers.addTrajectoryPoint(
                                     trajectoryPoints[i],
@@ -1488,7 +1492,7 @@ int main()
                 // Add markers for every 3rd point (more frequent for ship)
                 if (!shipTrajectoryPoints.empty())
                 {
-                    for (size_t i = 0; i < shipTrajectoryPoints.size(); i += 3)
+                    for (size_t i = 0; i < shipTrajectoryPoints.size(); i += SHIP_TRAJECTORY_POINT_SKIP)
                     {
                         predictionMarkers.addTrajectoryPoint(
                             shipTrajectoryPoints[i],
