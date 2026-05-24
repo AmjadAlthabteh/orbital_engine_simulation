@@ -160,6 +160,11 @@ void main()
 // Maximum distance sentinel value for finding nearest bodies
 constexpr float MAX_DISTANCE = 999999.0f;
 
+// Window dimensions - centralized for consistency across rendering pipeline
+constexpr int WINDOW_WIDTH = 1280;
+constexpr int WINDOW_HEIGHT = 720;
+constexpr float ASPECT_RATIO = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
+
 /**
  * Find a celestial body by name in O(n) time.
  * This replaces 6+ duplicate linear search patterns throughout the codebase.
@@ -220,7 +225,7 @@ int main()
     // settings.minorVersion = 6;
 
     sf::RenderWindow window(
-        sf::VideoMode(1280, 720),
+        sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
         "Black Hole Engine",
         sf::Style::Default,
         settings
@@ -286,8 +291,8 @@ int main()
     saturnRings.setAlpha(0.6f);
 
     // Create post-processing system with Bloom and HDR
-    Framebuffer sceneFramebuffer(1280, 720);
-    PostProcessing postProcessing(1280, 720);
+    Framebuffer sceneFramebuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
+    PostProcessing postProcessing(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Create black hole accretion disk (swirling matter around black hole)
     AccretionDisk accretionDisk(3.0f, 8.0f, 120, 40);  // Inner radius, outer radius, segments, rings
@@ -429,7 +434,7 @@ int main()
     std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
 
     // Projection matrix will be dynamic based on camera FOV (for zoom)
-    float aspectRatio = 1280.0f / 720.0f;
+    float aspectRatio = ASPECT_RATIO;
 
     // Initialize solar system
     auto bodies = SolarSystemFactory::createSimpleSystem();
@@ -1845,7 +1850,7 @@ int main()
         sceneFramebuffer.unbind();
 
         // Reset viewport to window size
-        glViewport(0, 0, 1280, 720);
+        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // Clear the default framebuffer
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
