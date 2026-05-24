@@ -165,6 +165,10 @@ constexpr int WINDOW_WIDTH = 1280;
 constexpr int WINDOW_HEIGHT = 720;
 constexpr float ASPECT_RATIO = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
 
+// Physics simulation constants
+constexpr float PHYSICS_TIMESTEP = 0.1f;  // Physics update interval in seconds
+constexpr float MIN_TIME_SCALE = 0.1f;     // Minimum allowed time scale multiplier
+
 /**
  * Find a celestial body by name in O(n) time.
  * This replaces 6+ duplicate linear search patterns throughout the codebase.
@@ -438,7 +442,7 @@ int main()
 
     // Initialize solar system
     auto bodies = SolarSystemFactory::createSimpleSystem();
-    PhysicsEngine physics(0.1f);
+    PhysicsEngine physics(PHYSICS_TIMESTEP);
 
     // Create preset waypoints now that bodies exist
     waypoints.createPresetWaypoints(bodies);
@@ -501,7 +505,7 @@ int main()
                 body->getName().find("Asteroid") == std::string::npos)
             {
                 OrbitalPath path;
-                path.calculatePath(body->getPhysicsBody(), *sun, 0.1f, 360);
+                path.calculatePath(body->getPhysicsBody(), *sun, PHYSICS_TIMESTEP, 360);
                 path.setColor(body->getColor() * 0.5f);
                 orbitalPaths.push_back(path);
             }
@@ -652,7 +656,7 @@ int main()
                 {
                     timeScale /= 1.5f;
                     statistics.recordTimeWarp();
-                    if (timeScale < 0.1f) timeScale = 0.1f;
+                    if (timeScale < MIN_TIME_SCALE) timeScale = MIN_TIME_SCALE;
                     std::cout << "Time scale: " << timeScale << "x\n";
                 }
                 if (event.key.code == sf::Keyboard::B)
@@ -852,8 +856,8 @@ int main()
                 // Quick time control hotkeys (1-5 keys)
                 if (event.key.code == sf::Keyboard::Num1)
                 {
-                    timeScale = 0.1f;
-                    std::cout << "Time scale set to 0.1x (slow motion)\n";
+                    timeScale = MIN_TIME_SCALE;
+                    std::cout << "Time scale set to " << MIN_TIME_SCALE << "x (slow motion)\n";
                 }
                 if (event.key.code == sf::Keyboard::Num2)
                 {
