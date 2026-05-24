@@ -157,6 +157,9 @@ void main()
 // the lookup logic and enables future optimization (e.g., hash map lookups).
 // ============================================================================
 
+// Maximum distance sentinel value for finding nearest bodies
+constexpr float MAX_DISTANCE = 999999.0f;
+
 /**
  * Find a celestial body by name in O(n) time.
  * This replaces 6+ duplicate linear search patterns throughout the codebase.
@@ -190,7 +193,7 @@ static CelestialBody* findNearestBody(const Vec3& position,
                                       float& outDistance)
 {
     CelestialBody* nearest = nullptr;
-    float minDist = 999999.0f;
+    float minDist = MAX_DISTANCE;
 
     for (auto* body : bodies)
     {
@@ -654,7 +657,7 @@ int main()
                     {
                         // Find closest landable body
                         CelestialBody* closestLandable = nullptr;
-                        float closestDist = 999999.0f;
+                        float closestDist = MAX_DISTANCE;
 
                         for (auto* body : bodies)
                         {
