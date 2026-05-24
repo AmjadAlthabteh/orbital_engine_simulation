@@ -151,11 +151,47 @@ void main()
 )";
 
 // ============================================================================
+// SIMULATION CONFIGURATION CONSTANTS
+// ============================================================================
+// All magic numbers have been extracted to named constants for:
+//   - Easier tuning and tweaking of simulation parameters
+//   - Better code readability and self-documentation
+//   - Single source of truth for configuration values
+//   - Future extensibility (e.g., loading from config files)
+// ============================================================================
+
+// ============================================================================
 // PERFORMANCE OPTIMIZATION: Body Lookup Helpers
 // These functions eliminate redundant loops over the bodies vector.
 // Previously, code would loop multiple times to find bodies - this centralizes
 // the lookup logic and enables future optimization (e.g., hash map lookups).
 // ============================================================================
+
+// Maximum distance sentinel value for finding nearest bodies
+constexpr float MAX_DISTANCE = 999999.0f;
+
+// Window dimensions - centralized for consistency across rendering pipeline
+constexpr int WINDOW_WIDTH = 1280;
+constexpr int WINDOW_HEIGHT = 720;
+constexpr float ASPECT_RATIO = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
+
+// Physics simulation constants
+constexpr float PHYSICS_TIMESTEP = 0.1f;           // Physics update interval in seconds
+constexpr float MIN_TIME_SCALE = 0.1f;             // Minimum allowed time scale multiplier
+constexpr float VECTOR_UPDATE_INTERVAL = 0.1f;     // Refresh rate for velocity/force vector display
+constexpr float COLLISION_PREDICTION_TIME = 50.0f; // How far ahead to predict collisions (seconds)
+constexpr float COLLISION_UPDATE_INTERVAL = 0.5f;  // How often to recalculate collision predictions
+constexpr float TRAJECTORY_UPDATE_INTERVAL = 1.0f; // How often to recalculate trajectory points
+
+// Trajectory visualization constants
+constexpr size_t BODY_TRAJECTORY_POINT_SKIP = 5;  // Display every Nth point for body trajectories
+constexpr size_t SHIP_TRAJECTORY_POINT_SKIP = 3;  // Display every Nth point for ship trajectory
+constexpr int ORBITAL_PATH_POINTS = 360;          // Number of points for orbital path calculation
+constexpr float ORBITAL_PATH_COLOR_DIM = 0.5f;    // Dimming factor for orbital path colors
+constexpr float TRAJECTORY_POINT_COLOR_DIM = 0.7f; // Dimming factor for trajectory point colors
+
+// Rotation and angle constants
+constexpr float FULL_ROTATION_DEGREES = 360.0f;   // Full rotation in degrees
 
 /**
  * Find a celestial body by name in O(n) time.
@@ -190,7 +226,7 @@ static CelestialBody* findNearestBody(const Vec3& position,
                                       float& outDistance)
 {
     CelestialBody* nearest = nullptr;
-    float minDist = 999999.0f;
+    float minDist = MAX_DISTANCE;
 
     for (auto* body : bodies)
     {
@@ -217,7 +253,7 @@ int main()
     // settings.minorVersion = 6;
 
     sf::RenderWindow window(
-        sf::VideoMode(1280, 720),
+        sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
         "Black Hole Engine",
         sf::Style::Default,
         settings
@@ -283,8 +319,8 @@ int main()
     saturnRings.setAlpha(0.6f);
 
     // Create post-processing system with Bloom and HDR
-    Framebuffer sceneFramebuffer(1280, 720);
-    PostProcessing postProcessing(1280, 720);
+    Framebuffer sceneFramebuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
+    PostProcessing postProcessing(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Create black hole accretion disk (swirling matter around black hole)
     AccretionDisk accretionDisk(3.0f, 8.0f, 120, 40);  // Inner radius, outer radius, segments, rings
@@ -426,11 +462,11 @@ int main()
     std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
 
     // Projection matrix will be dynamic based on camera FOV (for zoom)
-    float aspectRatio = 1280.0f / 720.0f;
+    float aspectRatio = ASPECT_RATIO;
 
     // Initialize solar system
     auto bodies = SolarSystemFactory::createSimpleSystem();
-    PhysicsEngine physics(0.1f);
+    PhysicsEngine physics(PHYSICS_TIMESTEP);
 
     // Create preset waypoints now that bodies exist
     waypoints.createPresetWaypoints(bodies);
@@ -493,8 +529,8 @@ int main()
                 body->getName().find("Asteroid") == std::string::npos)
             {
                 OrbitalPath path;
-                path.calculatePath(body->getPhysicsBody(), *sun, 0.1f, 360);
-                path.setColor(body->getColor() * 0.5f);
+                path.calculatePath(body->getPhysicsBody(), *sun, PHYSICS_TIMESTEP, ORBITAL_PATH_POINTS);
+                path.setColor(body->getColor() * ORBITAL_PATH_COLOR_DIM);
                 orbitalPaths.push_back(path);
             }
         }
@@ -644,7 +680,7 @@ int main()
                 {
                     timeScale /= 1.5f;
                     statistics.recordTimeWarp();
-                    if (timeScale < 0.1f) timeScale = 0.1f;
+                    if (timeScale < MIN_TIME_SCALE) timeScale = MIN_TIME_SCALE;
                     std::cout << "Time scale: " << timeScale << "x\n";
                 }
                 if (event.key.code == sf::Keyboard::B)
@@ -654,7 +690,7 @@ int main()
                     {
                         // Find closest landable body
                         CelestialBody* closestLandable = nullptr;
-                        float closestDist = 999999.0f;
+                        float closestDist = MAX_DISTANCE;
 
                         for (auto* body : bodies)
                         {
@@ -844,8 +880,8 @@ int main()
                 // Quick time control hotkeys (1-5 keys)
                 if (event.key.code == sf::Keyboard::Num1)
                 {
-                    timeScale = 0.1f;
-                    std::cout << "Time scale set to 0.1x (slow motion)\n";
+                    timeScale = MIN_TIME_SCALE;
+                    std::cout << "Time scale set to " << MIN_TIME_SCALE << "x (slow motion)\n";
                 }
                 if (event.key.code == sf::Keyboard::Num2)
                 {
@@ -1307,7 +1343,7 @@ int main()
 
             if (ship.isDoingBarrelRoll())
             {
-                int progress = (int)(ship.getBarrelRollProgress() * 100.0f / 360.0f);
+                int progress = (int)(ship.getBarrelRollProgress() * 100.0f / FULL_ROTATION_DEGREES);
                 std::cout << "🌀 BARREL ROLL IN PROGRESS (" << progress << "%)\n";
                 anyModeActive = true;
             }
@@ -1373,13 +1409,13 @@ int main()
 
         // Update collision predictions and markers every 0.5 seconds
         collisionPredictTimer += deltaTime;
-        if (collisionPredictTimer > 0.5f)
+        if (collisionPredictTimer > COLLISION_UPDATE_INTERVAL)
         {
             std::vector<Body*> physBodies;
             for (auto* body : bodies)
                 physBodies.push_back(&body->getPhysicsBody());
 
-            collisionPredictor.predictCollisions(physBodies, 0.1f, 50.0f);
+            collisionPredictor.predictCollisions(physBodies, PHYSICS_TIMESTEP, COLLISION_PREDICTION_TIME);
 
             // Add visual markers for collision points
             predictionMarkers.clear();
@@ -1391,9 +1427,9 @@ int main()
             collisionPredictTimer = 0.0f;
         }
 
-        // Update velocity and force vectors every 0.1 seconds
+        // Update velocity and force vectors periodically
         vectorUpdateTimer += deltaTime;
-        if (vectorUpdateTimer > 0.1f && showVectors)
+        if (vectorUpdateTimer > VECTOR_UPDATE_INTERVAL && showVectors)
         {
             vectorRenderer.clear();
             for (auto* body : bodies)
@@ -1416,9 +1452,9 @@ int main()
             vectorUpdateTimer = 0.0f;
         }
 
-        // Update trajectory prediction points every 1 second
+        // Update trajectory prediction points periodically
         trajectoryUpdateTimer += deltaTime;
-        if (trajectoryUpdateTimer > 1.0f)
+        if (trajectoryUpdateTimer > TRAJECTORY_UPDATE_INTERVAL)
         {
             // Calculate and show trajectory points for selected bodies
             std::vector<Body*> allBodies;
@@ -1445,11 +1481,11 @@ int main()
                         // Safety check: ensure trajectoryPoints is not empty
                         if (!trajectoryPoints.empty())
                         {
-                            for (size_t i = 0; i < trajectoryPoints.size(); i += 5)
+                            for (size_t i = 0; i < trajectoryPoints.size(); i += BODY_TRAJECTORY_POINT_SKIP)
                             {
                                 predictionMarkers.addTrajectoryPoint(
                                     trajectoryPoints[i],
-                                    body->getColor() * 0.7f
+                                    body->getColor() * TRAJECTORY_POINT_COLOR_DIM
                                 );
                             }
                         }
@@ -1474,7 +1510,7 @@ int main()
                 // Add markers for every 3rd point (more frequent for ship)
                 if (!shipTrajectoryPoints.empty())
                 {
-                    for (size_t i = 0; i < shipTrajectoryPoints.size(); i += 3)
+                    for (size_t i = 0; i < shipTrajectoryPoints.size(); i += SHIP_TRAJECTORY_POINT_SKIP)
                     {
                         predictionMarkers.addTrajectoryPoint(
                             shipTrajectoryPoints[i],
@@ -1842,7 +1878,7 @@ int main()
         sceneFramebuffer.unbind();
 
         // Reset viewport to window size
-        glViewport(0, 0, 1280, 720);
+        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // Clear the default framebuffer
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
