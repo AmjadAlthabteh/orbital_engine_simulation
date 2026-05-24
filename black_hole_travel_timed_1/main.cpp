@@ -193,6 +193,11 @@ constexpr float TRAJECTORY_POINT_COLOR_DIM = 0.7f; // Dimming factor for traject
 // Rotation and angle constants
 constexpr float FULL_ROTATION_DEGREES = 360.0f;   // Full rotation in degrees
 
+// Camera control constants
+constexpr float MOUSE_SENSITIVITY = 0.1f;         // Mouse look sensitivity multiplier
+constexpr float CAMERA_MOVEMENT_SPEED = 20.0f;    // Free camera WASD movement speed (units/sec)
+constexpr float CAMERA_PITCH_LIMIT = 89.0f;       // Maximum camera pitch angle (prevents gimbal lock)
+
 /**
  * Find a celestial body by name in O(n) time.
  * This replaces 6+ duplicate linear search patterns throughout the codebase.
@@ -241,6 +246,20 @@ static CelestialBody* findNearestBody(const Vec3& position,
 
     outDistance = minDist;
     return nearest;
+}
+
+/**
+ * Determines if a celestial body should have an orbital path displayed.
+ * Filters out bodies that don't need paths (Sun, Black Hole, Asteroids).
+ * @param body The celestial body to check
+ * @return true if the body should display an orbital path, false otherwise
+ */
+static bool shouldDisplayOrbitalPath(const CelestialBody* body)
+{
+    const std::string& name = body->getName();
+    return name != "Sun" &&
+           name != "Black Hole" &&
+           name.find("Asteroid") == std::string::npos;
 }
 
 int main()
@@ -525,8 +544,7 @@ int main()
     {
         for (auto* body : bodies)
         {
-            if (body->getName() != "Sun" && body->getName() != "Black Hole" &&
-                body->getName().find("Asteroid") == std::string::npos)
+            if (shouldDisplayOrbitalPath(body))
             {
                 OrbitalPath path;
                 path.calculatePath(body->getPhysicsBody(), *sun, PHYSICS_TIMESTEP, ORBITAL_PATH_POINTS);
@@ -984,22 +1002,21 @@ int main()
             lastX = xpos;
             lastY = ypos;
 
-            float sensitivity = 0.1f;
-            xoffset *= sensitivity;
-            yoffset *= sensitivity;
+            xoffset *= MOUSE_SENSITIVITY;
+            yoffset *= MOUSE_SENSITIVITY;
 
             camera.yaw += xoffset;
             camera.pitch += yoffset;
 
-            if (camera.pitch > 89.0f)
-                camera.pitch = 89.0f;
-            if (camera.pitch < -89.0f)
-                camera.pitch = -89.0f;
+            if (camera.pitch > CAMERA_PITCH_LIMIT)
+                camera.pitch = CAMERA_PITCH_LIMIT;
+            if (camera.pitch < -CAMERA_PITCH_LIMIT)
+                camera.pitch = -CAMERA_PITCH_LIMIT;
 
             camera.updateVectors();
 
             // WASD Movement (use rawDeltaTime for camera, not affected by time scale)
-            float speed = 20.0f * rawDeltaTime;
+            float speed = CAMERA_MOVEMENT_SPEED * rawDeltaTime;
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
                 camera.position = camera.position + camera.front * speed;
