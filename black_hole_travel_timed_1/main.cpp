@@ -193,6 +193,11 @@ constexpr float TRAJECTORY_POINT_COLOR_DIM = 0.7f; // Dimming factor for traject
 // Rotation and angle constants
 constexpr float FULL_ROTATION_DEGREES = 360.0f;   // Full rotation in degrees
 
+// Camera control constants
+constexpr float MOUSE_SENSITIVITY = 0.1f;         // Mouse look sensitivity multiplier
+constexpr float CAMERA_MOVEMENT_SPEED = 20.0f;    // Free camera WASD movement speed (units/sec)
+constexpr float CAMERA_PITCH_LIMIT = 89.0f;       // Maximum camera pitch angle (prevents gimbal lock)
+
 /**
  * Find a celestial body by name in O(n) time.
  * This replaces 6+ duplicate linear search patterns throughout the codebase.
@@ -997,22 +1002,21 @@ int main()
             lastX = xpos;
             lastY = ypos;
 
-            float sensitivity = 0.1f;
-            xoffset *= sensitivity;
-            yoffset *= sensitivity;
+            xoffset *= MOUSE_SENSITIVITY;
+            yoffset *= MOUSE_SENSITIVITY;
 
             camera.yaw += xoffset;
             camera.pitch += yoffset;
 
-            if (camera.pitch > 89.0f)
-                camera.pitch = 89.0f;
-            if (camera.pitch < -89.0f)
-                camera.pitch = -89.0f;
+            if (camera.pitch > CAMERA_PITCH_LIMIT)
+                camera.pitch = CAMERA_PITCH_LIMIT;
+            if (camera.pitch < -CAMERA_PITCH_LIMIT)
+                camera.pitch = -CAMERA_PITCH_LIMIT;
 
             camera.updateVectors();
 
             // WASD Movement (use rawDeltaTime for camera, not affected by time scale)
-            float speed = 20.0f * rawDeltaTime;
+            float speed = CAMERA_MOVEMENT_SPEED * rawDeltaTime;
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
                 camera.position = camera.position + camera.front * speed;
