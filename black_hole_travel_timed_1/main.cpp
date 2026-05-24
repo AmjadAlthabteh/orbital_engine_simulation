@@ -243,6 +243,20 @@ static CelestialBody* findNearestBody(const Vec3& position,
     return nearest;
 }
 
+/**
+ * Determines if a celestial body should have an orbital path displayed.
+ * Filters out bodies that don't need paths (Sun, Black Hole, Asteroids).
+ * @param body The celestial body to check
+ * @return true if the body should display an orbital path, false otherwise
+ */
+static bool shouldDisplayOrbitalPath(const CelestialBody* body)
+{
+    const std::string& name = body->getName();
+    return name != "Sun" &&
+           name != "Black Hole" &&
+           name.find("Asteroid") == std::string::npos;
+}
+
 int main()
 {
     sf::ContextSettings settings;
@@ -525,8 +539,7 @@ int main()
     {
         for (auto* body : bodies)
         {
-            if (body->getName() != "Sun" && body->getName() != "Black Hole" &&
-                body->getName().find("Asteroid") == std::string::npos)
+            if (shouldDisplayOrbitalPath(body))
             {
                 OrbitalPath path;
                 path.calculatePath(body->getPhysicsBody(), *sun, PHYSICS_TIMESTEP, ORBITAL_PATH_POINTS);
