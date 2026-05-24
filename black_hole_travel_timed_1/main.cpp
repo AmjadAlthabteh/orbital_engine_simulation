@@ -177,6 +177,8 @@ constexpr float TRAJECTORY_UPDATE_INTERVAL = 1.0f; // How often to recalculate t
 constexpr size_t BODY_TRAJECTORY_POINT_SKIP = 5;  // Display every Nth point for body trajectories
 constexpr size_t SHIP_TRAJECTORY_POINT_SKIP = 3;  // Display every Nth point for ship trajectory
 constexpr int ORBITAL_PATH_POINTS = 360;          // Number of points for orbital path calculation
+constexpr float ORBITAL_PATH_COLOR_DIM = 0.5f;    // Dimming factor for orbital path colors
+constexpr float TRAJECTORY_POINT_COLOR_DIM = 0.7f; // Dimming factor for trajectory point colors
 
 // Rotation and angle constants
 constexpr float FULL_ROTATION_DEGREES = 360.0f;   // Full rotation in degrees
@@ -518,7 +520,7 @@ int main()
             {
                 OrbitalPath path;
                 path.calculatePath(body->getPhysicsBody(), *sun, PHYSICS_TIMESTEP, ORBITAL_PATH_POINTS);
-                path.setColor(body->getColor() * 0.5f);
+                path.setColor(body->getColor() * ORBITAL_PATH_COLOR_DIM);
                 orbitalPaths.push_back(path);
             }
         }
@@ -1473,7 +1475,7 @@ int main()
                             {
                                 predictionMarkers.addTrajectoryPoint(
                                     trajectoryPoints[i],
-                                    body->getColor() * 0.7f
+                                    body->getColor() * TRAJECTORY_POINT_COLOR_DIM
                                 );
                             }
                         }
