@@ -174,6 +174,10 @@ constexpr float COLLISION_PREDICTION_TIME = 50.0f;  // How far ahead to predict 
 // Trajectory visualization constants
 constexpr size_t BODY_TRAJECTORY_POINT_SKIP = 5;  // Display every Nth point for body trajectories
 constexpr size_t SHIP_TRAJECTORY_POINT_SKIP = 3;  // Display every Nth point for ship trajectory
+constexpr int ORBITAL_PATH_POINTS = 360;          // Number of points for orbital path calculation
+
+// Rotation and angle constants
+constexpr float FULL_ROTATION_DEGREES = 360.0f;   // Full rotation in degrees
 
 /**
  * Find a celestial body by name in O(n) time.
@@ -511,7 +515,7 @@ int main()
                 body->getName().find("Asteroid") == std::string::npos)
             {
                 OrbitalPath path;
-                path.calculatePath(body->getPhysicsBody(), *sun, PHYSICS_TIMESTEP, 360);
+                path.calculatePath(body->getPhysicsBody(), *sun, PHYSICS_TIMESTEP, ORBITAL_PATH_POINTS);
                 path.setColor(body->getColor() * 0.5f);
                 orbitalPaths.push_back(path);
             }
@@ -1325,7 +1329,7 @@ int main()
 
             if (ship.isDoingBarrelRoll())
             {
-                int progress = (int)(ship.getBarrelRollProgress() * 100.0f / 360.0f);
+                int progress = (int)(ship.getBarrelRollProgress() * 100.0f / FULL_ROTATION_DEGREES);
                 std::cout << "🌀 BARREL ROLL IN PROGRESS (" << progress << "%)\n";
                 anyModeActive = true;
             }
