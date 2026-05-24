@@ -166,8 +166,9 @@ constexpr int WINDOW_HEIGHT = 720;
 constexpr float ASPECT_RATIO = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
 
 // Physics simulation constants
-constexpr float PHYSICS_TIMESTEP = 0.1f;  // Physics update interval in seconds
-constexpr float MIN_TIME_SCALE = 0.1f;     // Minimum allowed time scale multiplier
+constexpr float PHYSICS_TIMESTEP = 0.1f;     // Physics update interval in seconds
+constexpr float MIN_TIME_SCALE = 0.1f;       // Minimum allowed time scale multiplier
+constexpr float VECTOR_UPDATE_INTERVAL = 0.1f;  // Refresh rate for velocity/force vector display
 
 /**
  * Find a celestial body by name in O(n) time.
@@ -1403,9 +1404,9 @@ int main()
             collisionPredictTimer = 0.0f;
         }
 
-        // Update velocity and force vectors every 0.1 seconds
+        // Update velocity and force vectors periodically
         vectorUpdateTimer += deltaTime;
-        if (vectorUpdateTimer > 0.1f && showVectors)
+        if (vectorUpdateTimer > VECTOR_UPDATE_INTERVAL && showVectors)
         {
             vectorRenderer.clear();
             for (auto* body : bodies)
