@@ -22,7 +22,7 @@ private:
     float maxAcceleration;
     float avgGForce;
 
-    // G-force calculation (1 G = 9.81 m/s²)
+    // G-force calculation (1 G = 9.81 m/s^2)
     const float EARTH_GRAVITY = 9.81f;
 
 public:
@@ -85,7 +85,8 @@ public:
         float sum = 0.0f;
         for (float g : gForceHistory)
             sum += g;
-        avgGForce = sum / historySize;
+        const float sampleCount = static_cast<float>(gForceHistory.size());
+        avgGForce = (sampleCount > 0.0f) ? (sum / sampleCount) : 0.0f;
 
         lastVelocity = currentVel;
     }

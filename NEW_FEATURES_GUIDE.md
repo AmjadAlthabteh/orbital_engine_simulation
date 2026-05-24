@@ -1,6 +1,6 @@
-# 🚀 BLACK HOLE TRAVEL SIMULATOR - NEW ADVANCED FEATURES
+# BLACK HOLE TRAVEL SIMULATOR - NEW ADVANCED FEATURES
 
-## 📋 Table of Contents
+## Table of Contents
 1. [Achievement System](#achievement-system)
 2. [Science & Data Collection](#science-data-collection)
 3. [Waypoint Navigation](#waypoint-navigation)
@@ -20,7 +20,7 @@
 
 ---
 
-## 🏆 Achievement System
+## Achievement System
 
 ### Overview
 Unlock achievements by completing various challenges and milestones during your space journey!
@@ -65,7 +65,7 @@ Unlock achievements by completing various challenges and milestones during your 
 
 ---
 
-## 🔬 Science & Data Collection
+## Science & Data Collection
 
 ### Overview
 Scan celestial bodies to collect scientific data and earn science points!
@@ -110,7 +110,7 @@ Scan celestial bodies to collect scientific data and earn science points!
 
 ---
 
-## 📍 Waypoint Navigation System
+## Waypoint Navigation System
 
 ### Overview
 Create custom navigation markers anywhere in space for easy navigation!
@@ -142,7 +142,7 @@ Three waypoints are created automatically:
 
 ---
 
-## 📊 Advanced Telemetry System
+## Advanced Telemetry System
 
 ### Overview
 Detailed real-time analysis of ship performance, forces, and orbital mechanics!
@@ -188,7 +188,7 @@ Detailed real-time analysis of ship performance, forces, and orbital mechanics!
 
 ---
 
-## 🌌 Cosmic Event System
+## Cosmic Event System
 
 ### Overview
 Random space phenomena occur during your journey, adding challenges and opportunities!
@@ -247,7 +247,7 @@ Random space phenomena occur during your journey, adding challenges and opportun
 
 ---
 
-## 📊 Enhanced Statistics System
+## Enhanced Statistics System
 
 ### Overview
 Comprehensive statistics tracking with session vs lifetime comparisons!
@@ -297,7 +297,7 @@ Comprehensive statistics tracking with session vs lifetime comparisons!
 
 ---
 
-## 🪐 Planet Information Panel
+## Planet Information Panel
 
 ### Overview
 Full-screen interactive encyclopedia for every celestial body!
@@ -363,7 +363,7 @@ Complete data for all 10 celestial bodies:
 
 ---
 
-## 🎯 Advanced HUD Overlay
+## Advanced HUD Overlay
 
 ### Overview
 Professional heads-up display with targeting reticle, vectors, and indicators!
@@ -441,7 +441,7 @@ Professional heads-up display with targeting reticle, vectors, and indicators!
 
 ---
 
-## ⛽ Resource Management System
+## Resource Management System
 
 ### Overview
 Manage fuel, power, and life support for strategic gameplay!
@@ -488,7 +488,7 @@ Manage fuel, power, and life support for strategic gameplay!
 
 ---
 
-## 🔧 Damage & Repair System
+## Damage & Repair System
 
 ### Overview
 Ship health and subsystem damage add consequences to risky maneuvers!
@@ -551,7 +551,7 @@ Ship health and subsystem damage add consequences to risky maneuvers!
 
 ---
 
-## 🎯 Mission System
+## Mission System
 
 ### Overview
 Structured objectives with rewards and progression!
@@ -621,7 +621,7 @@ Structured objectives with rewards and progression!
 
 ---
 
-## 💾 Save/Load System
+## Save/Load System
 
 ### Overview
 Preserve your progress with full game state saving!
@@ -681,7 +681,7 @@ Save files include:
 
 ---
 
-## 🔊 Audio System
+## Audio System
 
 ### Overview
 Immersive sound effects and music enhance gameplay atmosphere!
@@ -742,7 +742,7 @@ Immersive sound effects and music enhance gameplay atmosphere!
 
 ---
 
-## 📝 Enhanced Console Logging
+## Enhanced Console Logging
 
 ### Overview
 Professional, color-coded console output for better readability!
@@ -779,7 +779,7 @@ Professional, color-coded console output for better readability!
 
 ---
 
-## ⌨️ Keyboard Shortcuts Reference
+## Keyboard Shortcuts Reference
 
 ### Basic Controls
 | Key | Function |
@@ -836,7 +836,7 @@ Professional, color-coded console output for better readability!
 
 ---
 
-## 💡 Tips & Strategies
+## Tips & Strategies
 
 ### Achievement Hunting
 1. **Speed runs**: Find open space and accelerate to max speed
@@ -876,7 +876,7 @@ Professional, color-coded console output for better readability!
 
 ---
 
-## 🎮 Quick Start Guide
+## Quick Start Guide
 
 ### First 5 Minutes
 1. **Press F1** - Read the help overlay
@@ -906,7 +906,7 @@ Professional, color-coded console output for better readability!
 
 ---
 
-## 📈 Statistics Tracking
+## Statistics Tracking
 
 ### View Anytime
 - **F2**: Achievement points, unlocks, max speed
@@ -927,7 +927,7 @@ Professional, color-coded console output for better readability!
 
 ---
 
-## 🔧 System Integration
+## System Integration
 
 All new systems are fully integrated:
 - **GUI panels** show real-time data
@@ -947,7 +947,7 @@ All new systems are fully integrated:
 
 ---
 
-## 🌟 Feature Highlights
+## Feature Highlights
 
 ### Why These Features Matter
 

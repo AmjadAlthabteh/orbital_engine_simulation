@@ -150,6 +150,63 @@ void main()
 }
 )";
 
+// ============================================================================
+// PERFORMANCE OPTIMIZATION: Body Lookup Helpers
+// These functions eliminate redundant loops over the bodies vector.
+// Previously, code would loop multiple times to find bodies - this centralizes
+// the lookup logic and enables future optimization (e.g., hash map lookups).
+// ============================================================================
+
+/**
+ * Find a celestial body by name in O(n) time.
+ * This replaces 6+ duplicate linear search patterns throughout the codebase.
+ * @param name The name of the body to find
+ * @param bodies Vector of all celestial bodies
+ * @return Pointer to the body if found, nullptr otherwise
+ */
+static CelestialBody* findBodyByName(const std::string& name,
+                                     const std::vector<CelestialBody*>& bodies)
+{
+    for (auto* body : bodies)
+    {
+        if (body->getName() == name)
+            return body;
+    }
+    return nullptr;
+}
+
+/**
+ * Find the nearest celestial body to a given position.
+ * Returns both the body pointer AND the distance in a single pass.
+ * This replaces the wasteful pattern of finding nearest by name, then
+ * looping again to get the body's properties.
+ * @param position The reference position
+ * @param bodies Vector of all celestial bodies
+ * @param outDistance Output parameter for the distance to nearest body
+ * @return Pointer to nearest body, or nullptr if bodies is empty
+ */
+static CelestialBody* findNearestBody(const Vec3& position,
+                                      const std::vector<CelestialBody*>& bodies,
+                                      float& outDistance)
+{
+    CelestialBody* nearest = nullptr;
+    float minDist = 999999.0f;
+
+    for (auto* body : bodies)
+    {
+        Vec3 diff = body->getPhysicsBody().position - position;
+        float dist = diff.length();
+        if (dist < minDist)
+        {
+            minDist = dist;
+            nearest = body;
+        }
+    }
+
+    outDistance = minDist;
+    return nearest;
+}
+
 int main()
 {
     sf::ContextSettings settings;
@@ -459,6 +516,9 @@ int main()
     float timeScale = 1.0f;      // 1.0 = normal speed
     bool isPaused = false;
 
+    // G-force damage threshold - forces above this cause ship damage
+    const float GFORCE_DAMAGE_THRESHOLD = 10.0f;
+
     sf::Clock clock;
     float collisionPredictTimer = 0.0f;
     float vectorUpdateTimer = 0.0f;
@@ -517,14 +577,11 @@ int main()
                 }
                 if (event.key.code == sf::Keyboard::H)
                 {
-                    // Calculate Hohmann transfer from Earth to Mars
-                    Body* earth = nullptr;
-                    Body* mars = nullptr;
-                    for (auto* body : bodies)
-                    {
-                        if (body->getName() == "Earth") earth = &body->getPhysicsBody();
-                        if (body->getName() == "Mars") mars = &body->getPhysicsBody();
-                    }
+                    // OPTIMIZED: Calculate Hohmann transfer from Earth to Mars
+                    CelestialBody* earthBody = findBodyByName("Earth", bodies);
+                    CelestialBody* marsBody = findBodyByName("Mars", bodies);
+                    Body* earth = earthBody ? &earthBody->getPhysicsBody() : nullptr;
+                    Body* mars = marsBody ? &marsBody->getPhysicsBody() : nullptr;
 
                     if (earth && mars && sun)
                     {
@@ -542,16 +599,9 @@ int main()
 
                     if (showLagrangePoints && sun)
                     {
-                        // Calculate Lagrange points between Sun and Earth
-                        Body* earth = nullptr;
-                        for (auto* body : bodies)
-                        {
-                            if (body->getName() == "Earth")
-                            {
-                                earth = &body->getPhysicsBody();
-                                break;
-                            }
-                        }
+                        // OPTIMIZED: Calculate Lagrange points between Sun and Earth
+                        CelestialBody* earthBody = findBodyByName("Earth", bodies);
+                        Body* earth = earthBody ? &earthBody->getPhysicsBody() : nullptr;
 
                         if (earth)
                         {
@@ -684,22 +734,12 @@ int main()
                 if (event.key.code == sf::Keyboard::F7)
                 {
                     // Start science scan on nearest body
-                    // Find nearest body
-                    float nearestDist = 999999.0f;
-                    std::string nearestName = "Unknown";
+                    // OPTIMIZED: Use helper to find nearest body efficiently
                     Vec3 shipPos = ship.getPhysicsBody().position;
+                    float nearestDist = 0.0f;
+                    CelestialBody* nearestBody = findNearestBody(shipPos, bodies, nearestDist);
 
-                    for (auto* body : bodies)
-                    {
-                        Vec3 diff = body->getPhysicsBody().position - shipPos;
-                        float dist = diff.length();
-                        if (dist < nearestDist)
-                        {
-                            nearestDist = dist;
-                            nearestName = body->getName();
-                        }
-                    }
-
+                    std::string nearestName = nearestBody ? nearestBody->getName() : "Unknown";
                     science.startScan(nearestName, nearestDist);
                 }
                 if (event.key.code == sf::Keyboard::F8)
@@ -1084,7 +1124,7 @@ int main()
 
         // Check for G-force damage
         float currentGForce = telemetry.getCurrentGForce();
-        if (currentGForce > 10.0f)
+        if (currentGForce > GFORCE_DAMAGE_THRESHOLD)
         {
             damageSystem.takeGForceDamage(currentGForce);
         }
@@ -1204,31 +1244,13 @@ int main()
             displayTimer = 0.0f;
 
             // Find nearest celestial body
-            float nearestDist = 999999.0f;
-            std::string nearestName = "Unknown";
+            // OPTIMIZED: Find nearest body in single pass instead of two separate loops
             Vec3 shipPos = ship.getPhysicsBody().position;
+            float nearestDist = 0.0f;
+            CelestialBody* nearestBody = findNearestBody(shipPos, bodies, nearestDist);
 
-            for (auto* body : bodies)
-            {
-                Vec3 diff = body->getPhysicsBody().position - shipPos;
-                float dist = diff.length();
-                if (dist < nearestDist)
-                {
-                    nearestDist = dist;
-                    nearestName = body->getName();
-                }
-            }
-
-            // Calculate altitude (distance from nearest body's surface)
-            float altitude = nearestDist;  // Distance from center
-            for (auto* body : bodies)
-            {
-                if (body->getName() == nearestName)
-                {
-                    altitude = nearestDist - body->getRadius();  // Subtract radius
-                    break;
-                }
-            }
+            std::string nearestName = nearestBody ? nearestBody->getName() : "Unknown";
+            float altitude = nearestBody ? (nearestDist - nearestBody->getRadius()) : nearestDist;
 
             // Display telemetry
             std::cout << "\n=== SHIP TELEMETRY ===\n";
@@ -1448,6 +1470,7 @@ int main()
                     shipTrajectoryPoints
                 );
 
+                // Safety check: ensure shipTrajectoryPoints is not empty
                 // Add markers for every 3rd point (more frequent for ship)
                 if (!shipTrajectoryPoints.empty())
                 {
