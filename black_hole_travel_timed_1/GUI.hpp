@@ -127,6 +127,37 @@ private:
     std::vector<TargetInfo> cachedTargets;
     float targetUpdateTimer = 0.0f;
 
+    struct Layout
+    {
+        ImVec2 workPos{0.0f, 0.0f};
+        ImVec2 workSize{0.0f, 0.0f};
+        float margin = 10.0f;
+        float topHudHeight = 90.0f;
+        float mainPanelTopOffset = 110.0f;
+
+        ImVec2 topHudPos() const { return ImVec2(workPos.x + margin, workPos.y + margin); }
+        ImVec2 topHudSize() const { return ImVec2(std::max(0.0f, workSize.x - margin * 2.0f), topHudHeight); }
+
+        float mainPanelY() const { return workPos.y + mainPanelTopOffset; }
+        float mainPanelHeight() const { return std::max(0.0f, workPos.y + workSize.y - margin - mainPanelY()); }
+    };
+
+    Layout getLayout() const
+    {
+        Layout layout;
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        if (viewport)
+        {
+            layout.workPos = viewport->WorkPos;
+            layout.workSize = viewport->WorkSize;
+            return layout;
+        }
+
+        ImGuiIO& io = ImGui::GetIO();
+        layout.workSize = io.DisplaySize;
+        return layout;
+    }
+
 public:
     GUI(sf::RenderWindow& window)
     {
@@ -261,9 +292,11 @@ public:
     {
         if (!state.showTopHUD) return;
 
+        const Layout layout = getLayout();
+
         // Transparent overlay at top of screen - always locked in place
-        ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(1260, 90), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(layout.topHudPos(), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(layout.topHudSize(), ImGuiCond_Always);
         ImGui::SetNextWindowBgAlpha(0.75f);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -272,11 +305,14 @@ public:
         ImGui::Begin("##TopHUD", nullptr, flags);
 
         Vec3 shipPos = ship.getPhysicsBody().position;
-        Vec3 shipVel = ship.getPhysicsBody().velocity;
         float speed = ship.getSpeed();
 
+        const float hudSpacing = ImGui::GetStyle().ItemSpacing.x;
+        const float hudChildHeight = 70.0f;
+        const float hudChildWidth = std::max(0.0f, (layout.topHudSize().x - hudSpacing * 2.0f) / 3.0f);
+
         // LEFT: Ship Status
-        ImGui::BeginChild("HUD_Left", ImVec2(400, 70), false);
+        ImGui::BeginChild("HUD_Left", ImVec2(hudChildWidth, hudChildHeight), false);
         ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);  // Larger font
         ImGui::TextColored(colorInfo, "SHIP STATUS");
         ImGui::PopFont();
@@ -297,7 +333,7 @@ public:
         ImGui::SameLine();
 
         // CENTER: Nearest Object
-        ImGui::BeginChild("HUD_Center", ImVec2(400, 70), false);
+        ImGui::BeginChild("HUD_Center", ImVec2(hudChildWidth, hudChildHeight), false);
         ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
         ImGui::TextColored(colorInfo, "PROXIMITY");
         ImGui::PopFont();
@@ -337,7 +373,7 @@ public:
         ImGui::SameLine();
 
         // RIGHT: Simulation Status
-        ImGui::BeginChild("HUD_Right", ImVec2(400, 70), false);
+        ImGui::BeginChild("HUD_Right", ImVec2(hudChildWidth, hudChildHeight), false);
         ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
         ImGui::TextColored(colorInfo, "SIMULATION");
         ImGui::PopFont();
@@ -360,9 +396,22 @@ public:
     {
         if (!state.showLeftPanel) return;
 
+        const Layout layout = getLayout();
+
+        const float minCenterWidth = 360.0f;
+        float panelWidth = std::clamp(layout.workSize.x * 0.32f, 340.0f, 460.0f);
+        if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
+        {
+            panelWidth = std::max(300.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
+        }
+        const float maxPanelWidth = std::max(240.0f, layout.workSize.x - layout.margin * 2.0f);
+        panelWidth = std::clamp(panelWidth, 240.0f, maxPanelWidth);
+        const float maxPanelWidth = std::max(240.0f, layout.workSize.x - layout.margin * 2.0f);
+        panelWidth = std::clamp(panelWidth, 240.0f, maxPanelWidth);
+
         // Lock panel position and size (cannot be moved or resized)
-        ImGui::SetNextWindowPos(ImVec2(10, 110), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(420, 610), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(ImVec2(layout.workPos.x + layout.margin, layout.mainPanelY()), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(panelWidth, layout.mainPanelHeight()), ImGuiCond_Always);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
         ImGui::Begin("Ship Operations", &state.showLeftPanel, flags);
@@ -533,9 +582,21 @@ public:
     {
         if (!state.showRightPanel) return;
 
+        const Layout layout = getLayout();
+
+        const float minCenterWidth = 360.0f;
+        float panelWidth = std::clamp(layout.workSize.x * 0.32f, 340.0f, 460.0f);
+        if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
+        {
+            panelWidth = std::max(300.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
+        }
+
         // Lock panel position and size (cannot be moved or resized)
-        ImGui::SetNextWindowPos(ImVec2(850, 110), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(420, 610), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(
+            ImVec2(layout.workPos.x + layout.workSize.x - layout.margin - panelWidth, layout.mainPanelY()),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowSize(ImVec2(panelWidth, layout.mainPanelHeight()), ImGuiCond_Always);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
         ImGui::Begin("Navigation & Radar", &state.showRightPanel, flags);
@@ -563,44 +624,44 @@ public:
             // Target list with highlighting
             ImGui::BeginChild("TargetList", ImVec2(-1, 180), true);
 
-            for (size_t i = 0; i < cachedTargets.size(); ++i)
+            if (ImGui::BeginTable("##TargetTable", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp))
             {
-                const TargetInfo& target = cachedTargets[i];
+                ImGui::TableSetupColumn("Target", ImGuiTableColumnFlags_WidthStretch, 2.0f);
+                ImGui::TableSetupColumn("Dist", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+                ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed, 90.0f);
 
-                bool isSelected = (state.selectedTarget == static_cast<int>(i));
-
-                // Highlight selected target
-                if (isSelected && state.lockTarget)
+                for (size_t i = 0; i < cachedTargets.size(); ++i)
                 {
-                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.6f, 0.8f, 0.8f));
+                    const TargetInfo& target = cachedTargets[i];
+                    const bool isSelected = (state.selectedTarget == static_cast<int>(i));
+
+                    ImGui::TableNextRow();
+
+                    ImGui::TableSetColumnIndex(0);
+                    if (ImGui::Selectable(target.name.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns))
+                    {
+                        state.selectedTarget = static_cast<int>(i);
+                    }
+
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::TextColored(colorInfo, "%.0f u", target.distance);
+
+                    ImGui::TableSetColumnIndex(2);
+                    if (isSelected && state.lockTarget)
+                    {
+                        ImGui::TextColored(colorHighlight, "LOCKED");
+                    }
+                    else if (target.isLandable)
+                    {
+                        ImGui::TextColored(colorSuccess, "LAND");
+                    }
+                    else
+                    {
+                        ImGui::TextDisabled("-");
+                    }
                 }
 
-                if (ImGui::Selectable(target.name.c_str(), isSelected, 0, ImVec2(200, 0)))
-                {
-                    state.selectedTarget = i;
-                }
-
-                if (isSelected && state.lockTarget)
-                {
-                    ImGui::PopStyleColor();
-                }
-
-                // Distance and landable indicator
-                ImGui::SameLine(220);
-                ImGui::TextColored(colorInfo, "%.0f u", target.distance);
-
-                if (target.isLandable)
-                {
-                    ImGui::SameLine();
-                    ImGui::TextColored(colorSuccess, "[LAND]");
-                }
-
-                // Show lock indicator
-                if (isSelected && state.lockTarget)
-                {
-                    ImGui::SameLine();
-                    ImGui::TextColored(colorHighlight, "[LOCKED]");
-                }
+                ImGui::EndTable();
             }
 
             ImGui::EndChild();
@@ -687,10 +748,13 @@ public:
     // ===== RADAR VISUALIZATION =====
     void renderRadar(const std::vector<CelestialBody*>& bodies, const Spaceship& ship)
     {
-        ImVec2 radarCenter = ImGui::GetCursorScreenPos();
-        radarCenter.x += 180;
-        radarCenter.y += 180;
-        float radarRadius = 160.0f;
+        const float maxRadarSize = 360.0f;
+        const float availableWidth = std::max(0.0f, ImGui::GetContentRegionAvail().x);
+        const float radarSize = std::min(availableWidth, maxRadarSize);
+
+        ImVec2 radarPos = ImGui::GetCursorScreenPos();
+        ImVec2 radarCenter(radarPos.x + radarSize * 0.5f, radarPos.y + radarSize * 0.5f);
+        float radarRadius = radarSize * 0.45f;
 
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -788,7 +852,7 @@ public:
             }
         }
 
-        ImGui::Dummy(ImVec2(360, 360)); // Reserve space
+        ImGui::Dummy(ImVec2(radarSize, radarSize)); // Reserve space
     }
 
     // ===== MISSION OBJECTIVES PANEL =====
@@ -797,8 +861,15 @@ public:
         if (!state.showMissions) return;
 
         // Lock panel position and size (cannot be moved or resized)
-        ImGui::SetNextWindowPos(ImVec2(440, 110), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Always);
+        const Layout layout = getLayout();
+        const float desiredWidth = 420.0f;
+        const float desiredHeight = 300.0f;
+        const float maxWidth = std::max(0.0f, layout.workSize.x - layout.margin * 2.0f);
+        const float clampedWidth = std::min(desiredWidth, maxWidth);
+        const float x = layout.workPos.x + (layout.workSize.x - clampedWidth) * 0.5f;
+
+        ImGui::SetNextWindowPos(ImVec2(x, layout.mainPanelY()), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(clampedWidth, desiredHeight), ImGuiCond_Always);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
         ImGui::Begin("Mission Objectives", &state.showMissions, flags);
@@ -863,8 +934,21 @@ public:
         if (!state.showKeybindOverlay) return;
 
         // Lock panel position and size (cannot be moved or resized)
-        ImGui::SetNextWindowPos(ImVec2(400, 200), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(500, 520), ImGuiCond_Always);
+        const Layout layout = getLayout();
+        const ImVec2 desiredSize(520.0f, 540.0f);
+        const float maxWidth = std::max(0.0f, layout.workSize.x - layout.margin * 2.0f);
+        const float maxHeight = std::max(0.0f, layout.workSize.y - layout.margin * 2.0f);
+        const ImVec2 clampedSize(
+            std::min(desiredSize.x, maxWidth),
+            std::min(desiredSize.y, maxHeight)
+        );
+        const ImVec2 pos(
+            layout.workPos.x + (layout.workSize.x - clampedSize.x) * 0.5f,
+            layout.workPos.y + (layout.workSize.y - clampedSize.y) * 0.5f
+        );
+
+        ImGui::SetNextWindowPos(pos, ImGuiCond_Always);
+        ImGui::SetNextWindowSize(clampedSize, ImGuiCond_Always);
         ImGui::SetNextWindowBgAlpha(0.95f);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
@@ -962,8 +1046,16 @@ public:
         if (!state.showSettings) return;
 
         // Lock panel position and size (cannot be moved or resized)
-        ImGui::SetNextWindowPos(ImVec2(440, 420), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Always);
+        const Layout layout = getLayout();
+        const float desiredWidth = 420.0f;
+        const float desiredHeight = 320.0f;
+        const float maxWidth = std::max(0.0f, layout.workSize.x - layout.margin * 2.0f);
+        const float clampedWidth = std::min(desiredWidth, maxWidth);
+        const float x = layout.workPos.x + (layout.workSize.x - clampedWidth) * 0.5f;
+        const float y = layout.workPos.y + (layout.workSize.y - desiredHeight) * 0.5f;
+
+        ImGui::SetNextWindowPos(ImVec2(x, y), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(clampedWidth, desiredHeight), ImGuiCond_Always);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
         ImGui::Begin("Visual Settings", &state.showSettings, flags);
