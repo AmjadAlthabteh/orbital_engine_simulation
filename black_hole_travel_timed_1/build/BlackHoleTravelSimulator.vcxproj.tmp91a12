@@ -125,7 +125,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-window-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-audio-d.lib;gdi32.lib;user32.lib;kernel32.lib;C:\Dev\SFML-2.6.2\lib\sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-window-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-system-d.lib;gdi32.lib;user32.lib;kernel32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -184,7 +184,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics.lib;C:\Dev\SFML-2.6.2\lib\sfml-window.lib;C:\Dev\SFML-2.6.2\lib\sfml-audio.lib;gdi32.lib;user32.lib;kernel32.lib;C:\Dev\SFML-2.6.2\lib\sfml-system.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics.lib;C:\Dev\SFML-2.6.2\lib\sfml-window.lib;C:\Dev\SFML-2.6.2\lib\sfml-system.lib;gdi32.lib;user32.lib;kernel32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -243,7 +243,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-window-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-audio-d.lib;gdi32.lib;user32.lib;kernel32.lib;C:\Dev\SFML-2.6.2\lib\sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-window-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-system-d.lib;gdi32.lib;user32.lib;kernel32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -301,7 +301,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-window-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-audio-d.lib;gdi32.lib;user32.lib;kernel32.lib;C:\Dev\SFML-2.6.2\lib\sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\Dev\SFML-2.6.2\lib\sfml-graphics-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-window-d.lib;C:\Dev\SFML-2.6.2\lib\sfml-system-d.lib;gdi32.lib;user32.lib;kernel32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>

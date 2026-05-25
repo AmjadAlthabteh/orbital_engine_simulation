@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Dev\C++Code\update_orderbook_02\black_hole_travel_timed_1\black_hole_travel_timed_1\build\CMakeFiles\54f6b993aab706b0b900c518d5631d04\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{DC680104-94F3-3977-A66C-5B0E49BE0214}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
