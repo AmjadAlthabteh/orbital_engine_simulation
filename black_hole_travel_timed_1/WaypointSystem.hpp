@@ -35,6 +35,8 @@ public:
         wp.description = description;
         waypoints.push_back(wp);
 
+#if 0
+
         std::cout << "\n╔═══════════════════════════════════════════════════════╗\n";
         std::cout << "║  📍 WAYPOINT CREATED                                  ║\n";
         std::cout << "╠═══════════════════════════════════════════════════════╣\n";
@@ -53,6 +55,18 @@ public:
         for (size_t i = std::to_string(waypoints.size()).length(); i < 33; ++i) std::cout << " ";
         std::cout << "║\n";
         std::cout << "╚═══════════════════════════════════════════════════════╝\n";
+#endif
+
+        std::cout << "\n------------------------------------------------------------\n";
+        std::cout << "[WAYPOINT] Created\n";
+        std::cout << "  Name: " << name << "\n";
+        if (!description.empty())
+            std::cout << "  Description: " << description << "\n";
+        std::cout << "  Position: (" << static_cast<int>(position.x) << ", "
+                  << static_cast<int>(position.y) << ", "
+                  << static_cast<int>(position.z) << ")\n";
+        std::cout << "  Total waypoints: " << waypoints.size() << "\n";
+        std::cout << "------------------------------------------------------------\n";
     }
 
     // Remove a waypoint
@@ -110,6 +124,8 @@ public:
             return;
         }
 
+#if 0
+
         std::cout << "\n╔═══════════════════════════════════════════════════════╗\n";
         std::cout << "║           WAYPOINT LIST                               ║\n";
         std::cout << "╠═══════════════════════════════════════════════════════╣\n";
@@ -129,6 +145,20 @@ public:
         }
 
         std::cout << "╚═══════════════════════════════════════════════════════╝\n";
+#endif
+
+        std::cout << "\n--------------------------- WAYPOINT LIST ---------------------------\n";
+        for (size_t i = 0; i < waypoints.size(); ++i)
+        {
+            const Waypoint& wp = waypoints[i];
+            std::cout << "  [" << i << "] " << wp.name;
+            if (!wp.description.empty())
+                std::cout << " - " << wp.description;
+            if (static_cast<int>(i) == selectedWaypoint)
+                std::cout << " (selected)";
+            std::cout << "\n";
+        }
+        std::cout << "---------------------------------------------------------------------\n";
     }
 
     // Getters

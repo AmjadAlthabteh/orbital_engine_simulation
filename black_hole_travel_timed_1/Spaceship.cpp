@@ -29,7 +29,7 @@ Spaceship::Spaceship(float mass, float radius_, const Vec3& color_)
       rotationDamping(0.95f),       // 95% damping per second
       speedLimiterEnabled(false),   // Speed limiter off by default
       maxSpeedLimit(100.0f),        // Default max speed: 100 units/s
-      isTurboBoostActive(false),    // Boost not active
+      turboBoostActive(false),      // Boost not active
       turboBoostMultiplier(3.0f),   // 3x thrust during boost!
       turboBoostDuration(2.0f),     // 2 seconds of pure power
       turboBoostTimer(0.0f),
@@ -141,7 +141,7 @@ void Spaceship::applyThrust(float deltaTime)
     float effectiveThrust = thrustPower;
 
     // TURBO BOOST MULTIPLIER!
-    if (isTurboBoostActive)
+    if (turboBoostActive)
     {
         effectiveThrust *= turboBoostMultiplier;
     }
@@ -563,9 +563,9 @@ void Spaceship::updateBarrelRoll(float deltaTime)
 
 void Spaceship::activateTurboBoost()
 {
-    if (!isTurboBoostActive && turboBoostCooldownTimer <= 0.0f)
+    if (!turboBoostActive && turboBoostCooldownTimer <= 0.0f)
     {
-        isTurboBoostActive = true;
+        turboBoostActive = true;
         turboBoostTimer = turboBoostDuration;
         std::cout << "TURBO BOOST ACTIVATED! GOTTA GO FAST!!!\n";
         addComboAction("Turbo Boost");
@@ -578,12 +578,12 @@ void Spaceship::activateTurboBoost()
 
 void Spaceship::updateTurboBoost(float deltaTime)
 {
-    if (isTurboBoostActive)
+    if (turboBoostActive)
     {
         turboBoostTimer -= deltaTime;
         if (turboBoostTimer <= 0.0f)
         {
-            isTurboBoostActive = false;
+            turboBoostActive = false;
             turboBoostCooldownTimer = turboBoostCooldown;
             std::cout << "Turbo boost depleted! Starting cooldown...\n";
         }
