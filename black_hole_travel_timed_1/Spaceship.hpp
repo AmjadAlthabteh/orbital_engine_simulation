@@ -5,6 +5,7 @@
 #include "Trail.hpp"
 #include <memory>
 #include <string>
+#include <vector>
 
 // Forward declaration
 class CelestialBody;
@@ -56,7 +57,7 @@ private:
     float maxSpeedLimit;            // Maximum allowed speed
 
     // TURBO BOOST SYSTEM - GOTTA GO FAST!
-    bool isTurboBoostActive;        // Is turbo boost engaged?
+    bool turboBoostActive;          // Is turbo boost engaged?
     float turboBoostMultiplier;     // Thrust multiplier during boost (3x!)
     float turboBoostDuration;       // How long boost lasts
     float turboBoostTimer;          // Current boost timer
@@ -130,7 +131,7 @@ public:
     bool isDrifting() const { return isDriftMode; }
 
     // Status queries for special modes
-    bool isTurboBoostActive() const { return isTurboBoostActive; }
+    bool isTurboBoostActive() const { return turboBoostActive; }
     bool isDoingBarrelRoll() const { return isBarrelRolling; }
     float getBarrelRollProgress() const { return barrelRollProgress; }
     bool isRainbowExhaustActive() const { return rainbowExhaustMode; }

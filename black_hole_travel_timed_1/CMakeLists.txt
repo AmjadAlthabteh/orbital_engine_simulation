@@ -61,7 +61,7 @@ find_package(OpenGL REQUIRED)
 
 # SFML - adjust path as needed
 set(SFML_DIR "C:/Dev/SFML-2.6.2/lib/cmake/SFML")
-find_package(SFML 2.6 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 # Note: If version mismatch occurs, remove version number or adjust SFML path
 
 # GLAD - adjust path as needed
@@ -172,6 +172,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-graphics
     sfml-window
     sfml-system
+    sfml-audio
 )
 
 # Platform-specific libraries

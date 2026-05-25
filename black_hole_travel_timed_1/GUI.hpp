@@ -158,6 +158,11 @@ private:
         return layout;
     }
 
+    static float clampf(float value, float low, float high)
+    {
+        return (value < low) ? low : ((value > high) ? high : value);
+    }
+
 public:
     GUI(sf::RenderWindow& window)
     {
@@ -399,15 +404,13 @@ public:
         const Layout layout = getLayout();
 
         const float minCenterWidth = 360.0f;
-        float panelWidth = std::clamp(layout.workSize.x * 0.32f, 340.0f, 460.0f);
+        float panelWidth = clampf(layout.workSize.x * 0.32f, 340.0f, 460.0f);
         if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
         {
             panelWidth = std::max(300.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
         }
         const float maxPanelWidth = std::max(240.0f, layout.workSize.x - layout.margin * 2.0f);
-        panelWidth = std::clamp(panelWidth, 240.0f, maxPanelWidth);
-        const float maxPanelWidth = std::max(240.0f, layout.workSize.x - layout.margin * 2.0f);
-        panelWidth = std::clamp(panelWidth, 240.0f, maxPanelWidth);
+        panelWidth = clampf(panelWidth, 240.0f, maxPanelWidth);
 
         // Lock panel position and size (cannot be moved or resized)
         ImGui::SetNextWindowPos(ImVec2(layout.workPos.x + layout.margin, layout.mainPanelY()), ImGuiCond_Always);
@@ -585,7 +588,7 @@ public:
         const Layout layout = getLayout();
 
         const float minCenterWidth = 360.0f;
-        float panelWidth = std::clamp(layout.workSize.x * 0.32f, 340.0f, 460.0f);
+        float panelWidth = clampf(layout.workSize.x * 0.32f, 340.0f, 460.0f);
         if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
         {
             panelWidth = std::max(300.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
