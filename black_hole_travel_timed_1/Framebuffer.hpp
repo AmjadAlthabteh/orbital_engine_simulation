@@ -68,6 +68,9 @@ public:
 
     void resize(int w, int h)
     {
+        if (w <= 0 || h <= 0)
+            return;
+
         width = w;
         height = h;
 

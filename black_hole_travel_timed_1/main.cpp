@@ -4,6 +4,7 @@
 // Visual Physics: Velocity vectors, force vectors, prediction markers, trajectory points
 // ENHANCED VERSION: Atmospheric glow, rim lighting, nebula background, engine particles, planet textures
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <glad/glad.h>
 #include <iostream>
 #include <cmath>
@@ -295,6 +296,23 @@ int main()
     glEnable(GL_PROGRAM_POINT_SIZE);
     glLineWidth(2.0f);
 
+    auto applyViewportAndResizeTargets =
+        [&](unsigned int newWidth, unsigned int newHeight,
+            Framebuffer& framebuffer, PostProcessing& postProcessingTarget,
+            float& currentAspectRatio)
+    {
+        if (newWidth == 0 || newHeight == 0)
+            return;
+
+        const int w = static_cast<int>(newWidth);
+        const int h = static_cast<int>(newHeight);
+
+        glViewport(0, 0, w, h);
+        framebuffer.resize(w, h);
+        postProcessingTarget.resize(w, h);
+        currentAspectRatio = static_cast<float>(w) / static_cast<float>(h);
+    };
+
     // Create ENHANCED shaders with atmospheric effects, rim lighting, and improved visuals
     Shader planetShader(enhancedPlanetVertexShader, enhancedPlanetFragmentShader);
     Shader lineShader(lineVertexShaderSource, lineFragmentShaderSource);
@@ -338,8 +356,9 @@ int main()
     saturnRings.setAlpha(0.6f);
 
     // Create post-processing system with Bloom and HDR
-    Framebuffer sceneFramebuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
-    PostProcessing postProcessing(WINDOW_WIDTH, WINDOW_HEIGHT);
+    const sf::Vector2u initialWindowSize = window.getSize();
+    Framebuffer sceneFramebuffer(static_cast<int>(initialWindowSize.x), static_cast<int>(initialWindowSize.y));
+    PostProcessing postProcessing(static_cast<int>(initialWindowSize.x), static_cast<int>(initialWindowSize.y));
 
     // Create black hole accretion disk (swirling matter around black hole)
     AccretionDisk accretionDisk(3.0f, 8.0f, 120, 40);  // Inner radius, outer radius, segments, rings
@@ -481,7 +500,10 @@ int main()
     std::cout << "└───────────────────────────────────────────────────────────┘\n\n";
 
     // Projection matrix will be dynamic based on camera FOV (for zoom)
-    float aspectRatio = ASPECT_RATIO;
+    float aspectRatio = (initialWindowSize.y > 0)
+        ? static_cast<float>(initialWindowSize.x) / static_cast<float>(initialWindowSize.y)
+        : ASPECT_RATIO;
+    sf::Vector2u lastWindowSize = initialWindowSize;
 
     // Initialize solar system
     auto bodies = SolarSystemFactory::createSimpleSystem();
@@ -595,6 +617,21 @@ int main()
 
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::Resized)
+            {
+                applyViewportAndResizeTargets(
+                    event.size.width,
+                    event.size.height,
+                    sceneFramebuffer,
+                    postProcessing,
+                    aspectRatio
+                );
+                lastWindowSize = {event.size.width, event.size.height};
+                window.setView(sf::View(sf::FloatRect(0.0f, 0.0f,
+                                                     static_cast<float>(event.size.width),
+                                                     static_cast<float>(event.size.height))));
+            }
 
             // Mouse wheel for zoom
             if (event.type == sf::Event::MouseWheelScrolled)
@@ -1547,6 +1584,22 @@ int main()
         starfield.update(deltaTime);
 
         // -------- Rendering --------
+        const sf::Vector2u currentWindowSize = window.getSize();
+        if (currentWindowSize != lastWindowSize)
+        {
+            applyViewportAndResizeTargets(
+                currentWindowSize.x,
+                currentWindowSize.y,
+                sceneFramebuffer,
+                postProcessing,
+                aspectRatio
+            );
+            lastWindowSize = currentWindowSize;
+            window.setView(sf::View(sf::FloatRect(0.0f, 0.0f,
+                                                 static_cast<float>(currentWindowSize.x),
+                                                 static_cast<float>(currentWindowSize.y))));
+        }
+
         // 1. Render scene to framebuffer for post-processing
         sceneFramebuffer.bind();
         glClearColor(0.0f, 0.0f, 0.01f, 1.0f);  // Darker for better nebula contrast
@@ -1895,7 +1948,7 @@ int main()
         sceneFramebuffer.unbind();
 
         // Reset viewport to window size
-        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        glViewport(0, 0, static_cast<int>(lastWindowSize.x), static_cast<int>(lastWindowSize.y));
 
         // Clear the default framebuffer
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
