@@ -47,6 +47,11 @@ struct Vec3
         return std::sqrt(x * x + y * y + z * z);
     }
 
+    float lengthSquared() const
+    {
+        return x * x + y * y + z * z;
+    }
+
     Vec3 normalize() const
     {
         float len = length();

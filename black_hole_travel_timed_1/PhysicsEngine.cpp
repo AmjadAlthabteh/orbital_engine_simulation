@@ -145,9 +145,8 @@ void PhysicsEngine::applyGravity()
 bool PhysicsEngine::checkCollision(const Body* a, const Body* b) const
 {
     Vec3 diff = b->position - a->position;
-    float distance = diff.length();
     float minDistance = a->radius + b->radius;
-    return distance < minDistance;
+    return diff.lengthSquared() < (minDistance * minDistance);
 }
 
 float PhysicsEngine::predictCollisionTime(const Body* a, const Body* b) const
@@ -176,12 +175,12 @@ float PhysicsEngine::predictCollisionTime(const Body* a, const Body* b) const
 bool PhysicsEngine::needsAdaptiveStepping() const
 {
     // Check if any body is moving fast enough to require adaptive stepping
+    const float thresholdSquared = velocityThreshold * velocityThreshold;
     for (const auto* body : bodies)
     {
         if (body != nullptr)
         {
-            float speed = body->velocity.length();
-            if (speed > velocityThreshold)
+            if (body->velocity.lengthSquared() > thresholdSquared)
             {
                 return true;
             }
