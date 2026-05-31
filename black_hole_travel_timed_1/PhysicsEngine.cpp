@@ -1,6 +1,7 @@
 #include "PhysicsEngine.hpp"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 // OPTIMIZATION: Fast inverse square root (Quake III style) for distance calculations
 // Only about 1% less accurate than std::sqrt but significantly faster
@@ -77,21 +78,19 @@ const std::vector<CollisionEvent>& PhysicsEngine::getRecentCollisions() const
 
 void PhysicsEngine::updateCollisionMarkers(float deltaTime)
 {
-    // Update timestamps and remove old collision markers (older than 3 seconds)
-    for (size_t i = 0; i < recentCollisions.size(); )
+    // Update timestamps and remove old collision markers (older than 3 seconds).
+    // PERF: avoid repeated vector::erase() inside a loop (O(n^2) moves).
+    for (auto& event : recentCollisions)
     {
-        recentCollisions[i].timestamp += deltaTime;
-
-        if (recentCollisions[i].timestamp > 3.0f)  // Fade after 3 seconds
-        {
-            // Remove this collision marker
-            recentCollisions.erase(recentCollisions.begin() + i);
-        }
-        else
-        {
-            ++i;
-        }
+        event.timestamp += deltaTime;
     }
+
+    recentCollisions.erase(
+        std::remove_if(
+            recentCollisions.begin(),
+            recentCollisions.end(),
+            [](const CollisionEvent& event) { return event.timestamp > 3.0f; }),
+        recentCollisions.end());
 }
 
 void PhysicsEngine::applyGravity()
