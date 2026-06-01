@@ -106,11 +106,15 @@ void PhysicsEngine::applyGravity()
 
     const size_t bodyCount = bodies.size();
 
+    // PERFORMANCE: Loop optimization - help compiler vectorize
     for (size_t i = 0; i < bodyCount; ++i)
     {
         // SAFETY: Verify index is in range
         if (i >= bodies.size()) break;
         if (bodies[i] == nullptr) continue;
+
+        // OPTIMIZATION: Cache body pointer (compiler hint for aliasing)
+        Body* const bodyI = bodies[i];
 
         for (size_t j = i + 1; j < bodyCount; ++j)
         {
@@ -118,30 +122,35 @@ void PhysicsEngine::applyGravity()
             if (j >= bodies.size()) break;
             if (bodies[j] == nullptr) continue;
 
-            Vec3 direction = bodies[j]->position - bodies[i]->position;
+            Body* const bodyJ = bodies[j];
 
-            // OPTIMIZATION: Calculate distance squared to avoid sqrt when possible
-            float distanceSquared = direction.x * direction.x +
-                                   direction.y * direction.y +
-                                   direction.z * direction.z;
+            // OPTIMIZATION: Manually unroll vector subtraction (cache-friendly)
+            const float dx = bodyJ->position.x - bodyI->position.x;
+            const float dy = bodyJ->position.y - bodyI->position.y;
+            const float dz = bodyJ->position.z - bodyI->position.z;
+
+            // Calculate distance squared inline (better register usage)
+            const float distanceSquared = dx * dx + dy * dy + dz * dz;
 
             if (distanceSquared < 0.0001f) continue;  // 0.01^2
 
             // PERFORMANCE BOOST: Use fast inverse square root (Quake III algorithm)
             // This eliminates the expensive sqrt() call and division in the critical path!
             // ~3-4x faster than std::sqrt + division, with negligible accuracy loss
-            float invDistance = fastInvSqrt(distanceSquared);
+            const float invDistance = fastInvSqrt(distanceSquared);
+            const float invDistCubed = invDistance * invDistance * invDistance;
 
-            float forceMagnitude =
-                gravitationalConstant *
-                (bodies[i]->mass * bodies[j]->mass) *
-                invDistance * invDistance;
+            // OPTIMIZATION: Combine mass product with G constant
+            const float forceFactor = gravitationalConstant * bodyI->mass * bodyJ->mass * invDistCubed;
 
-            // Normalize using fast inverse distance
-            Vec3 force = direction * (invDistance * forceMagnitude);
+            // Calculate force components directly (avoid Vec3 temporaries)
+            const float fx = dx * forceFactor;
+            const float fy = dy * forceFactor;
+            const float fz = dz * forceFactor;
 
-            bodies[i]->applyForce(force);
-            bodies[j]->applyForce(force * -1.0f);
+            // Apply forces (compiler can now optimize better with explicit loads)
+            bodyI->applyForce(Vec3(fx, fy, fz));
+            bodyJ->applyForce(Vec3(-fx, -fy, -fz));
         }
     }
 }
