@@ -59,18 +59,61 @@ endif()
 # Find packages
 find_package(OpenGL REQUIRED)
 
-# SFML - adjust path as needed
-set(SFML_DIR "C:/Dev/SFML-2.6.2/lib/cmake/SFML")
+# Dependency paths (configure via -D...=...)
+# These defaults intentionally prefer local "external/" folders when present.
+set(SFML_DIR "" CACHE PATH "Path to SFMLConfig.cmake folder (e.g. .../lib/cmake/SFML)")
+set(GLAD_INCLUDE_DIR "" CACHE PATH "Path to glad include dir (contains glad/glad.h)")
+set(GLAD_SOURCE "" CACHE FILEPATH "Path to glad.c source file")
+set(IMGUI_DIR "" CACHE PATH "Path to Dear ImGui root (contains imgui.cpp)")
+set(IMGUI_SFML_DIR "" CACHE PATH "Path to imgui-sfml root (contains imgui-SFML.cpp)")
+
+if(NOT SFML_DIR AND EXISTS "C:/Dev/SFML-2.6.2/lib/cmake/SFML")
+    set(SFML_DIR "C:/Dev/SFML-2.6.2/lib/cmake/SFML")
+endif()
+if(NOT IMGUI_DIR AND EXISTS "C:/Dev/imgui/imgui.cpp")
+    set(IMGUI_DIR "C:/Dev/imgui")
+endif()
+if(NOT IMGUI_SFML_DIR AND EXISTS "C:/Dev/imgui-sfml/imgui-SFML.cpp")
+    set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml")
+endif()
+if(NOT GLAD_INCLUDE_DIR AND EXISTS "C:/Dev/glad/include/glad/glad.h")
+    set(GLAD_INCLUDE_DIR "C:/Dev/glad/include")
+endif()
+if(NOT GLAD_SOURCE AND EXISTS "C:/Users/amjad/Downloads/glad/src/glad.c")
+    set(GLAD_SOURCE "C:/Users/amjad/Downloads/glad/src/glad.c")
+endif()
+
+if(NOT SFML_DIR AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/SFML/lib/cmake/SFML")
+    set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/SFML/lib/cmake/SFML")
+endif()
+if(NOT IMGUI_DIR AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/imgui.cpp")
+    set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/imgui")
+endif()
+if(NOT IMGUI_SFML_DIR AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/imgui-sfml/imgui-SFML.cpp")
+    set(IMGUI_SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/imgui-sfml")
+endif()
+if(NOT GLAD_INCLUDE_DIR AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include/glad/glad.h")
+    set(GLAD_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include")
+endif()
+if(NOT GLAD_SOURCE AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/src/glad.c")
+    set(GLAD_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/external/glad/src/glad.c")
+endif()
+
+if(NOT IMGUI_DIR OR NOT EXISTS "${IMGUI_DIR}/imgui.cpp")
+    message(FATAL_ERROR "ImGui not found. Set -DIMGUI_DIR=... (must contain imgui.cpp).")
+endif()
+if(NOT IMGUI_SFML_DIR OR NOT EXISTS "${IMGUI_SFML_DIR}/imgui-SFML.cpp")
+    message(FATAL_ERROR "ImGui-SFML not found. Set -DIMGUI_SFML_DIR=... (must contain imgui-SFML.cpp).")
+endif()
+if(NOT GLAD_INCLUDE_DIR OR NOT EXISTS "${GLAD_INCLUDE_DIR}/glad/glad.h")
+    message(FATAL_ERROR "GLAD headers not found. Set -DGLAD_INCLUDE_DIR=... (must contain glad/glad.h).")
+endif()
+if(NOT GLAD_SOURCE OR NOT EXISTS "${GLAD_SOURCE}")
+    message(FATAL_ERROR "GLAD source not found. Set -DGLAD_SOURCE=... (path to glad.c).")
+endif()
+
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 # Note: If version mismatch occurs, remove version number or adjust SFML path
-
-# GLAD - adjust path as needed
-set(GLAD_INCLUDE_DIR "C:/Dev/glad/include")
-set(GLAD_SOURCE "C:/Users/amjad/Downloads/glad/src/glad.c")
-
-# ImGui - Download from: https://github.com/ocornut/imgui
-set(IMGUI_DIR "C:/Dev/imgui")
-set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml")
 
 # ImGui source files
 set(IMGUI_SOURCES
@@ -191,6 +234,8 @@ message(STATUS "=== Black Hole Travel Simulator Configuration ===")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
-message(STATUS "SFML Version: ${SFML_VERSION}")
+if(DEFINED SFML_VERSION)
+    message(STATUS "SFML Version: ${SFML_VERSION}")
+endif()
 message(STATUS "=================================================")
 message(STATUS "")

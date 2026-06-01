@@ -2,15 +2,20 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
+#include <cstdint>
+#include <cstring>
 
 // OPTIMIZATION: Fast inverse square root (Quake III style) for distance calculations
 // Only about 1% less accurate than std::sqrt but significantly faster
 inline float fastInvSqrt(float x)
 {
     float halfx = 0.5f * x;
-    int i = *(int*)&x;
+    static_assert(sizeof(float) == sizeof(std::uint32_t), "fastInvSqrt assumes 32-bit float");
+
+    std::uint32_t i = 0;
+    std::memcpy(&i, &x, sizeof(x));
     i = 0x5f3759df - (i >> 1);
-    x = *(float*)&i;
+    std::memcpy(&x, &i, sizeof(x));
     x = x * (1.5f - halfx * x * x);  // One Newton iteration
     return x;
 }
