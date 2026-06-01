@@ -31,13 +31,14 @@ void CollisionPredictor::setupBuffers()
 Vec3 CollisionPredictor::calculateFuturePosition(const Body& body, const Body& otherBody, float G, float time)
 {
     Vec3 r = otherBody.position - body.position;
-    float distance = r.length();
+    float distanceSquared = r.lengthSquared();
 
-    if (distance < 0.01f)
+    if (distanceSquared < 0.0001f) // 0.01^2
         return body.position;
 
-    float forceMagnitude = G * body.mass * otherBody.mass / (distance * distance);
-    Vec3 force = r.normalize() * forceMagnitude;
+    const float invDistance = 1.0f / std::sqrt(distanceSquared);
+    float forceMagnitude = G * body.mass * otherBody.mass * (invDistance * invDistance);
+    Vec3 force = r * (invDistance * forceMagnitude);
 
     Vec3 acceleration = force * (1.0f / body.mass);
     Vec3 futureVelocity = body.velocity + acceleration * time;
@@ -50,6 +51,8 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 {
     predictions.clear();
     lineVertices.clear();
+    predictions.reserve(bodies.size());
+    lineVertices.reserve(bodies.size() * 4);
 
     for (size_t i = 0; i < bodies.size(); ++i)
     {
@@ -156,13 +159,14 @@ void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector
         for (Body* other : otherBodies)
         {
             Vec3 direction = other->position - simPos;
-            float distance = direction.length();
+            float distanceSquared = direction.lengthSquared();
 
-            if (distance < 0.1f)
+            if (distanceSquared < 0.01f) // 0.1^2
                 continue;
 
-            float forceMagnitude = G * body.mass * other->mass / (distance * distance);
-            Vec3 force = direction.normalize() * forceMagnitude;
+            const float invDistance = 1.0f / std::sqrt(distanceSquared);
+            float forceMagnitude = G * body.mass * other->mass * (invDistance * invDistance);
+            Vec3 force = direction * (invDistance * forceMagnitude);
             totalForce = totalForce + force;
         }
 

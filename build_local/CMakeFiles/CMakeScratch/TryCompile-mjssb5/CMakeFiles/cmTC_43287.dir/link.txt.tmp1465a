@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\cmTC_43287.dir/objects.a
-C:\Compiler\mingw32\bin\ar.exe qc CMakeFiles\cmTC_43287.dir/objects.a @CMakeFiles\cmTC_43287.dir\objects1.rsp
-C:\Compiler\mingw32\bin\gcc.exe  -v -Wl,-v -Wl,--whole-archive CMakeFiles\cmTC_43287.dir/objects.a -Wl,--no-whole-archive -o cmTC_43287.exe -Wl,--out-implib,libcmTC_43287.dll.a -Wl,--major-image-version,0,--minor-image-version,0

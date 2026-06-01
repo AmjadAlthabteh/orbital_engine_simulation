@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\cmTC_9714f.dir/objects.a
-C:\Compiler\mingw32\bin\ar.exe qc CMakeFiles\cmTC_9714f.dir/objects.a @CMakeFiles\cmTC_9714f.dir\objects1.rsp
-C:\Compiler\mingw32\bin\gcc.exe -Wl,--whole-archive CMakeFiles\cmTC_9714f.dir/objects.a -Wl,--no-whole-archive -o cmTC_9714f.exe -Wl,--out-implib,libcmTC_9714f.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\cmTC_9714f.dir\linkLibs.rsp

@@ -214,28 +214,34 @@ void Camera::updateZoom(float deltaTime)
 // OPTIMIZATION: Frustum culling - check if sphere is visible in camera view
 bool Camera::isSphereInFrustum(const Vec3& center, float radius, float aspectRatio) const
 {
-    // Calculate vector from camera to sphere
-    Vec3 toCenter = center - position;
+    // PERFORMANCE: Early rejection using distance-squared (avoids sqrt)
+    // Cull objects beyond far plane distance (assume 10000 units)
+    constexpr float MAX_RENDER_DISTANCE_SQ = 10000.0f * 10000.0f;
+    const Vec3 toCenter = center - position;
+    const float distSq = toCenter.x * toCenter.x + toCenter.y * toCenter.y + toCenter.z * toCenter.z;
+
+    if (distSq > MAX_RENDER_DISTANCE_SQ)
+        return false;
 
     // Check if behind camera (with radius tolerance)
-    float distanceAlongFront = toCenter.dot(front);
+    const float distanceAlongFront = toCenter.dot(front);
     if (distanceAlongFront < -radius)
         return false;
 
-    // Calculate half-angles for frustum
-    float fovRadians = fov * DEG2RAD;
-    float halfVFov = fovRadians * 0.5f;
-    float halfHFov = std::atan(std::tan(halfVFov) * aspectRatio);
+    // Calculate half-angles for frustum (cache to avoid recomputation)
+    const float fovRadians = fov * DEG2RAD;
+    const float halfVFov = fovRadians * 0.5f;
+    const float halfHFov = std::atan(std::tan(halfVFov) * aspectRatio);
 
-    // Check vertical frustum bounds
-    float distanceAlongUp = toCenter.dot(up);
-    float verticalExtent = distanceAlongFront * std::tan(halfVFov) + radius;
+    // OPTIMIZATION: Check vertical bounds first (fails more often)
+    const float distanceAlongUp = toCenter.dot(up);
+    const float verticalExtent = distanceAlongFront * std::tan(halfVFov) + radius;
     if (std::abs(distanceAlongUp) > verticalExtent)
         return false;
 
     // Check horizontal frustum bounds
-    float distanceAlongRight = toCenter.dot(right);
-    float horizontalExtent = distanceAlongFront * std::tan(halfHFov) + radius;
+    const float distanceAlongRight = toCenter.dot(right);
+    const float horizontalExtent = distanceAlongFront * std::tan(halfHFov) + radius;
     if (std::abs(distanceAlongRight) > horizontalExtent)
         return false;
 

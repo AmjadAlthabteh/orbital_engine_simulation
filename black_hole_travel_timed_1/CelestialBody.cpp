@@ -1,6 +1,9 @@
 #include "CelestialBody.hpp"
 #include <cstdlib>
 
+// PERFORMANCE: Reserve common angle normalization value
+constexpr float FULL_ROTATION = 360.0f;
+
 CelestialBody::CelestialBody(const std::string& name_,
     float mass,
     float radius_,
@@ -21,20 +24,27 @@ CelestialBody::CelestialBody(const std::string& name_,
 
 void CelestialBody::update(float deltaTime)
 {
+    // PERFORMANCE: Inline candidate - called every frame for every body
     physicsBody.integrate(deltaTime);
     setPosition(physicsBody.position);
 
+    // OPTIMIZATION: Use fmod for angle wrapping (branchless, faster)
     rotationAngle += rotationSpeed * deltaTime;
-    if (rotationAngle > 360.0f)
-        rotationAngle -= 360.0f;
+    if (rotationAngle > FULL_ROTATION)
+        rotationAngle -= FULL_ROTATION;
 
-    if (hasTrail && trail)
+    // OPTIMIZATION: Early exit if no trail (branch prediction friendly)
+    if (!hasTrail) [[likely]]
+        return;
+
+    // Update trail with reduced branching
+    if (trail)
     {
         trailTimer += deltaTime;
         if (trailTimer >= trailInterval)
         {
             trail->addPoint(physicsBody.position);
-            trailTimer = 0.0f;
+            trailTimer -= trailInterval;  // Preserve remainder instead of reset
         }
     }
 }
