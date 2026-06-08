@@ -118,6 +118,9 @@ public:
 
     void generateDiskMesh(int segments, int rings)
     {
+        vertices.reserve(static_cast<size_t>(rings + 1) * static_cast<size_t>(segments + 1) * 5);
+        indices.reserve(static_cast<size_t>(rings) * static_cast<size_t>(segments) * 6);
+
         // Generate ring vertices
         for (int r = 0; r <= rings; r++)
         {

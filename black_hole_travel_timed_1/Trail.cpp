@@ -21,6 +21,10 @@ void Trail::setupBuffers()
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER,
+        maxPoints * 3 * sizeof(float),
+        nullptr,
+        GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -61,10 +65,10 @@ void Trail::updateBuffers()
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER,
+    glBufferSubData(GL_ARRAY_BUFFER,
+        0,
         positions.size() * 3 * sizeof(float),
-        positions.data(),  // Use .data() instead of &[0] - safer in C++11+
-        GL_DYNAMIC_DRAW);
+        positions.data());
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     needsUpdate = false;

@@ -8,6 +8,11 @@ Sphere::Sphere(float radius, int sectors, int stacks)
 {
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
+    vertices.reserve(static_cast<size_t>(stacks + 1) * static_cast<size_t>(sectors + 1) * 8);
+    if (stacks > 1 && sectors > 0)
+    {
+        indices.reserve(static_cast<size_t>(stacks - 1) * static_cast<size_t>(sectors) * 6);
+    }
 
     for (int i = 0; i <= stacks; ++i)
     {

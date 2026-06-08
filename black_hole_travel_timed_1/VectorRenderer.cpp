@@ -33,10 +33,16 @@ void VectorRenderer::setupBuffers()
 
 void VectorRenderer::addVelocityVector(const Vec3& origin, const Vec3& velocity)
 {
+    const float speedSquared = velocity.lengthSquared();
+    if (speedSquared < 0.000001f)
+        return;
+
+    const float speed = std::sqrt(speedSquared);
+
     VectorArrow arrow;
     arrow.origin = origin;
-    arrow.direction = velocity.normalize();
-    arrow.magnitude = velocity.length() * 2.0f; // Scale for visibility
+    arrow.direction = velocity / speed;
+    arrow.magnitude = speed * 2.0f; // Scale for visibility
     arrow.color = Vec3(0.0f, 1.0f, 0.5f); // Green-cyan for velocity
     arrow.active = true;
 
@@ -45,13 +51,15 @@ void VectorRenderer::addVelocityVector(const Vec3& origin, const Vec3& velocity)
 
 void VectorRenderer::addForceVector(const Vec3& origin, const Vec3& force)
 {
-    float forceMag = force.length();
-    if (forceMag < 0.01f)
+    const float forceMagSquared = force.lengthSquared();
+    if (forceMagSquared < 0.0001f)
         return; // Don't render tiny forces
+
+    const float forceMag = std::sqrt(forceMagSquared);
 
     VectorArrow arrow;
     arrow.origin = origin;
-    arrow.direction = force.normalize();
+    arrow.direction = force / forceMag;
     arrow.magnitude = std::log(forceMag + 1.0f) * 3.0f; // Logarithmic scale for visibility
     arrow.color = Vec3(1.0f, 0.3f, 0.0f); // Orange-red for forces
     arrow.active = true;
@@ -61,6 +69,9 @@ void VectorRenderer::addForceVector(const Vec3& origin, const Vec3& force)
 
 void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& direction, float magnitude, const Vec3& color)
 {
+    static constexpr float headCos[4] = { 1.0f, 0.0f, -1.0f, 0.0f };
+    static constexpr float headSin[4] = { 0.0f, 1.0f, 0.0f, -1.0f };
+
     Vec3 endpoint = origin + direction * magnitude;
 
     // Arrow shaft (line from origin to endpoint)
@@ -89,9 +100,8 @@ void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& directi
     // Arrow head triangles (4 lines making a cone)
     for (int i = 0; i < 4; ++i)
     {
-        float angle = (i * 3.14159f * 2.0f) / 4.0f;
         Vec3 headPoint = headBase +
-            (perpendicular1 * std::cos(angle) + perpendicular2 * std::sin(angle)) * headSize;
+            (perpendicular1 * headCos[i] + perpendicular2 * headSin[i]) * headSize;
 
         vertexData.push_back(endpoint.x);
         vertexData.push_back(endpoint.y);
@@ -112,6 +122,7 @@ void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& directi
 void VectorRenderer::updateBuffers()
 {
     vertexData.clear();
+    vertexData.reserve((velocityVectors.size() + forceVectors.size()) * 60);
 
     // Create geometry for all velocity vectors
     for (const auto& arrow : velocityVectors)
