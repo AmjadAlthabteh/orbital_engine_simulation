@@ -100,29 +100,23 @@ void PhysicsEngine::updateCollisionMarkers(float deltaTime)
 
 void PhysicsEngine::applyGravity()
 {
-    // SAFETY: Check bodies vector is valid
-    if (bodies.empty() || bodies.size() == 0)
+    if (bodies.size() < 2)
         return;
 
     const size_t bodyCount = bodies.size();
+    Body* const* const bodyData = bodies.data();
 
-    // PERFORMANCE: Loop optimization - help compiler vectorize
     for (size_t i = 0; i < bodyCount; ++i)
     {
-        // SAFETY: Verify index is in range
-        if (i >= bodies.size()) break;
-        if (bodies[i] == nullptr) continue;
-
-        // OPTIMIZATION: Cache body pointer (compiler hint for aliasing)
-        Body* const bodyI = bodies[i];
+        Body* const bodyI = bodyData[i];
+        if (bodyI == nullptr)
+            continue;
 
         for (size_t j = i + 1; j < bodyCount; ++j)
         {
-            // SAFETY: Verify index is in range
-            if (j >= bodies.size()) break;
-            if (bodies[j] == nullptr) continue;
-
-            Body* const bodyJ = bodies[j];
+            Body* const bodyJ = bodyData[j];
+            if (bodyJ == nullptr)
+                continue;
 
             // OPTIMIZATION: Manually unroll vector subtraction (cache-friendly)
             const float dx = bodyJ->position.x - bodyI->position.x;
@@ -204,46 +198,46 @@ bool PhysicsEngine::needsAdaptiveStepping() const
 
 void PhysicsEngine::handleCollisions()
 {
-    // SAFETY: Check bodies vector is valid
-    if (bodies.empty() || bodies.size() < 2)
+    if (bodies.size() < 2)
         return;
 
     const size_t bodyCount = bodies.size();
+    Body* const* const bodyData = bodies.data();
 
     // PERFORMANCE: Broad-phase optimization using AABB checks
     // Skip expensive collision tests if bounding boxes don't overlap
     // This provides ~2-3x speedup for large body counts (>10 bodies)
     for (size_t i = 0; i < bodyCount; ++i)
     {
-        // SAFETY: Verify index and pointer
-        if (i >= bodies.size()) break;
-        if (bodies[i] == nullptr) continue;
+        Body* const bodyA = bodyData[i];
+        if (bodyA == nullptr)
+            continue;
 
         for (size_t j = i + 1; j < bodyCount; ++j)
         {
-            // SAFETY: Verify index and pointer
-            if (j >= bodies.size()) break;
-            if (bodies[j] == nullptr) continue;
+            Body* const bodyB = bodyData[j];
+            if (bodyB == nullptr)
+                continue;
 
             // BROAD-PHASE: Quick AABB (axis-aligned bounding box) rejection test
             // Much faster than sphere collision, eliminates ~60-80% of checks
-            const Vec3& posA = bodies[i]->position;
-            const Vec3& posB = bodies[j]->position;
-            const float maxDist = bodies[i]->radius + bodies[j]->radius;
+            const Vec3 delta = bodyB->position - bodyA->position;
+            const float maxDist = bodyA->radius + bodyB->radius;
 
             // Fast axis-by-axis rejection (cheaper than lengthSquared)
-            if (std::abs(posA.x - posB.x) > maxDist) continue;
-            if (std::abs(posA.y - posB.y) > maxDist) continue;
-            if (std::abs(posA.z - posB.z) > maxDist) continue;
+            if (std::abs(delta.x) > maxDist) continue;
+            if (std::abs(delta.y) > maxDist) continue;
+            if (std::abs(delta.z) > maxDist) continue;
 
-            if (checkCollision(bodies[i], bodies[j]))
+            const float distanceSquared = delta.lengthSquared();
+            if (distanceSquared < maxDist * maxDist)
             {
-                // Calculate collision point (midpoint between surfaces)
-                Vec3 normal = (bodies[j]->position - bodies[i]->position).normalize();
-                Vec3 collisionPoint = bodies[i]->position + normal * bodies[i]->radius;
+                const float distance = std::sqrt(distanceSquared);
+                const Vec3 normal = distance > 0.0f ? delta * (1.0f / distance) : Vec3();
+                const Vec3 collisionPoint = bodyA->position + normal * bodyA->radius;
 
                 // Calculate relative velocity
-                Vec3 relativeVel = bodies[j]->velocity - bodies[i]->velocity;
+                Vec3 relativeVel = bodyB->velocity - bodyA->velocity;
                 float velAlongNormal = relativeVel.dot(normal);
 
                 if (velAlongNormal > 0) continue;
@@ -254,18 +248,17 @@ void PhysicsEngine::handleCollisions()
                 // Simple elastic collision response
                 float e = 0.8f; // coefficient of restitution
                 float j_impulse = -(1.0f + e) * velAlongNormal;
-                j_impulse /= (1.0f / bodies[i]->mass + 1.0f / bodies[j]->mass);
+                j_impulse /= (1.0f / bodyA->mass + 1.0f / bodyB->mass);
 
                 Vec3 impulse = normal * j_impulse;
-                bodies[i]->velocity = bodies[i]->velocity - impulse * (1.0f / bodies[i]->mass);
-                bodies[j]->velocity = bodies[j]->velocity + impulse * (1.0f / bodies[j]->mass);
+                bodyA->velocity = bodyA->velocity - impulse * (1.0f / bodyA->mass);
+                bodyB->velocity = bodyB->velocity + impulse * (1.0f / bodyB->mass);
 
                 // Separate bodies to prevent overlap
-                float overlap = (bodies[i]->radius + bodies[j]->radius) -
-                               (bodies[j]->position - bodies[i]->position).length();
+                float overlap = maxDist - distance;
                 Vec3 separation = normal * (overlap * 0.5f);
-                bodies[i]->position = bodies[i]->position - separation;
-                bodies[j]->position = bodies[j]->position + separation;
+                bodyA->position = bodyA->position - separation;
+                bodyB->position = bodyB->position + separation;
 
                 // Record collision event for visualization (only once, not per substep)
                 // Check if we recently recorded this collision to avoid duplicates
@@ -273,8 +266,8 @@ void PhysicsEngine::handleCollisions()
                 for (const auto& existing : recentCollisions)
                 {
                     if (existing.timestamp < 0.1f &&  // Recent collision
-                        (existing.bodyA == bodies[i] || existing.bodyA == bodies[j]) &&
-                        (existing.bodyB == bodies[i] || existing.bodyB == bodies[j]))
+                        (existing.bodyA == bodyA || existing.bodyA == bodyB) &&
+                        (existing.bodyB == bodyA || existing.bodyB == bodyB))
                     {
                         isDuplicate = true;
                         break;
@@ -287,15 +280,15 @@ void PhysicsEngine::handleCollisions()
                     event.position = collisionPoint;
                     event.timestamp = 0.0f;  // Will be updated by timer
                     event.intensity = collisionSpeed;
-                    event.bodyA = bodies[i];
-                    event.bodyB = bodies[j];
+                    event.bodyA = bodyA;
+                    event.bodyB = bodyB;
                     recentCollisions.push_back(event);
 
                     // Console output for debugging
                     std::cout << "*** COLLISION DETECTED ***\n";
                     std::cout << "  Position: (" << collisionPoint.x << ", " << collisionPoint.y << ", " << collisionPoint.z << ")\n";
                     std::cout << "  Impact speed: " << collisionSpeed << " m/s\n";
-                    std::cout << "  Bodies: Mass " << bodies[i]->mass << " vs Mass " << bodies[j]->mass << "\n";
+                    std::cout << "  Bodies: Mass " << bodyA->mass << " vs Mass " << bodyB->mass << "\n";
                 }
             }
         }
