@@ -1,53 +1,45 @@
-Orbital Engine Simulation
+# Orbital Engine Simulation
 
-A custom 3D space simulation engine built from scratch in modern C++ using OpenGL.
+A real-time 3D orbital simulation written in C++17 with OpenGL, SFML, GLAD,
+Dear ImGui, and a custom math and physics stack.
 
-Tech Stack
+## Features
 
-C++17
+- Newtonian gravity and orbital motion
+- Procedural planets, stars, nebulae, and black-hole effects
+- Spaceship navigation, trajectories, waypoints, and collision prediction
+- Interactive telemetry and orbital-mechanics HUDs
+- Configurable post-processing, particles, audio, missions, and achievements
 
-OpenGL 4.x (Core Profile)
+## Quick start
 
-GLAD
+Requirements:
 
-SFML (window + context management)
+- CMake 3.15 or newer
+- A C++17 compiler
+- OpenGL
+- SFML 2.6
+- Dear ImGui and ImGui-SFML
 
-Custom math library (Vec3, Mat4)
+On Windows, open `black_hole_travel_timed_1.sln` in Visual Studio, or run:
 
-GLSL shader pipeline
+```bat
+cd black_hole_travel_timed_1
+build.bat --release --run
+```
 
-Overview
+For dependency path options and other build methods, see
+[`BUILD_AND_TEST.md`](BUILD_AND_TEST.md).
 
-This project is a from-scratch 3D engine designed to render and simulate a space environment.
-It uses a fully modern OpenGL pipeline (no deprecated fixed-function code) and is structured with a clean, modular architecture inspired by real engine design.
+## Project structure
 
-The goal is to build a scalable foundation for:
+The simulation is split into focused modules for rendering, physics, camera
+control, celestial bodies, spacecraft, visual effects, and UI systems. The
+main implementation is in [`black_hole_travel_timed_1/`](black_hole_travel_timed_1/).
 
-Planet rendering (sphere meshes)
+## Contributing and security
 
-Star fields
+Bug reports and focused pull requests are welcome. Please report security
+issues according to [`SECURITY.md`](SECURITY.md).
 
-Camera navigation in 3D space
-
-Spaceships and interactive objects
-
-Newtonian gravity and orbital motion
-
-All systems are separated into dedicated modules (rendering, physics, math, universe, entities) rather than placing everything inside main.cpp.
-
-Engine Architecture
-
-math/ → Custom vector, matrix, and camera systems
-
-rendering/ → Shader management, mesh handling, renderer
-
-physics/ → Gravity and motion simulation
-
-universe/ → Planet and solar system generation
-
-entities/ → Ships and interactive objects
-
-effects/ → Starfield rendering
-
-
-https://www.orbitalcollision.dev/
+Project site: <https://www.orbitalcollision.dev/>
