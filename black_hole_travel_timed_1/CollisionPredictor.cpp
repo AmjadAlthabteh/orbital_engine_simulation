@@ -56,8 +56,14 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 
     for (size_t i = 0; i < bodies.size(); ++i)
     {
+        if (bodies[i] == nullptr)
+            continue;
+
         for (size_t j = i + 1; j < bodies.size(); ++j)
         {
+            if (bodies[j] == nullptr)
+                continue;
+
             Vec3 relativePos = bodies[j]->position - bodies[i]->position;
             Vec3 relativeVel = bodies[j]->velocity - bodies[i]->velocity;
 
@@ -71,8 +77,10 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 
             if (discriminant >= 0.0f && a != 0.0f)
             {
-                float t1 = (-b - std::sqrt(discriminant)) / (2.0f * a);
-                float t2 = (-b + std::sqrt(discriminant)) / (2.0f * a);
+                const float sqrtDiscriminant = std::sqrt(discriminant);
+                const float inverseDenominator = 0.5f / a;
+                float t1 = (-b - sqrtDiscriminant) * inverseDenominator;
+                float t2 = (-b + sqrtDiscriminant) * inverseDenominator;
 
                 float collisionTime = -1.0f;
                 if (t1 > 0.0f && t1 < maxTime)
@@ -144,6 +152,7 @@ const std::vector<CollisionPrediction>& CollisionPredictor::getPredictions() con
 void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector<Body*>& otherBodies, float G, float timeStep, int numPoints, std::vector<Vec3>& outPoints)
 {
     outPoints.clear();
+    outPoints.reserve(static_cast<size_t>(numPoints) + 1);
 
     // Create temporary simulation of the body
     Vec3 simPos = body.position;
