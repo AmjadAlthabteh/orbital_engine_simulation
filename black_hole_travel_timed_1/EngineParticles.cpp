@@ -7,6 +7,7 @@ EngineParticles::EngineParticles(int maxCount) : maxParticles(maxCount)
 {
     // OPTIMIZATION: Pre-allocate particle pool
     particles.resize(maxCount);
+    vertexData.reserve(static_cast<size_t>(maxCount) * 8);
     for (auto& p : particles)
     {
         p.active = false;
@@ -131,6 +132,11 @@ void EngineParticles::setupBuffers()
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(maxParticles) * 8 * sizeof(float),
+        nullptr,
+        GL_DYNAMIC_DRAW);
 
     // Vertex layout: position(3), color(3), size(1), alpha(1) = 8 floats
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -173,10 +179,11 @@ void EngineParticles::updateBuffers()
         return;
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER,
-                 vertexData.size() * sizeof(float),
-                 vertexData.data(),
-                 GL_DYNAMIC_DRAW);
+    glBufferSubData(
+        GL_ARRAY_BUFFER,
+        0,
+        static_cast<GLsizeiptr>(vertexData.size() * sizeof(float)),
+        vertexData.data());
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
