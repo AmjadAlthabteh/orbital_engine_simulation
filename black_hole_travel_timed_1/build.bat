@@ -1,16 +1,12 @@
 @echo off
-REM Build script for Windows (MSVC/MinGW)
+setlocal
 
-setlocal enabledelayedexpansion
-
-REM Default values
 set BUILD_TYPE=Debug
 set COMPILER=msvc
 set CLEAN=0
 set RUN=0
 set SANITIZER=
 
-REM Parse arguments
 :parse_args
 if "%~1"=="" goto :end_parse
 if /i "%~1"=="--release" set BUILD_TYPE=Release
@@ -23,34 +19,28 @@ if /i "%~1"=="--asan" set SANITIZER=asan
 if /i "%~1"=="--help" goto :show_help
 shift
 goto :parse_args
+
 :end_parse
-
-echo ╔════════════════════════════════════════════╗
-echo ║  Black Hole Simulator - Build Script      ║
-echo ╚════════════════════════════════════════════╝
+echo ============================================
+echo   Black Hole Simulator - Build Script
+echo ============================================
 echo.
-echo Configuration:
-echo   Build Type: %BUILD_TYPE%
-echo   Compiler:   %COMPILER%
-if defined SANITIZER echo   Sanitizer:  %SANITIZER%
+echo Build type: %BUILD_TYPE%
+echo Compiler:   %COMPILER%
+if defined SANITIZER echo Sanitizer:  %SANITIZER%
 echo.
 
-REM Clean if requested
 if %CLEAN%==1 (
     echo Cleaning build directory...
     rmdir /s /q build 2>nul
 )
 
-REM Create build directory
 if not exist build mkdir build
 cd build
 
-REM CMake configuration
 set CMAKE_ARGS=-DCMAKE_BUILD_TYPE=%BUILD_TYPE%
-
 if "%SANITIZER%"=="asan" set CMAKE_ARGS=%CMAKE_ARGS% -DENABLE_ASAN=ON
 
-REM Configure
 echo Configuring with CMake...
 if "%COMPILER%"=="mingw" (
     cmake .. %CMAKE_ARGS% -G "MinGW Makefiles"
@@ -59,27 +49,23 @@ if "%COMPILER%"=="mingw" (
 )
 
 if errorlevel 1 (
-    echo ✗ CMake configuration failed!
+    echo ERROR: CMake configuration failed.
     exit /b 1
 )
 
-REM Build
 echo Building...
 cmake --build . --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
-
 if errorlevel 1 (
-    echo ✗ Build failed!
+    echo ERROR: Build failed.
     exit /b 1
 )
 
 echo.
-echo ✓ Build successful!
+echo Build successful.
 echo.
 
-REM Run if requested
 if %RUN%==1 (
     echo Running Black Hole Simulator...
-    echo.
     %BUILD_TYPE%\BlackHoleTravelSimulator.exe
 ) else (
     echo Run with: cd build\%BUILD_TYPE% ^&^& BlackHoleTravelSimulator.exe
@@ -98,7 +84,7 @@ echo   --msvc          Use MSVC compiler (default)
 echo   --mingw         Use MinGW compiler
 echo   --clean         Clean build directory first
 echo   --run           Run after building
-echo   --asan          Enable Address Sanitizer (MSVC only)
+echo   --asan          Enable Address Sanitizer
 echo   --help          Show this help message
 echo.
 echo Examples:
