@@ -1,20 +1,21 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Security fixes are applied to the latest revision on the `master` branch.
+Older commits and unofficial builds are not actively supported.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
-If you discover a security vulnerability, please report it responsibly by contacting the project maintainers directly. Include a detailed description of the issue, steps to reproduce it, and any relevant proof-of-concept information if available.
+Please do not open a public issue for a suspected vulnerability.
 
-After a report is submitted, you can expect an acknowledgment within a few business days. The team will investigate the issue, assess its impact, and provide updates throughout the review process when appropriate.
+Send the maintainers a private report through GitHub's security advisory
+feature. Include:
 
-If the vulnerability is confirmed, a fix will be developed and released as soon as possible. If the report is declined or determined not to be a security issue, an explanation will be provided.
+- A description of the issue and its impact
+- The affected commit or version
+- Reproduction steps or a minimal proof of concept
+- Any suggested mitigation
+
+Reports should receive an initial response within five business days. Confirmed
+issues will be investigated and fixed before public disclosure when practical.
