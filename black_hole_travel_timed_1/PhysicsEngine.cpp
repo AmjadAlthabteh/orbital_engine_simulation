@@ -269,8 +269,8 @@ void PhysicsEngine::handleCollisions()
                 // Calculate collision intensity for visualization
                 float collisionSpeed = relativeVel.length();
 
-                const float inverseMassA = bodyA->mass > 0.0f ? 1.0f / bodyA->mass : 0.0f;
-                const float inverseMassB = bodyB->mass > 0.0f ? 1.0f / bodyB->mass : 0.0f;
+                const float inverseMassA = bodyA->inverseMass;
+                const float inverseMassB = bodyB->inverseMass;
                 const float inverseMassSum = inverseMassA + inverseMassB;
                 if (inverseMassSum <= 0.0f)
                     continue;
@@ -281,8 +281,8 @@ void PhysicsEngine::handleCollisions()
                 j_impulse /= inverseMassSum;
 
                 Vec3 impulse = normal * j_impulse;
-                bodyA->velocity = bodyA->velocity - impulse * inverseMassA;
-                bodyB->velocity = bodyB->velocity + impulse * inverseMassB;
+                bodyA->applyImpulse(impulse * -1.0f);
+                bodyB->applyImpulse(impulse);
 
                 // Separate bodies in proportion to inverse mass to avoid moving heavy bodies too much.
                 constexpr float penetrationSlop = 0.01f;
