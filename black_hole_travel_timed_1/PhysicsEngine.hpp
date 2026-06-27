@@ -24,6 +24,7 @@ private:
     int maxSubsteps;           // Maximum substeps per frame (default 8)
     float velocityThreshold;   // Velocity threshold for adaptive stepping (default 100.0f)
     float gravitySofteningLength;  // Prevent singular forces during very close passes
+    float maxVelocityChangePerStep;  // Acceleration-based substep threshold
 
 public:
     PhysicsEngine(float G = 0.1f);
@@ -42,6 +43,7 @@ public:
     void setMaxSubsteps(int maxSteps) { maxSubsteps = maxSteps; }
     void setVelocityThreshold(float threshold) { velocityThreshold = threshold; }
     void setGravitySofteningLength(float length) { gravitySofteningLength = length; }
+    void setMaxVelocityChangePerStep(float deltaV) { maxVelocityChangePerStep = deltaV; }
     int getLastSubstepCount() const { return lastSubstepCount; }
 
 private:

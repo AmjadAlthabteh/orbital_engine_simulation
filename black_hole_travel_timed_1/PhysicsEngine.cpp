@@ -30,6 +30,7 @@ PhysicsEngine::PhysicsEngine(float G)
     maxSubsteps = 8;              // Up to 8 substeps for high-speed scenarios
     velocityThreshold = 100.0f;   // Activate adaptive stepping above 100 m/s
     gravitySofteningLength = 0.25f;
+    maxVelocityChangePerStep = 5.0f;
     lastSubstepCount = 1;
 }
 
@@ -212,6 +213,35 @@ int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
         const float maxTravelPerStep = std::max(body->radius * 0.25f, 0.01f);
         const int travelSubsteps = static_cast<int>(std::ceil(travelDistance / maxTravelPerStep));
         substeps = std::max(substeps, travelSubsteps);
+    }
+
+    const float softeningSquared = gravitySofteningLength * gravitySofteningLength;
+    const size_t bodyCount = bodies.size();
+    for (size_t i = 0; i < bodyCount; ++i)
+    {
+        const Body* bodyI = bodies[i];
+        if (bodyI == nullptr || bodyI->isStatic || maxVelocityChangePerStep <= 0.0f)
+            continue;
+
+        float accelerationMagnitude = 0.0f;
+        for (size_t j = 0; j < bodyCount; ++j)
+        {
+            if (i == j)
+                continue;
+
+            const Body* bodyJ = bodies[j];
+            if (bodyJ == nullptr || bodyJ->mass <= 0.0f)
+                continue;
+
+            const Vec3 delta = bodyJ->position - bodyI->position;
+            const float distanceSquared = std::max(delta.lengthSquared() + softeningSquared, 0.0001f);
+            accelerationMagnitude += gravitationalConstant * bodyJ->mass / distanceSquared;
+        }
+
+        const float velocityChange = accelerationMagnitude * deltaTime;
+        const int accelerationSubsteps =
+            static_cast<int>(std::ceil(velocityChange / maxVelocityChangePerStep));
+        substeps = std::max(substeps, accelerationSubsteps);
     }
 
     if (needsAdaptiveStepping())
