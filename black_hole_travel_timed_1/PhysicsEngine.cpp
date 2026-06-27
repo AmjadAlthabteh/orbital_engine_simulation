@@ -145,24 +145,37 @@ bool PhysicsEngine::checkCollision(const Body* a, const Body* b) const
 
 float PhysicsEngine::predictCollisionTime(const Body* a, const Body* b) const
 {
-    Vec3 relativePos = b->position - a->position;
-    Vec3 relativeVel = b->velocity - a->velocity;
-    float minDistance = a->radius + b->radius;
+    const Vec3 relativePos = b->position - a->position;
+    const Vec3 relativeVel = b->velocity - a->velocity;
+    const float minDistance = a->radius + b->radius;
 
-    float a_coeff = relativeVel.dot(relativeVel);
-    float b_coeff = 2.0f * relativePos.dot(relativeVel);
-    float c_coeff = relativePos.dot(relativePos) - minDistance * minDistance;
+    const double aCoeff = static_cast<double>(relativeVel.dot(relativeVel));
+    const double bCoeff = 2.0 * static_cast<double>(relativePos.dot(relativeVel));
+    const double cCoeff = static_cast<double>(relativePos.dot(relativePos)) -
+        static_cast<double>(minDistance) * static_cast<double>(minDistance);
 
-    float discriminant = b_coeff * b_coeff - 4.0f * a_coeff * c_coeff;
+    if (cCoeff <= 0.0)
+        return 0.0f;
 
-    if (discriminant < 0.0f || a_coeff == 0.0f)
+    if (aCoeff <= 0.0 || bCoeff >= 0.0)
         return -1.0f;
 
-    float t1 = (-b_coeff - std::sqrt(discriminant)) / (2.0f * a_coeff);
-    float t2 = (-b_coeff + std::sqrt(discriminant)) / (2.0f * a_coeff);
+    const double discriminant = bCoeff * bCoeff - 4.0 * aCoeff * cCoeff;
+    if (discriminant < 0.0)
+        return -1.0f;
 
-    if (t1 > 0.0f) return t1;
-    if (t2 > 0.0f) return t2;
+    const double sqrtDiscriminant = std::sqrt(discriminant);
+    const double q = -0.5 * (bCoeff + (bCoeff < 0.0 ? -sqrtDiscriminant : sqrtDiscriminant));
+    const double t1 = q / aCoeff;
+    const double t2 = q != 0.0 ? cCoeff / q : -1.0;
+
+    const double firstImpact = std::min(t1, t2);
+    const double secondImpact = std::max(t1, t2);
+
+    if (firstImpact > 0.0)
+        return static_cast<float>(firstImpact);
+    if (secondImpact > 0.0)
+        return static_cast<float>(secondImpact);
     return -1.0f;
 }
 
