@@ -48,5 +48,6 @@ private:
     void applyGravity();
     void handleCollisions();
     bool needsAdaptiveStepping() const;  // Check if adaptive stepping is needed
+    int calculateAdaptiveSubsteps(float deltaTime) const;
     mutable int lastSubstepCount;        // Track substeps for diagnostics
 };

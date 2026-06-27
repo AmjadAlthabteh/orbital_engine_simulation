@@ -40,22 +40,10 @@ void PhysicsEngine::addBody(Body* body)
 
 void PhysicsEngine::update(float deltaTime)
 {
-    // ADAPTIVE SUBSTEPPING: Subdivide large timesteps for stability
-    // This prevents physics tunneling at high speeds and improves accuracy
-
-    // Determine if we need adaptive substepping
-    bool useAdaptive = needsAdaptiveStepping();
-
-    // Calculate number of substeps needed
-    int substeps = 1;
-    if (useAdaptive || deltaTime > maxTimeStep)
-    {
-        substeps = static_cast<int>(std::ceil(deltaTime / maxTimeStep));
-        substeps = std::min(substeps, maxSubsteps);  // Clamp to max substeps
-    }
+    const int substeps = calculateAdaptiveSubsteps(deltaTime);
 
     lastSubstepCount = substeps;
-    float subDeltaTime = deltaTime / static_cast<float>(substeps);
+    const float subDeltaTime = deltaTime / static_cast<float>(substeps);
 
     // Perform physics update in substeps
     for (int step = 0; step < substeps; ++step)
@@ -193,6 +181,30 @@ bool PhysicsEngine::needsAdaptiveStepping() const
         }
     }
     return false;
+}
+
+int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
+{
+    if (deltaTime <= 0.0f)
+        return 1;
+
+    int substeps = static_cast<int>(std::ceil(deltaTime / maxTimeStep));
+
+    for (const auto* body : bodies)
+    {
+        if (body == nullptr || body->radius <= 0.0f)
+            continue;
+
+        const float travelDistance = body->velocity.length() * deltaTime;
+        const float maxTravelPerStep = std::max(body->radius * 0.25f, 0.01f);
+        const int travelSubsteps = static_cast<int>(std::ceil(travelDistance / maxTravelPerStep));
+        substeps = std::max(substeps, travelSubsteps);
+    }
+
+    if (needsAdaptiveStepping())
+        substeps = std::max(substeps, 2);
+
+    return std::max(1, std::min(substeps, maxSubsteps));
 }
 
 void PhysicsEngine::handleCollisions()
