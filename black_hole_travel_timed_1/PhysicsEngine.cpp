@@ -29,6 +29,7 @@ PhysicsEngine::PhysicsEngine(float G)
     maxTimeStep = 0.016f;         // ~60 FPS timestep maximum
     maxSubsteps = 8;              // Up to 8 substeps for high-speed scenarios
     velocityThreshold = 100.0f;   // Activate adaptive stepping above 100 m/s
+    gravitySofteningLength = 0.25f;
     lastSubstepCount = 1;
 }
 
@@ -123,14 +124,12 @@ void PhysicsEngine::applyGravity()
             const float dy = bodyJ->position.y - bodyI->position.y;
             const float dz = bodyJ->position.z - bodyI->position.z;
 
-            // Calculate distance squared inline (better register usage)
-            const float distanceSquared = dx * dx + dy * dy + dz * dz;
+            const float softeningSquared = gravitySofteningLength * gravitySofteningLength;
+            const float distanceSquared = dx * dx + dy * dy + dz * dz + softeningSquared;
 
             if (distanceSquared < 0.0001f) continue;  // 0.01^2
 
-            // PERFORMANCE BOOST: Use fast inverse square root (Quake III algorithm)
-            // This eliminates the expensive sqrt() call and division in the critical path!
-            // ~3-4x faster than std::sqrt + division, with negligible accuracy loss
+            // Plummer-style softening keeps close passes finite without changing far-field gravity.
             const float invDistance = fastInvSqrt(distanceSquared);
             const float invDistCubed = invDistance * invDistance * invDistance;
 
