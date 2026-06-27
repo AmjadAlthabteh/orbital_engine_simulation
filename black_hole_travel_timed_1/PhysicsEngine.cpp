@@ -256,20 +256,28 @@ void PhysicsEngine::handleCollisions()
                 // Calculate collision intensity for visualization
                 float collisionSpeed = relativeVel.length();
 
+                const float inverseMassA = bodyA->mass > 0.0f ? 1.0f / bodyA->mass : 0.0f;
+                const float inverseMassB = bodyB->mass > 0.0f ? 1.0f / bodyB->mass : 0.0f;
+                const float inverseMassSum = inverseMassA + inverseMassB;
+                if (inverseMassSum <= 0.0f)
+                    continue;
+
                 // Simple elastic collision response
                 float e = 0.8f; // coefficient of restitution
                 float j_impulse = -(1.0f + e) * velAlongNormal;
-                j_impulse /= (1.0f / bodyA->mass + 1.0f / bodyB->mass);
+                j_impulse /= inverseMassSum;
 
                 Vec3 impulse = normal * j_impulse;
-                bodyA->velocity = bodyA->velocity - impulse * (1.0f / bodyA->mass);
-                bodyB->velocity = bodyB->velocity + impulse * (1.0f / bodyB->mass);
+                bodyA->velocity = bodyA->velocity - impulse * inverseMassA;
+                bodyB->velocity = bodyB->velocity + impulse * inverseMassB;
 
-                // Separate bodies to prevent overlap
-                float overlap = maxDist - distance;
-                Vec3 separation = normal * (overlap * 0.5f);
-                bodyA->position = bodyA->position - separation;
-                bodyB->position = bodyB->position + separation;
+                // Separate bodies in proportion to inverse mass to avoid moving heavy bodies too much.
+                constexpr float penetrationSlop = 0.01f;
+                constexpr float correctionPercent = 0.8f;
+                const float overlap = std::max(maxDist - distance - penetrationSlop, 0.0f);
+                const Vec3 correction = normal * (overlap * correctionPercent / inverseMassSum);
+                bodyA->position = bodyA->position - correction * inverseMassA;
+                bodyB->position = bodyB->position + correction * inverseMassB;
 
                 // Record collision event for visualization (only once, not per substep)
                 // Check if we recently recorded this collision to avoid duplicates
