@@ -14,6 +14,9 @@
 4. Rebuild and test the affected behavior.
 5. Use a concise, imperative commit message.
 
+Keep documentation updates in the same pull request when they explain or verify
+the code change.
+
 Windows build:
 
 ```bat
