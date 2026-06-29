@@ -5,6 +5,9 @@
 Security fixes are applied to the latest revision on the `master` branch.
 Older commits and unofficial builds are not actively supported.
 
+Dependency updates are reviewed as part of normal maintenance when they affect
+runtime libraries or bundled build assets.
+
 ## Reporting a vulnerability
 
 Please do not open a public issue for a suspected vulnerability.
