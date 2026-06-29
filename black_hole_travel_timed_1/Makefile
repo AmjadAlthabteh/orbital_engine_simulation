@@ -7,8 +7,8 @@ CC := gcc
 
 # Directories
 SFML_DIR := C:/Dev/SFML-2.6.2
-GLAD_DIR := C:/Dev/glad
-GLAD_SRC := C:/Users/amjad/Downloads/glad/src
+GLAD_DIR := external/glad
+GLAD_SRC := external/glad/src
 
 # Flags
 CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic

@@ -42,7 +42,7 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Users\amjad\Downloads\glad\src\glad.c">
+    <ClCompile Include="external\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
@@ -116,6 +116,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\glad\include\glad\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Body.hpp">
       <Filter>physics</Filter>
     </ClInclude>

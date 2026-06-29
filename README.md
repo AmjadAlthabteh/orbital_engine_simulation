@@ -31,6 +31,11 @@ build.bat --release --run
 For dependency path options and other build methods, see
 [`BUILD_AND_TEST.md`](BUILD_AND_TEST.md).
 
+## Run checks
+
+Before sharing changes, build the Visual Studio solution or run the provided
+script for the configuration you changed.
+
 ## Project structure
 
 The simulation is split into focused modules for rendering, physics, camera

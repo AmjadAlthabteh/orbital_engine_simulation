@@ -3,9 +3,9 @@
 // Features: Realistic gravity, collision prediction, orbital trails, starfield
 // Visual Physics: Velocity vectors, force vectors, prediction markers, trajectory points
 // ENHANCED VERSION: Atmospheric glow, rim lighting, nebula background, engine particles, planet textures
+#include <glad/glad.h>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <glad/glad.h>
 #include <iostream>
 #include <cmath>
 
@@ -960,13 +960,13 @@ int main()
                 }
 
                 // Auto-stabilization toggle (Ctrl+S)
-                if (event.key.code == sf::Keyboard::S && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                if (event.key.code == sf::Keyboard::S && event.key.control)
                 {
                     ship.toggleAutoStabilization();
                 }
 
                 // Speed limiter toggle (Ctrl+V)
-                if (event.key.code == sf::Keyboard::V && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+                if (event.key.code == sf::Keyboard::V && event.key.control)
                 {
                     ship.toggleSpeedLimiter();
                 }
