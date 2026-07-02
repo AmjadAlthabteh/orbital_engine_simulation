@@ -41,6 +41,9 @@ void PhysicsEngine::addBody(Body* body)
 
 void PhysicsEngine::update(float deltaTime)
 {
+    if (deltaTime <= 0.0f)
+        return;
+
     const int substeps = calculateAdaptiveSubsteps(deltaTime);
 
     lastSubstepCount = substeps;
