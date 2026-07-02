@@ -1,6 +1,15 @@
 #include "CollisionPredictor.hpp"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <cstddef>
+
+namespace
+{
+    constexpr float kMinMass = 0.0001f;
+    constexpr float kMinDistanceSquared = 0.0001f;
+    constexpr float kMinRelativeSpeedSquared = 0.000001f;
+    constexpr std::size_t kMaxLineVertices = 100000;
+}
 
 CollisionPredictor::CollisionPredictor()
 {
@@ -33,7 +42,7 @@ Vec3 CollisionPredictor::calculateFuturePosition(const Body& body, const Body& o
     Vec3 r = otherBody.position - body.position;
     float distanceSquared = r.lengthSquared();
 
-    if (distanceSquared < 0.0001f) // 0.01^2
+    if (body.mass <= kMinMass || distanceSquared < kMinDistanceSquared)
         return body.position;
 
     const float invDistance = 1.0f / std::sqrt(distanceSquared);
@@ -41,7 +50,6 @@ Vec3 CollisionPredictor::calculateFuturePosition(const Body& body, const Body& o
     Vec3 force = r * (invDistance * forceMagnitude);
 
     Vec3 acceleration = force * (1.0f / body.mass);
-    Vec3 futureVelocity = body.velocity + acceleration * time;
     Vec3 futurePosition = body.position + body.velocity * time + acceleration * (0.5f * time * time);
 
     return futurePosition;
@@ -51,6 +59,12 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 {
     predictions.clear();
     lineVertices.clear();
+    if (bodies.size() < 2 || maxTime <= 0.0f)
+    {
+        updateBuffers();
+        return;
+    }
+
     predictions.reserve(bodies.size());
     lineVertices.reserve(bodies.size() * 4);
 
@@ -75,7 +89,7 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 
             float discriminant = b * b - 4.0f * a * c;
 
-            if (discriminant >= 0.0f && a != 0.0f)
+            if (discriminant >= 0.0f && a > kMinRelativeSpeedSquared)
             {
                 const float sqrtDiscriminant = std::sqrt(discriminant);
                 const float inverseDenominator = 0.5f / a;
@@ -115,12 +129,10 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 
 void CollisionPredictor::updateBuffers()
 {
-    // CRITICAL SAFETY: Multiple checks before buffer access
-    if (lineVertices.empty() || lineVertices.size() == 0)
+    if (lineVertices.empty())
         return;
 
-    // EXTRA SAFETY: Verify reasonable size
-    if (lineVertices.size() > 100000)  // Sanity check
+    if (lineVertices.size() > kMaxLineVertices)
     {
         lineVertices.clear();
         return;
@@ -152,7 +164,8 @@ const std::vector<CollisionPrediction>& CollisionPredictor::getPredictions() con
 void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector<Body*>& otherBodies, float G, float timeStep, int numPoints, std::vector<Vec3>& outPoints)
 {
     outPoints.clear();
-    outPoints.reserve(static_cast<size_t>(numPoints) + 1);
+    const int pointCount = std::max(0, numPoints);
+    outPoints.reserve(static_cast<size_t>(pointCount) + 1);
 
     // Create temporary simulation of the body
     Vec3 simPos = body.position;
@@ -160,13 +173,16 @@ void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector
 
     outPoints.push_back(simPos);
 
-    for (int i = 0; i < numPoints; ++i)
+    for (int i = 0; i < pointCount; ++i)
     {
         // Calculate gravitational forces from all other bodies
         Vec3 totalForce(0, 0, 0);
 
         for (Body* other : otherBodies)
         {
+            if (other == nullptr)
+                continue;
+
             Vec3 direction = other->position - simPos;
             float distanceSquared = direction.lengthSquared();
 
