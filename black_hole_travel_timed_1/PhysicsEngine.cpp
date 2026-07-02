@@ -167,6 +167,9 @@ void PhysicsEngine::applyGravity()
 
 bool PhysicsEngine::checkCollision(const Body* a, const Body* b) const
 {
+    if (a == nullptr || b == nullptr)
+        return false;
+
     Vec3 diff = b->position - a->position;
     float minDistance = a->radius + b->radius;
     return diff.lengthSquared() < (minDistance * minDistance);
@@ -174,6 +177,9 @@ bool PhysicsEngine::checkCollision(const Body* a, const Body* b) const
 
 float PhysicsEngine::predictCollisionTime(const Body* a, const Body* b) const
 {
+    if (a == nullptr || b == nullptr)
+        return -1.0f;
+
     const Vec3 relativePos = b->position - a->position;
     const Vec3 relativeVel = b->velocity - a->velocity;
     const float minDistance = a->radius + b->radius;
