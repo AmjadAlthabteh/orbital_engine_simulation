@@ -74,6 +74,31 @@ const std::vector<CollisionEvent>& PhysicsEngine::getRecentCollisions() const
     return recentCollisions;
 }
 
+void PhysicsEngine::setMaxTimeStep(float maxStep)
+{
+    maxTimeStep = std::max(maxStep, 0.001f);
+}
+
+void PhysicsEngine::setMaxSubsteps(int maxSteps)
+{
+    maxSubsteps = std::max(maxSteps, 1);
+}
+
+void PhysicsEngine::setVelocityThreshold(float threshold)
+{
+    velocityThreshold = std::max(threshold, 0.0f);
+}
+
+void PhysicsEngine::setGravitySofteningLength(float length)
+{
+    gravitySofteningLength = std::max(length, 0.0f);
+}
+
+void PhysicsEngine::setMaxVelocityChangePerStep(float deltaV)
+{
+    maxVelocityChangePerStep = std::max(deltaV, 0.001f);
+}
+
 void PhysicsEngine::updateCollisionMarkers(float deltaTime)
 {
     // Update timestamps and remove old collision markers (older than 3 seconds).

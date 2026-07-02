@@ -39,11 +39,11 @@ public:
     void updateCollisionMarkers(float deltaTime);  // Fade out old collisions
 
     // Adaptive substepping configuration
-    void setMaxTimeStep(float maxStep) { maxTimeStep = maxStep; }
-    void setMaxSubsteps(int maxSteps) { maxSubsteps = maxSteps; }
-    void setVelocityThreshold(float threshold) { velocityThreshold = threshold; }
-    void setGravitySofteningLength(float length) { gravitySofteningLength = length; }
-    void setMaxVelocityChangePerStep(float deltaV) { maxVelocityChangePerStep = deltaV; }
+    void setMaxTimeStep(float maxStep);
+    void setMaxSubsteps(int maxSteps);
+    void setVelocityThreshold(float threshold);
+    void setGravitySofteningLength(float length);
+    void setMaxVelocityChangePerStep(float deltaV);
     int getLastSubstepCount() const { return lastSubstepCount; }
 
 private:
