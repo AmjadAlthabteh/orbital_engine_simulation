@@ -66,6 +66,7 @@ layout (location = 0) in vec3 aPos;
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform float alphaScale;
 
 void main()
 {
@@ -117,7 +118,7 @@ void main()
     vec2 coord = gl_PointCoord - vec2(0.5);
     float dist = length(coord);
     float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
-    FragColor = vec4(starColor, alpha);
+    FragColor = vec4(starColor, alpha * alphaScale);
 }
 )";
 
@@ -1621,6 +1622,7 @@ int main()
         nebulaShader.use();
         nebulaShader.setMat4("view", view);
         nebulaShader.setMat4("projection", projection);
+        nebulaShader.setFloat("opacityScale", 0.58f);
         nebula.render();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Reset blending
         glDepthMask(GL_TRUE);
@@ -1629,6 +1631,7 @@ int main()
         starShader.use();
         starShader.setMat4("view", view);
         starShader.setMat4("projection", projection);
+        starShader.setFloat("alphaScale", 0.70f);
         starfield.render();
 
         // Render MASSIVE galaxy background with 20,000 stars in realistic spiral arms!
@@ -1923,6 +1926,7 @@ int main()
             starShader.use();  // Use star shader for glowing points
             starShader.setMat4("view", view);
             starShader.setMat4("projection", projection);
+            starShader.setFloat("alphaScale", 1.0f);
             lagrangePoints.render();
         }
 

@@ -22,27 +22,27 @@ void NebulaBackground::generateNebula()
     // Create multiple nebula regions with different colors
     // Region 1: Purple/magenta nebula (left side)
     createNebulaRegion(Vec3(-200.0f, 100.0f, -150.0f), 180.0f,
-                       Vec3(0.8f, 0.2f, 0.9f), 800);
+                       Vec3(0.55f, 0.16f, 0.70f), 520);
 
     // Region 2: Blue/cyan nebula (right side)
     createNebulaRegion(Vec3(220.0f, -80.0f, -180.0f), 160.0f,
-                       Vec3(0.2f, 0.5f, 1.0f), 700);
+                       Vec3(0.16f, 0.38f, 0.78f), 460);
 
     // Region 3: Orange/red nebula (top)
     createNebulaRegion(Vec3(0.0f, 250.0f, -200.0f), 140.0f,
-                       Vec3(1.0f, 0.4f, 0.2f), 600);
+                       Vec3(0.78f, 0.32f, 0.18f), 390);
 
     // Region 4: Green/teal nebula (bottom)
     createNebulaRegion(Vec3(100.0f, -200.0f, -170.0f), 120.0f,
-                       Vec3(0.2f, 0.9f, 0.6f), 500);
+                       Vec3(0.16f, 0.62f, 0.48f), 320);
 
     // Region 5: Yellow/gold nebula (center-back)
     createNebulaRegion(Vec3(-50.0f, 0.0f, -300.0f), 200.0f,
-                       Vec3(1.0f, 0.8f, 0.3f), 900);
+                       Vec3(0.78f, 0.62f, 0.26f), 560);
 
     // Region 6: Deep space nebula (far background, darker)
     createNebulaRegion(Vec3(150.0f, 150.0f, -400.0f), 250.0f,
-                       Vec3(0.4f, 0.2f, 0.6f), 1000);
+                       Vec3(0.28f, 0.16f, 0.46f), 640);
 
     // Add some small nebula wisps scattered around
     std::random_device rd;
@@ -50,11 +50,11 @@ void NebulaBackground::generateNebula()
     std::uniform_real_distribution<float> posDis(-300.0f, 300.0f);
     std::uniform_real_distribution<float> colorDis(0.2f, 0.8f);
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 6; i++)
     {
         Vec3 wispColor(colorDis(gen), colorDis(gen), colorDis(gen));
         createNebulaRegion(Vec3(posDis(gen), posDis(gen), -posDis(gen)),
-                           50.0f + colorDis(gen) * 50.0f, wispColor, 200);
+                           40.0f + colorDis(gen) * 45.0f, wispColor, 120);
     }
 
     updateBuffers();
@@ -73,8 +73,8 @@ void NebulaBackground::createNebulaRegion(const Vec3& center, float radius,
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
-    std::uniform_real_distribution<float> densityDis(0.1f, 1.0f);
-    std::uniform_real_distribution<float> sizeDis(10.0f, 40.0f);
+    std::uniform_real_distribution<float> densityDis(0.08f, 0.72f);
+    std::uniform_real_distribution<float> sizeDis(8.0f, 30.0f);
     std::uniform_real_distribution<float> rotDis(0.0f, 6.28318f);
 
     for (int i = 0; i < particleCount; i++)

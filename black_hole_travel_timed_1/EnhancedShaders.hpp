@@ -138,6 +138,7 @@ layout (location = 4) in float aRotation;
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform float opacityScale;
 
 out vec3 particleColor;
 out float particleDensity;
@@ -148,7 +149,7 @@ void main()
     gl_Position = projection * view * vec4(aPos, 1.0);
     gl_PointSize = aSize / (gl_Position.w * 0.1);  // Distance-based sizing
     particleColor = aColor;
-    particleDensity = aDensity;
+    particleDensity = aDensity * opacityScale;
     particleRotation = aRotation;
 }
 )";

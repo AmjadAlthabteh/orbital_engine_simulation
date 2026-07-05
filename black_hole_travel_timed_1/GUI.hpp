@@ -112,9 +112,9 @@ private:
     const int historySize = 100;
 
     // Font sizes
-    float fontSizeNormal = 16.0f;
-    float fontSizeLarge = 20.0f;
-    float fontSizeHuge = 24.0f;
+    float fontScaleNormal = 1.08f;
+    float fontScaleLarge = 1.18f;
+    float fontScaleHuge = 1.28f;
 
     // Colors for theming (brighter for better visibility)
     ImVec4 colorSuccess = ImVec4(0.3f, 1.0f, 0.4f, 1.0f);
@@ -131,9 +131,9 @@ private:
     {
         ImVec2 workPos{0.0f, 0.0f};
         ImVec2 workSize{0.0f, 0.0f};
-        float margin = 10.0f;
-        float topHudHeight = 90.0f;
-        float mainPanelTopOffset = 110.0f;
+        float margin = 14.0f;
+        float topHudHeight = 110.0f;
+        float mainPanelTopOffset = 136.0f;
 
         ImVec2 topHudPos() const { return ImVec2(workPos.x + margin, workPos.y + margin); }
         ImVec2 topHudSize() const { return ImVec2(std::max(0.0f, workSize.x - margin * 2.0f), topHudHeight); }
@@ -163,6 +163,27 @@ private:
         return (value < low) ? low : ((value > high) ? high : value);
     }
 
+    static void drawPanelGlow(const ImVec2& pos, const ImVec2& size, float intensity = 1.0f)
+    {
+        ImDrawList* drawList = ImGui::GetBackgroundDrawList();
+        if (!drawList) return;
+
+        const ImVec2 min = pos;
+        const ImVec2 max(pos.x + size.x, pos.y + size.y);
+
+        for (int layer = 4; layer >= 1; --layer)
+        {
+            const float spread = 8.0f + layer * 8.0f;
+            const int alpha = static_cast<int>(18.0f * intensity / layer);
+            drawList->AddRectFilled(
+                ImVec2(min.x - spread, min.y - spread),
+                ImVec2(max.x + spread, max.y + spread),
+                IM_COL32(80, 190, 255, alpha),
+                14.0f + spread
+            );
+        }
+    }
+
 public:
     GUI(sf::RenderWindow& window)
     {
@@ -185,8 +206,8 @@ public:
         ImVec4* colors = style.Colors;
 
         // Background colors (darker for space theme)
-        colors[ImGuiCol_WindowBg] = ImVec4(0.04f, 0.04f, 0.10f, 0.96f);
-        colors[ImGuiCol_ChildBg] = ImVec4(0.06f, 0.06f, 0.12f, 0.92f);
+        colors[ImGuiCol_WindowBg] = ImVec4(0.035f, 0.045f, 0.11f, 0.98f);
+        colors[ImGuiCol_ChildBg] = ImVec4(0.055f, 0.065f, 0.14f, 0.94f);
         colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.18f, 0.98f);
 
         // Border and frame colors
@@ -251,16 +272,16 @@ public:
         style.PopupBorderSize = 1.5f;
 
         // Larger padding and spacing for better readability
-        style.WindowPadding = ImVec2(12, 12);
-        style.FramePadding = ImVec2(10, 6);
-        style.ItemSpacing = ImVec2(10, 8);
-        style.ItemInnerSpacing = ImVec2(8, 6);
+        style.WindowPadding = ImVec2(16, 16);
+        style.FramePadding = ImVec2(12, 8);
+        style.ItemSpacing = ImVec2(12, 10);
+        style.ItemInnerSpacing = ImVec2(10, 7);
 
         style.ScrollbarSize = 16.0f;
         style.GrabMinSize = 12.0f;
 
         // Scale everything up slightly for better visibility
-        style.ScaleAllSizes(1.1f);
+        style.ScaleAllSizes(1.15f);
     }
 
     void initializeMissions()
@@ -302,25 +323,27 @@ public:
         // Transparent overlay at top of screen - always locked in place
         ImGui::SetNextWindowPos(layout.topHudPos(), ImGuiCond_Always);
         ImGui::SetNextWindowSize(layout.topHudSize(), ImGuiCond_Always);
-        ImGui::SetNextWindowBgAlpha(0.75f);
+        drawPanelGlow(layout.topHudPos(), layout.topHudSize(), 1.15f);
+        ImGui::SetNextWindowBgAlpha(0.84f);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar;
 
         ImGui::Begin("##TopHUD", nullptr, flags);
+        ImGui::SetWindowFontScale(fontScaleLarge);
 
         Vec3 shipPos = ship.getPhysicsBody().position;
         float speed = ship.getSpeed();
 
         const float hudSpacing = ImGui::GetStyle().ItemSpacing.x;
-        const float hudChildHeight = 70.0f;
+        const float hudChildHeight = 86.0f;
         const float hudChildWidth = std::max(0.0f, (layout.topHudSize().x - hudSpacing * 2.0f) / 3.0f);
 
         // LEFT: Ship Status
         ImGui::BeginChild("HUD_Left", ImVec2(hudChildWidth, hudChildHeight), false);
-        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);  // Larger font
+        ImGui::SetWindowFontScale(fontScaleHuge);
         ImGui::TextColored(colorInfo, "SHIP STATUS");
-        ImGui::PopFont();
+        ImGui::SetWindowFontScale(fontScaleLarge);
         ImGui::Separator();
 
         ImGui::Text("Speed: ");
@@ -339,9 +362,9 @@ public:
 
         // CENTER: Nearest Object
         ImGui::BeginChild("HUD_Center", ImVec2(hudChildWidth, hudChildHeight), false);
-        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImGui::SetWindowFontScale(fontScaleHuge);
         ImGui::TextColored(colorInfo, "PROXIMITY");
-        ImGui::PopFont();
+        ImGui::SetWindowFontScale(fontScaleLarge);
         ImGui::Separator();
 
         float nearestDist = 999999.0f;
@@ -379,9 +402,9 @@ public:
 
         // RIGHT: Simulation Status
         ImGui::BeginChild("HUD_Right", ImVec2(hudChildWidth, hudChildHeight), false);
-        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImGui::SetWindowFontScale(fontScaleHuge);
         ImGui::TextColored(colorInfo, "SIMULATION");
-        ImGui::PopFont();
+        ImGui::SetWindowFontScale(fontScaleLarge);
         ImGui::Separator();
 
         if (state.isPaused)
@@ -393,6 +416,7 @@ public:
         ImGui::Text("FPS: %.0f", state.fps);
         ImGui::EndChild();
 
+        ImGui::SetWindowFontScale(1.0f);
         ImGui::End();
     }
 
@@ -403,11 +427,11 @@ public:
 
         const Layout layout = getLayout();
 
-        const float minCenterWidth = 360.0f;
-        float panelWidth = clampf(layout.workSize.x * 0.32f, 340.0f, 460.0f);
+        const float minCenterWidth = 320.0f;
+        float panelWidth = clampf(layout.workSize.x * 0.35f, 380.0f, 540.0f);
         if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
         {
-            panelWidth = std::max(300.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
+            panelWidth = std::max(320.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
         }
         const float maxPanelWidth = std::max(240.0f, layout.workSize.x - layout.margin * 2.0f);
         panelWidth = clampf(panelWidth, 240.0f, maxPanelWidth);
@@ -415,9 +439,12 @@ public:
         // Lock panel position and size (cannot be moved or resized)
         ImGui::SetNextWindowPos(ImVec2(layout.workPos.x + layout.margin, layout.mainPanelY()), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(panelWidth, layout.mainPanelHeight()), ImGuiCond_Always);
+        drawPanelGlow(ImVec2(layout.workPos.x + layout.margin, layout.mainPanelY()),
+                      ImVec2(panelWidth, layout.mainPanelHeight()), 0.9f);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
         ImGui::Begin("Ship Operations", &state.showLeftPanel, flags);
+        ImGui::SetWindowFontScale(fontScaleNormal);
 
         Vec3 pos = ship.getPhysicsBody().position;
         Vec3 vel = ship.getPhysicsBody().velocity;
@@ -435,9 +462,11 @@ public:
             ImGui::Indent();
 
             // Speed graph
+            ImGui::SetWindowFontScale(fontScaleLarge);
             ImGui::TextColored(colorInfo, "Velocity: %.2f m/s", speed);
+            ImGui::SetWindowFontScale(fontScaleNormal);
             ImGui::PlotLines("##SpeedGraph", speedHistory.data(), speedHistory.size(),
-                           0, nullptr, 0.0f, 120.0f, ImVec2(-1, 80));
+                           0, nullptr, 0.0f, 120.0f, ImVec2(-1, 96));
 
             ImGui::Spacing();
 
@@ -456,15 +485,21 @@ public:
             // Landing status
             if (ship.getLandingState() == LandingState::LANDED)
             {
+                ImGui::SetWindowFontScale(fontScaleLarge);
                 ImGui::TextColored(colorSuccess, "STATUS: LANDED");
+                ImGui::SetWindowFontScale(fontScaleNormal);
             }
             else if (ship.getLandingState() == LandingState::APPROACHING)
             {
+                ImGui::SetWindowFontScale(fontScaleLarge);
                 ImGui::TextColored(colorWarning, "STATUS: APPROACH MODE");
+                ImGui::SetWindowFontScale(fontScaleNormal);
             }
             else
             {
+                ImGui::SetWindowFontScale(fontScaleLarge);
                 ImGui::TextColored(colorInfo, "STATUS: FLIGHT MODE");
+                ImGui::SetWindowFontScale(fontScaleNormal);
             }
 
             ImGui::Unindent();
@@ -577,6 +612,7 @@ public:
             ImGui::Unindent();
         }
 
+        ImGui::SetWindowFontScale(1.0f);
         ImGui::End();
     }
 
@@ -587,22 +623,22 @@ public:
 
         const Layout layout = getLayout();
 
-        const float minCenterWidth = 360.0f;
-        float panelWidth = clampf(layout.workSize.x * 0.32f, 340.0f, 460.0f);
+        const float minCenterWidth = 320.0f;
+        float panelWidth = clampf(layout.workSize.x * 0.35f, 380.0f, 540.0f);
         if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
         {
-            panelWidth = std::max(300.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
+            panelWidth = std::max(320.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
         }
 
         // Lock panel position and size (cannot be moved or resized)
-        ImGui::SetNextWindowPos(
-            ImVec2(layout.workPos.x + layout.workSize.x - layout.margin - panelWidth, layout.mainPanelY()),
-            ImGuiCond_Always
-        );
+        const ImVec2 panelPos(layout.workPos.x + layout.workSize.x - layout.margin - panelWidth, layout.mainPanelY());
+        ImGui::SetNextWindowPos(panelPos, ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(panelWidth, layout.mainPanelHeight()), ImGuiCond_Always);
+        drawPanelGlow(panelPos, ImVec2(panelWidth, layout.mainPanelHeight()), 0.9f);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
         ImGui::Begin("Navigation & Radar", &state.showRightPanel, flags);
+        ImGui::SetWindowFontScale(fontScaleNormal);
 
         Vec3 shipPos = ship.getPhysicsBody().position;
 
@@ -625,7 +661,7 @@ public:
             ImGui::Separator();
 
             // Target list with highlighting
-            ImGui::BeginChild("TargetList", ImVec2(-1, 180), true);
+            ImGui::BeginChild("TargetList", ImVec2(-1, 220), true);
 
             if (ImGui::BeginTable("##TargetTable", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp))
             {
@@ -745,6 +781,7 @@ public:
             state.radarExpanded = false;
         }
 
+        ImGui::SetWindowFontScale(1.0f);
         ImGui::End();
     }
 
