@@ -30,10 +30,12 @@ void EngineParticles::emit(const Vec3& position, const Vec3& direction,
     std::uniform_real_distribution<float> speedDis(5.0f, 15.0f);
     std::uniform_real_distribution<float> sizeDis(0.2f, 0.6f);
     std::uniform_real_distribution<float> lifeDis(0.5f, 1.5f);
+    std::uniform_real_distribution<float> heatDis(0.0f, 1.0f);
 
     // OPTIMIZATION: Reuse inactive particles from pool instead of allocating new ones
     int emitted = 0;
-    for (size_t i = 0; i < particles.size() && emitted < count; i++)
+    const size_t particleCount = particles.size();
+    for (size_t i = 0; i < particleCount && emitted < count; i++)
     {
         if (!particles[i].active)
         {
@@ -56,7 +58,7 @@ void EngineParticles::emit(const Vec3& position, const Vec3& direction,
             p.alpha = 1.0f;
 
             // Engine exhaust colors: hot orange/yellow to cooler red
-            float heatValue = std::uniform_real_distribution<float>(0.0f, 1.0f)(gen);
+            float heatValue = heatDis(gen);
             if (heatValue > 0.7f)
             {
                 // Hot core (yellow-white)
