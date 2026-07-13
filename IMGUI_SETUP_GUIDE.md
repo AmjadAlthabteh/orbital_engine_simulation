@@ -77,6 +77,9 @@ set(IMGUI_SFML_DIR "C:/Dev/imgui-sfml") # <- Update this path
 
 ## Building the Project
 
+If configuration fails, confirm the ImGui and ImGui-SFML folders match the paths
+defined in `CMakeLists.txt`.
+
 ### Option 1: CMake Build (Recommended)
 
 ```bash
