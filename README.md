@@ -35,6 +35,8 @@ For dependency path options and other build methods, see
 
 Before sharing changes, build the Visual Studio solution or run the provided
 script for the configuration you changed.
+For documentation-only updates, review the changed Markdown files for broken
+links and stale command examples.
 
 ## Project structure
 
