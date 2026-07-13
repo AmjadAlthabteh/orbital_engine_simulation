@@ -1,5 +1,8 @@
 # Professional GUI Setup - Complete Guide
 
+This guide describes the intended panel layout and the runtime controls exposed
+through the simulator UI.
+
 ## What I've Done For You ✅
 
 I've completely upgraded your GUI system to a **professional, multi-panel interface** with:
