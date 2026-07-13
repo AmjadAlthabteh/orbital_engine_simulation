@@ -1,5 +1,7 @@
 # BLACK HOLE TRAVEL SIMULATOR - NEW ADVANCED FEATURES
 
+Use this guide as a feature checklist when validating a new build locally.
+
 ## Table of Contents
 1. [Achievement System](#achievement-system)
 2. [Science & Data Collection](#science-data-collection)
