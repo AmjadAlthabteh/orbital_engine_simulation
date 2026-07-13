@@ -123,6 +123,7 @@ void PhysicsEngine::applyGravity()
 
     const size_t bodyCount = bodies.size();
     Body* const* const bodyData = bodies.data();
+    const float softeningSquared = gravitySofteningLength * gravitySofteningLength;
 
     for (size_t i = 0; i < bodyCount; ++i)
     {
@@ -141,7 +142,6 @@ void PhysicsEngine::applyGravity()
             const float dy = bodyJ->position.y - bodyI->position.y;
             const float dz = bodyJ->position.z - bodyI->position.z;
 
-            const float softeningSquared = gravitySofteningLength * gravitySofteningLength;
             const float distanceSquared = dx * dx + dy * dy + dz * dz + softeningSquared;
 
             if (distanceSquared < 0.0001f) continue;  // 0.01^2
@@ -251,9 +251,10 @@ int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
 
     const float softeningSquared = gravitySofteningLength * gravitySofteningLength;
     const size_t bodyCount = bodies.size();
+    Body* const* const bodyData = bodies.data();
     for (size_t i = 0; i < bodyCount; ++i)
     {
-        const Body* bodyI = bodies[i];
+        const Body* bodyI = bodyData[i];
         if (bodyI == nullptr || bodyI->isStatic || maxVelocityChangePerStep <= 0.0f)
             continue;
 
@@ -263,12 +264,14 @@ int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
             if (i == j)
                 continue;
 
-            const Body* bodyJ = bodies[j];
+            const Body* bodyJ = bodyData[j];
             if (bodyJ == nullptr || bodyJ->mass <= 0.0f)
                 continue;
 
-            const Vec3 delta = bodyJ->position - bodyI->position;
-            const float distanceSquared = std::max(delta.lengthSquared() + softeningSquared, 0.0001f);
+            const float dx = bodyJ->position.x - bodyI->position.x;
+            const float dy = bodyJ->position.y - bodyI->position.y;
+            const float dz = bodyJ->position.z - bodyI->position.z;
+            const float distanceSquared = std::max(dx * dx + dy * dy + dz * dz + softeningSquared, 0.0001f);
             accelerationMagnitude += gravitationalConstant * bodyJ->mass / distanceSquared;
         }
 
@@ -309,19 +312,22 @@ void PhysicsEngine::handleCollisions()
 
             // BROAD-PHASE: Quick AABB (axis-aligned bounding box) rejection test
             // Much faster than sphere collision, eliminates ~60-80% of checks
-            const Vec3 delta = bodyB->position - bodyA->position;
             const float maxDist = bodyA->radius + bodyB->radius;
+            const float dx = bodyB->position.x - bodyA->position.x;
+            const float dy = bodyB->position.y - bodyA->position.y;
+            const float dz = bodyB->position.z - bodyA->position.z;
 
             // Fast axis-by-axis rejection (cheaper than lengthSquared)
-            if (std::abs(delta.x) > maxDist) continue;
-            if (std::abs(delta.y) > maxDist) continue;
-            if (std::abs(delta.z) > maxDist) continue;
+            if (std::abs(dx) > maxDist) continue;
+            if (std::abs(dy) > maxDist) continue;
+            if (std::abs(dz) > maxDist) continue;
 
-            const float distanceSquared = delta.lengthSquared();
-            if (distanceSquared < maxDist * maxDist)
+            const float maxDistSquared = maxDist * maxDist;
+            const float distanceSquared = dx * dx + dy * dy + dz * dz;
+            if (distanceSquared < maxDistSquared)
             {
                 const float distance = std::sqrt(distanceSquared);
-                const Vec3 normal = distance > 0.0f ? delta * (1.0f / distance) : Vec3();
+                const Vec3 normal = distance > 0.0f ? Vec3(dx, dy, dz) * (1.0f / distance) : Vec3();
                 const Vec3 collisionPoint = bodyA->position + normal * bodyA->radius;
 
                 // Calculate relative velocity
