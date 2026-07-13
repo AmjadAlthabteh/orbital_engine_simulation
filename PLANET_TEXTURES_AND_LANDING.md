@@ -1,5 +1,7 @@
 # Planet Surface Textures & Landing System
 
+This note tracks visual texture work and landing-related behavior in one place.
+
 ## Implementation Summary
 
 This document describes the enhanced planet textures and landing system added to the space simulation.
