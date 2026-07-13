@@ -1,5 +1,6 @@
 #include "Trail.hpp"
 #include <algorithm>
+#include <cstddef>
 
 Trail::Trail(size_t maxPoints_, const Vec3& color_)
     : maxPoints(maxPoints_), color(color_), needsUpdate(false)
@@ -35,11 +36,15 @@ void Trail::setupBuffers()
 
 void Trail::addPoint(const Vec3& position)
 {
+    if (maxPoints == 0)
+        return;
+
     positions.push_back(position);
 
     if (positions.size() > maxPoints)
     {
-        positions.erase(positions.begin());
+        const size_t overflow = positions.size() - maxPoints;
+        positions.erase(positions.begin(), positions.begin() + static_cast<std::ptrdiff_t>(overflow));
     }
 
     needsUpdate = true;
@@ -54,7 +59,7 @@ void Trail::clear()
 void Trail::updateBuffers()
 {
     // CRITICAL SAFETY: Check for empty vector before accessing
-    if (!needsUpdate || positions.empty() || positions.size() == 0)
+    if (!needsUpdate || positions.empty())
         return;
 
     // EXTRA SAFETY: Verify we have valid data
