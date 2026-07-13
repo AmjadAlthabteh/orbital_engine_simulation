@@ -29,3 +29,5 @@ build.bat --debug
 Describe the problem, the solution, and how you verified it. Include screenshots
 or recordings for visible changes. Do not commit generated build output, IDE
 state, or unrelated formatting changes.
+Keep PR descriptions short, but include enough context for someone to reproduce
+the changed behavior.
