@@ -26,6 +26,9 @@ Make sure these files are included in your build system:
 
 ## Build Instructions
 
+Start from a clean working tree when possible so generated files are easy to
+spot before committing.
+
 ### Visual Studio 2022:
 1. Add all new .cpp files to your project
 2. Make sure all .hpp files are in the include path
