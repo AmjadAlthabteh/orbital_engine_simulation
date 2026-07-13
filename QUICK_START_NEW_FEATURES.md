@@ -30,6 +30,8 @@ git clone https://github.com/SFML/imgui-sfml.git
 
 Check that these files exist:
 
+Use forward slashes in CMake paths if Windows backslashes cause escaping issues.
+
 ```
 ✅ C:\Dev\imgui\imgui.h
 ✅ C:\Dev\imgui\imgui.cpp
