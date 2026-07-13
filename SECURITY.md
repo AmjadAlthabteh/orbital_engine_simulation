@@ -22,3 +22,5 @@ feature. Include:
 
 Reports should receive an initial response within five business days. Confirmed
 issues will be investigated and fixed before public disclosure when practical.
+Please include whether the issue affects a local build, distributed binary, or
+project documentation.
