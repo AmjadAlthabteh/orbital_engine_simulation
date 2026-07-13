@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <random>
+#include <algorithm>
 
 StarField::StarField(int count)
 {
@@ -24,7 +25,8 @@ void StarField::generateStars(int count)
     std::uniform_real_distribution<float> radiusDis(50.0f, 500.0f);
 
     stars.clear();
-    stars.reserve(count);
+    const int brightStarCount = count / 10;
+    stars.reserve(static_cast<size_t>(count + brightStarCount));
 
     for (int i = 0; i < count; ++i)
     {
@@ -34,8 +36,9 @@ void StarField::generateStars(int count)
         float phi = std::acos(2.0f * dis(gen) - 1.0f);
         float radius = radiusDis(gen);
 
-        star.position.x = radius * std::sin(phi) * std::cos(theta);
-        star.position.y = radius * std::sin(phi) * std::sin(theta);
+        const float sinPhi = std::sin(phi);
+        star.position.x = radius * sinPhi * std::cos(theta);
+        star.position.y = radius * sinPhi * std::sin(theta);
         star.position.z = radius * std::cos(phi);
 
         star.brightness = 0.3f + dis(gen) * 0.7f;
@@ -62,7 +65,7 @@ void StarField::generateStars(int count)
         stars.push_back(star);
     }
 
-    for (int i = 0; i < count / 10; ++i)
+    for (int i = 0; i < brightStarCount; ++i)
     {
         Star brightStar;
 
@@ -70,8 +73,9 @@ void StarField::generateStars(int count)
         float phi = std::acos(2.0f * dis(gen) - 1.0f);
         float radius = radiusDis(gen) * 1.2f;
 
-        brightStar.position.x = radius * std::sin(phi) * std::cos(theta);
-        brightStar.position.y = radius * std::sin(phi) * std::sin(theta);
+        const float sinPhi = std::sin(phi);
+        brightStar.position.x = radius * sinPhi * std::cos(theta);
+        brightStar.position.y = radius * sinPhi * std::sin(theta);
         brightStar.position.z = radius * std::cos(phi);
 
         brightStar.brightness = 0.8f + dis(gen) * 0.2f;
@@ -134,7 +138,7 @@ void StarField::update(float deltaTime)
     for (auto& star : stars)
     {
         star.brightness += (std::sin(deltaTime * 10.0f + star.position.x * 0.01f) * 0.001f);
-        star.brightness = std::max(0.3f, std::min(1.0f, star.brightness));
+        star.brightness = std::clamp(star.brightness, 0.3f, 1.0f);
     }
 }
 
