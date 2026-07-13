@@ -31,6 +31,10 @@ void OrbitalPath::setupBuffers()
 void OrbitalPath::calculatePath(const Body& body, const Body& centralBody, float G, int numPoints)
 {
     pathPoints.clear();
+    if (numPoints <= 0)
+        return;
+
+    pathPoints.reserve(static_cast<size_t>(numPoints) + 1);
 
     Vec3 r = body.position - centralBody.position;
     Vec3 v = body.velocity - centralBody.velocity;
@@ -56,14 +60,24 @@ void OrbitalPath::calculatePath(const Body& body, const Body& centralBody, float
     Vec3 normal = h.normalize();
     Vec3 minor_axis = normal.cross(periapsis);
 
+    constexpr float twoPi = 6.28318530718f;
+    const float thetaStep = twoPi / static_cast<float>(numPoints);
+    const float cosStep = std::cos(thetaStep);
+    const float sinStep = std::sin(thetaStep);
+    float cosTheta = 1.0f;
+    float sinTheta = 0.0f;
+
     for (int i = 0; i <= numPoints; ++i)
     {
-        float theta = (i * 2.0f * 3.14159265f) / numPoints;
-        float x = a * std::cos(theta);
-        float y = b * std::sin(theta);
+        float x = a * cosTheta;
+        float y = b * sinTheta;
 
         Vec3 point = centralBody.position + periapsis * x + minor_axis * y;
         pathPoints.push_back(point);
+
+        const float nextCos = cosTheta * cosStep - sinTheta * sinStep;
+        sinTheta = sinTheta * cosStep + cosTheta * sinStep;
+        cosTheta = nextCos;
     }
 
     updateBuffers();
