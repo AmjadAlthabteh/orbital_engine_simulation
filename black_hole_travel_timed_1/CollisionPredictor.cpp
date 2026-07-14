@@ -168,6 +168,9 @@ const std::vector<CollisionPrediction>& CollisionPredictor::getPredictions() con
 void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector<Body*>& otherBodies, float G, float timeStep, int numPoints, std::vector<Vec3>& outPoints)
 {
     outPoints.clear();
+    if (body.mass <= kMinMass || timeStep <= 0.0f)
+        return;
+
     const int pointCount = std::max(0, numPoints);
     outPoints.reserve(static_cast<size_t>(pointCount) + 1);
 
