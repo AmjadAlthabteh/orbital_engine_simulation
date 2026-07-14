@@ -18,6 +18,8 @@ StarField::~StarField()
 
 void StarField::generateStars(int count)
 {
+    const int safeCount = std::max(0, count);
+
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
@@ -25,10 +27,10 @@ void StarField::generateStars(int count)
     std::uniform_real_distribution<float> radiusDis(50.0f, 500.0f);
 
     stars.clear();
-    const int brightStarCount = count / 10;
-    stars.reserve(static_cast<size_t>(count + brightStarCount));
+    const int brightStarCount = safeCount / 10;
+    stars.reserve(static_cast<size_t>(safeCount + brightStarCount));
 
-    for (int i = 0; i < count; ++i)
+    for (int i = 0; i < safeCount; ++i)
     {
         Star star;
 
