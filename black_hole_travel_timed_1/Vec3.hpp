@@ -54,8 +54,9 @@ struct Vec3
 
     Vec3 normalize() const
     {
-        float len = length();
-        if (len == 0) return Vec3();
-        return Vec3(x / len, y / len, z / len);
+        const float lenSquared = lengthSquared();
+        if (lenSquared == 0.0f) return Vec3();
+        const float invLen = 1.0f / std::sqrt(lenSquared);
+        return Vec3(x * invLen, y * invLen, z * invLen);
     }
 };
