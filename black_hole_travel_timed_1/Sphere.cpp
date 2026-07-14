@@ -1,11 +1,20 @@
 #include "Sphere.hpp"
 #include <glad/glad.h>
 #include <cmath>
+#include <cstddef>
 #include <vector>
 
 Sphere::Sphere(float radius, int sectors, int stacks)
     : sectorCount(sectors), stackCount(stacks)
 {
+    constexpr float pi = 3.1415926f;
+    constexpr float twoPi = 2.0f * pi;
+    const float stackStep = pi / static_cast<float>(stacks);
+    const float sectorStep = twoPi / static_cast<float>(sectors);
+    const float invStacks = 1.0f / static_cast<float>(stacks);
+    const float invSectors = 1.0f / static_cast<float>(sectors);
+    const float invRadius = 1.0f / radius;
+
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
     vertices.reserve(static_cast<size_t>(stacks + 1) * static_cast<size_t>(sectors + 1) * 8);
@@ -16,13 +25,13 @@ Sphere::Sphere(float radius, int sectors, int stacks)
 
     for (int i = 0; i <= stacks; ++i)
     {
-        float stackAngle = 3.1415926f / 2 - i * 3.1415926f / stacks;
+        float stackAngle = pi / 2.0f - static_cast<float>(i) * stackStep;
         float xy = radius * cosf(stackAngle);
         float z = radius * sinf(stackAngle);
 
         for (int j = 0; j <= sectors; ++j)
         {
-            float sectorAngle = j * 2 * 3.1415926f / sectors;
+            float sectorAngle = static_cast<float>(j) * sectorStep;
 
             float x = xy * cosf(sectorAngle);
             float y = xy * sinf(sectorAngle);
@@ -33,15 +42,15 @@ Sphere::Sphere(float radius, int sectors, int stacks)
             vertices.push_back(z);
 
             // TEXTURE COORDINATES (UV mapping)
-            float u = (float)j / sectors;
-            float v = (float)i / stacks;
+            float u = static_cast<float>(j) * invSectors;
+            float v = static_cast<float>(i) * invStacks;
             vertices.push_back(u);
             vertices.push_back(v);
 
             // NORMAL (important for lighting)
-            vertices.push_back(x / radius);
-            vertices.push_back(y / radius);
-            vertices.push_back(z / radius);
+            vertices.push_back(x * invRadius);
+            vertices.push_back(y * invRadius);
+            vertices.push_back(z * invRadius);
         }
     }
 
