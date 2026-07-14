@@ -3,6 +3,7 @@
 std::vector<CelestialBody*> SolarSystemFactory::createSimpleSystem()
 {
     std::vector<CelestialBody*> system;
+    system.reserve(14);
 
     // Sun - MASSIVE, BLAZING yellow-orange star with intense glow (ULTRA REALISTIC)
     CelestialBody* sun = new CelestialBody("Sun", 2000.0f, 7.0f, Vec3(1.0f, 0.75f, 0.2f));
