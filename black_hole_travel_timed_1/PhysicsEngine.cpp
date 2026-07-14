@@ -243,7 +243,11 @@ int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
         if (body == nullptr || body->radius <= 0.0f)
             continue;
 
-        const float travelDistance = body->velocity.length() * deltaTime;
+        const float velocitySquared = body->velocity.lengthSquared();
+        if (velocitySquared <= 0.0f)
+            continue;
+
+        const float travelDistance = std::sqrt(velocitySquared) * deltaTime;
         const float maxTravelPerStep = std::max(body->radius * 0.25f, 0.01f);
         const int travelSubsteps = static_cast<int>(std::ceil(travelDistance / maxTravelPerStep));
         substeps = std::max(substeps, travelSubsteps);
