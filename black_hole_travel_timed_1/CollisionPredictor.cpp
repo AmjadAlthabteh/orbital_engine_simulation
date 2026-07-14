@@ -59,29 +59,33 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 {
     predictions.clear();
     lineVertices.clear();
-    if (bodies.size() < 2 || maxTime <= 0.0f)
+    const size_t bodyCount = bodies.size();
+    if (bodyCount < 2 || maxTime <= 0.0f)
     {
         updateBuffers();
         return;
     }
 
-    predictions.reserve(bodies.size());
-    lineVertices.reserve(bodies.size() * 4);
+    Body* const* const bodyData = bodies.data();
+    predictions.reserve(bodyCount);
+    lineVertices.reserve(bodyCount * 4);
 
-    for (size_t i = 0; i < bodies.size(); ++i)
+    for (size_t i = 0; i < bodyCount; ++i)
     {
-        if (bodies[i] == nullptr)
+        Body* const bodyA = bodyData[i];
+        if (bodyA == nullptr)
             continue;
 
-        for (size_t j = i + 1; j < bodies.size(); ++j)
+        for (size_t j = i + 1; j < bodyCount; ++j)
         {
-            if (bodies[j] == nullptr)
+            Body* const bodyB = bodyData[j];
+            if (bodyB == nullptr)
                 continue;
 
-            Vec3 relativePos = bodies[j]->position - bodies[i]->position;
-            Vec3 relativeVel = bodies[j]->velocity - bodies[i]->velocity;
+            Vec3 relativePos = bodyB->position - bodyA->position;
+            Vec3 relativeVel = bodyB->velocity - bodyA->velocity;
 
-            float minDist = bodies[i]->radius + bodies[j]->radius;
+            float minDist = bodyA->radius + bodyB->radius;
 
             float a = relativeVel.dot(relativeVel);
             float b = 2.0f * relativePos.dot(relativeVel);
@@ -104,20 +108,20 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 
                 if (collisionTime > 0.0f)
                 {
-                    Vec3 collisionPos = bodies[i]->position + bodies[i]->velocity * collisionTime;
+                    Vec3 collisionPos = bodyA->position + bodyA->velocity * collisionTime;
 
                     CollisionPrediction pred;
-                    pred.bodyA = bodies[i];
-                    pred.bodyB = bodies[j];
+                    pred.bodyA = bodyA;
+                    pred.bodyB = bodyB;
                     pred.collisionPoint = collisionPos;
                     pred.timeToCollision = collisionTime;
                     pred.willCollide = true;
 
                     predictions.push_back(pred);
 
-                    lineVertices.push_back(bodies[i]->position);
+                    lineVertices.push_back(bodyA->position);
                     lineVertices.push_back(collisionPos);
-                    lineVertices.push_back(bodies[j]->position);
+                    lineVertices.push_back(bodyB->position);
                     lineVertices.push_back(collisionPos);
                 }
             }
