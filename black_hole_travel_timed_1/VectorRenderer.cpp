@@ -122,6 +122,10 @@ void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& directi
 void VectorRenderer::updateBuffers()
 {
     vertexData.clear();
+
+    if (velocityVectors.empty() && forceVectors.empty())
+        return;
+
     vertexData.reserve((velocityVectors.size() + forceVectors.size()) * 60);
 
     // Create geometry for all velocity vectors
