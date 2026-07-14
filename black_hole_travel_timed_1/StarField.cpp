@@ -114,6 +114,9 @@ void StarField::setupBuffers()
 void StarField::updateBuffers()
 {
     vertexData.clear();
+    if (stars.empty())
+        return;
+
     vertexData.reserve(stars.size() * 7);
 
     for (const auto& star : stars)
