@@ -53,7 +53,7 @@ void Trail::addPoint(const Vec3& position)
 void Trail::clear()
 {
     positions.clear();
-    needsUpdate = true;
+    needsUpdate = false;
 }
 
 void Trail::updateBuffers()
@@ -66,6 +66,7 @@ void Trail::updateBuffers()
     if (positions.size() > 10000)  // Sanity check - trail should never be this long
     {
         positions.clear();
+        needsUpdate = false;
         return;
     }
 
