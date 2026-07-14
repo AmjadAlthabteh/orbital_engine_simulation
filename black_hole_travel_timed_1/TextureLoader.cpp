@@ -51,6 +51,11 @@ GLuint TextureLoader::loadCubemap(const std::vector<std::string>& faces)
 
 GLuint TextureLoader::createProceduralPlanetTexture(const std::string& planetName, int width, int height)
 {
+    if (width <= 0 || height <= 0)
+    {
+        return 0;
+    }
+
     // Check cache
     auto it = textureCache.find(planetName);
     if (it != textureCache.end())
@@ -59,7 +64,8 @@ GLuint TextureLoader::createProceduralPlanetTexture(const std::string& planetNam
     }
 
     // Allocate texture data (RGB)
-    std::vector<unsigned char> data(width * height * 3);
+    const size_t pixelCount = static_cast<size_t>(width) * static_cast<size_t>(height);
+    std::vector<unsigned char> data(pixelCount * 3);
 
     // Generate based on planet name
     if (planetName == "Earth")
