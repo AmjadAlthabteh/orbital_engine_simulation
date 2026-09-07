@@ -3,8 +3,12 @@
 #include <iomanip>
 #include <cmath>
 
-const float PI = 3.14159265359f;
-const float G_SCALED = 0.1f;  // Gravitational constant (scaled for simulation)
+namespace
+{
+    constexpr float kPi = 3.14159265359f;
+    constexpr float kScaledG = 0.1f;
+    constexpr float kMinOrbitRadius = 0.01f;
+}
 
 OrbitalMechanicsHUD::OrbitalMechanicsHUD()
     : isEnabled(true), updateInterval(2.0f), timeSinceLastUpdate(0.0f)
@@ -22,7 +26,7 @@ OrbitalParameters OrbitalMechanicsHUD::calculateOrbitalParameters(const Body& or
     float r = relPos.length();
     float v = relVel.length();
 
-    if (r < 0.01f)
+    if (r < kMinOrbitRadius || central.mass <= 0.0f)
     {
         // Too close, invalid orbit
         params.isStable = false;
@@ -62,7 +66,7 @@ OrbitalParameters OrbitalMechanicsHUD::calculateOrbitalParameters(const Body& or
     }
 
     // Specific orbital energy: E = v²/2 - GM/r
-    float GM = central.mass * G_SCALED;
+    float GM = central.mass * kScaledG;
     params.specificEnergy = (v * v) / 2.0f - GM / r;
 
     // Angular momentum magnitude: L = r × v
@@ -71,7 +75,7 @@ OrbitalParameters OrbitalMechanicsHUD::calculateOrbitalParameters(const Body& or
 
     // Inclination (angle from XZ plane)
     Vec3 normalVec = angularMomentumVec.normalize();
-    params.inclination = std::acos(std::abs(normalVec.y)) * 180.0f / PI;
+    params.inclination = std::acos(std::abs(normalVec.y)) * 180.0f / kPi;
 
     // Classify orbit type
     params.orbitType = classifyOrbitType(params.eccentricity);
@@ -88,9 +92,9 @@ float OrbitalMechanicsHUD::calculateEccentricity(const Vec3& position, const Vec
     float r_mag = r.length();
     float v_mag = v.length();
 
-    if (r_mag < 0.01f) return 0.0f;
+    if (r_mag < kMinOrbitRadius || centralMass <= 0.0f) return 0.0f;
 
-    float GM = centralMass * G_SCALED;
+    float GM = centralMass * kScaledG;
 
     // Eccentricity vector: e = (v × L)/GM - r/|r|
     Vec3 L = r.cross(v);  // Angular momentum
@@ -107,8 +111,10 @@ float OrbitalMechanicsHUD::calculateSemiMajorAxis(const Vec3& position, const Ve
 
     float r_mag = r.length();
     float v_mag = v.length();
+    if (r_mag < kMinOrbitRadius || centralMass <= 0.0f)
+        return 0.0f;
 
-    float GM = centralMass * G_SCALED;
+    float GM = centralMass * kScaledG;
 
     // Semi-major axis: a = -GM / (2E) where E is specific orbital energy
     float specificEnergy = (v_mag * v_mag) / 2.0f - GM / r_mag;
@@ -126,10 +132,12 @@ float OrbitalMechanicsHUD::calculateOrbitalPeriod(float semiMajorAxis, float cen
 {
     if (semiMajorAxis <= 0.0f) return 0.0f;
 
-    float GM = centralMass * G_SCALED;
+    if (centralMass <= 0.0f) return 0.0f;
+
+    float GM = centralMass * kScaledG;
 
     // Kepler's third law: T = 2π * sqrt(a³ / GM)
-    float period = 2.0f * PI * std::sqrt((semiMajorAxis * semiMajorAxis * semiMajorAxis) / GM);
+    float period = 2.0f * kPi * std::sqrt((semiMajorAxis * semiMajorAxis * semiMajorAxis) / GM);
 
     return period;
 }
