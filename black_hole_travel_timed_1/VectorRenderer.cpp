@@ -33,6 +33,9 @@ void VectorRenderer::setupBuffers()
 
 void VectorRenderer::addVelocityVector(const Vec3& origin, const Vec3& velocity)
 {
+    if (!origin.isFinite() || !velocity.isFinite())
+        return;
+
     const float speedSquared = velocity.lengthSquared();
     if (speedSquared < 0.000001f)
         return;
@@ -51,6 +54,9 @@ void VectorRenderer::addVelocityVector(const Vec3& origin, const Vec3& velocity)
 
 void VectorRenderer::addForceVector(const Vec3& origin, const Vec3& force)
 {
+    if (!origin.isFinite() || !force.isFinite())
+        return;
+
     const float forceMagSquared = force.lengthSquared();
     if (forceMagSquared < 0.0001f)
         return; // Don't render tiny forces
@@ -69,6 +75,9 @@ void VectorRenderer::addForceVector(const Vec3& origin, const Vec3& force)
 
 void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& direction, float magnitude, const Vec3& color)
 {
+    if (!origin.isFinite() || !direction.isFinite() || !color.isFinite() || !std::isfinite(magnitude))
+        return;
+
     static constexpr float headCos[4] = { 1.0f, 0.0f, -1.0f, 0.0f };
     static constexpr float headSin[4] = { 0.0f, 1.0f, 0.0f, -1.0f };
 
