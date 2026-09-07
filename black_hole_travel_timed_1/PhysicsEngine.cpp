@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <limits>
 
 // OPTIMIZATION: Fast inverse square root (Quake III style) for distance calculations
 // Only about 1% less accurate than std::sqrt but significantly faster
@@ -67,6 +68,7 @@ void PhysicsEngine::update(float deltaTime)
 
     // Update collision markers once per frame (not per substep)
     updateCollisionMarkers(deltaTime);
+    updateDiagnostics();
 }
 
 const std::vector<CollisionEvent>& PhysicsEngine::getRecentCollisions() const
@@ -114,6 +116,56 @@ void PhysicsEngine::updateCollisionMarkers(float deltaTime)
             recentCollisions.end(),
             [](const CollisionEvent& event) { return event.timestamp > 3.0f; }),
         recentCollisions.end());
+}
+
+void PhysicsEngine::updateDiagnostics()
+{
+    diagnostics = PhysicsDiagnostics();
+    diagnostics.closestApproach = std::numeric_limits<float>::max();
+
+    const size_t bodyCount = bodies.size();
+    Body* const* const bodyData = bodies.data();
+
+    for (size_t i = 0; i < bodyCount; ++i)
+    {
+        const Body* const body = bodyData[i];
+        if (body == nullptr || body->mass <= 0.0f)
+            continue;
+
+        diagnostics.kineticEnergy += body->kineticEnergy();
+        diagnostics.totalMomentum += body->velocity * body->mass;
+    }
+
+    const float softeningSquared = gravitySofteningLength * gravitySofteningLength;
+    for (size_t i = 0; i < bodyCount; ++i)
+    {
+        const Body* const bodyI = bodyData[i];
+        if (bodyI == nullptr || bodyI->mass <= 0.0f)
+            continue;
+
+        for (size_t j = i + 1; j < bodyCount; ++j)
+        {
+            const Body* const bodyJ = bodyData[j];
+            if (bodyJ == nullptr || bodyJ->mass <= 0.0f)
+                continue;
+
+            const Vec3 delta = bodyJ->position - bodyI->position;
+            const float rawDistanceSquared = delta.lengthSquared();
+            diagnostics.closestApproach = std::min(diagnostics.closestApproach, std::sqrt(rawDistanceSquared));
+
+            const float softenedDistance = std::sqrt(rawDistanceSquared + softeningSquared);
+            if (softenedDistance > 0.0f)
+            {
+                diagnostics.potentialEnergy -=
+                    gravitationalConstant * bodyI->mass * bodyJ->mass / softenedDistance;
+            }
+        }
+    }
+
+    if (diagnostics.closestApproach == std::numeric_limits<float>::max())
+        diagnostics.closestApproach = 0.0f;
+
+    diagnostics.totalEnergy = diagnostics.kineticEnergy + diagnostics.potentialEnergy;
 }
 
 void PhysicsEngine::applyGravity()

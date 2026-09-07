@@ -12,12 +12,22 @@ struct CollisionEvent
     Body* bodyB;
 };
 
+struct PhysicsDiagnostics
+{
+    float kineticEnergy = 0.0f;
+    float potentialEnergy = 0.0f;
+    float totalEnergy = 0.0f;
+    Vec3 totalMomentum;
+    float closestApproach = 0.0f;
+};
+
 class PhysicsEngine
 {
 private:
     std::vector<Body*> bodies;
     float gravitationalConstant;
     std::vector<CollisionEvent> recentCollisions;  // Track recent collisions
+    PhysicsDiagnostics diagnostics;
 
     // Adaptive substepping parameters for improved stability
     float maxTimeStep;         // Maximum timestep before subdivision (default 0.016f)
@@ -45,10 +55,12 @@ public:
     void setGravitySofteningLength(float length);
     void setMaxVelocityChangePerStep(float deltaV);
     int getLastSubstepCount() const { return lastSubstepCount; }
+    const PhysicsDiagnostics& getDiagnostics() const { return diagnostics; }
 
 private:
     void applyGravity();
     void handleCollisions();
+    void updateDiagnostics();
     bool needsAdaptiveStepping() const;  // Check if adaptive stepping is needed
     int calculateAdaptiveSubsteps(float deltaTime) const;
     mutable int lastSubstepCount;        // Track substeps for diagnostics
