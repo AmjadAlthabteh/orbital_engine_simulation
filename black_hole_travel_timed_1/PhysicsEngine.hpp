@@ -36,6 +36,8 @@ private:
     float gravitySofteningLength;  // Prevent singular forces during very close passes
     float maxVelocityChangePerStep;  // Acceleration-based substep threshold
     float maxFrameTime;        // Clamp hitches before substep calculation
+    float restitution;         // Bounce retained after impacts
+    float collisionFriction;   // Tangential damping applied during contact
 
 public:
     PhysicsEngine(float G = 0.1f);
@@ -56,6 +58,8 @@ public:
     void setGravitySofteningLength(float length);
     void setMaxVelocityChangePerStep(float deltaV);
     void setMaxFrameTime(float seconds);
+    void setRestitution(float value);
+    void setCollisionFriction(float value);
     int getLastSubstepCount() const { return lastSubstepCount; }
     const PhysicsDiagnostics& getDiagnostics() const { return diagnostics; }
 

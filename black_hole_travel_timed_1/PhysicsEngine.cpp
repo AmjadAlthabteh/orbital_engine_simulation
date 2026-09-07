@@ -33,6 +33,8 @@ PhysicsEngine::PhysicsEngine(float G)
     gravitySofteningLength = 0.25f;
     maxVelocityChangePerStep = 5.0f;
     maxFrameTime = 0.25f;
+    restitution = 0.72f;
+    collisionFriction = 0.04f;
     lastSubstepCount = 1;
 }
 
@@ -106,6 +108,16 @@ void PhysicsEngine::setMaxVelocityChangePerStep(float deltaV)
 void PhysicsEngine::setMaxFrameTime(float seconds)
 {
     maxFrameTime = std::max(seconds, maxTimeStep);
+}
+
+void PhysicsEngine::setRestitution(float value)
+{
+    restitution = std::max(0.0f, std::min(value, 1.0f));
+}
+
+void PhysicsEngine::setCollisionFriction(float value)
+{
+    collisionFriction = std::max(0.0f, std::min(value, 1.0f));
 }
 
 void PhysicsEngine::updateCollisionMarkers(float deltaTime)
@@ -408,14 +420,27 @@ void PhysicsEngine::handleCollisions()
                 if (inverseMassSum <= 0.0f)
                     continue;
 
-                // Simple elastic collision response
-                float e = 0.8f; // coefficient of restitution
-                float j_impulse = -(1.0f + e) * velAlongNormal;
+                const float impactRestitution = (collisionSpeed > 25.0f)
+                    ? restitution * 0.85f
+                    : restitution;
+                float j_impulse = -(1.0f + impactRestitution) * velAlongNormal;
                 j_impulse /= inverseMassSum;
 
                 Vec3 impulse = normal * j_impulse;
                 bodyA->applyImpulse(impulse * -1.0f);
                 bodyB->applyImpulse(impulse);
+
+                const Vec3 tangentVelocity = relativeVel - normal * velAlongNormal;
+                const float tangentSpeedSquared = tangentVelocity.lengthSquared();
+                if (tangentSpeedSquared > 0.000001f && collisionFriction > 0.0f)
+                {
+                    const Vec3 tangent = tangentVelocity * (1.0f / std::sqrt(tangentSpeedSquared));
+                    const float frictionImpulseMagnitude =
+                        std::min(collisionFriction * j_impulse, std::sqrt(tangentSpeedSquared) / inverseMassSum);
+                    const Vec3 frictionImpulse = tangent * frictionImpulseMagnitude;
+                    bodyA->applyImpulse(frictionImpulse);
+                    bodyB->applyImpulse(frictionImpulse * -1.0f);
+                }
 
                 // Separate bodies in proportion to inverse mass to avoid moving heavy bodies too much.
                 constexpr float penetrationSlop = 0.01f;
