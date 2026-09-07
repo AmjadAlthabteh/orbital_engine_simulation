@@ -75,8 +75,10 @@ OrbitalParameters OrbitalMechanicsHUD::calculateOrbitalParameters(const Body& or
     params.angularMomentum = angularMomentumVec.length();
 
     // Inclination (angle from XZ plane)
-    Vec3 normalVec = angularMomentumVec.normalize();
-    params.inclination = std::acos(std::abs(normalVec.y)) * 180.0f / kPi;
+    Vec3 normalVec = angularMomentumVec.normalizedOrZero();
+    params.inclination = (normalVec.lengthSquared() > 0.0f)
+        ? std::acos(std::abs(normalVec.y)) * 180.0f / kPi
+        : 0.0f;
 
     // Classify orbit type
     params.orbitType = classifyOrbitType(params.eccentricity);
