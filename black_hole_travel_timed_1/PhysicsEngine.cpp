@@ -187,13 +187,13 @@ void PhysicsEngine::applyGravity()
     for (size_t i = 0; i < bodyCount; ++i)
     {
         Body* const bodyI = bodyData[i];
-        if (bodyI == nullptr)
+        if (bodyI == nullptr || bodyI->mass <= 0.0f)
             continue;
 
         for (size_t j = i + 1; j < bodyCount; ++j)
         {
             Body* const bodyJ = bodyData[j];
-            if (bodyJ == nullptr)
+            if (bodyJ == nullptr || bodyJ->mass <= 0.0f)
                 continue;
 
             // OPTIMIZATION: Manually unroll vector subtraction (cache-friendly)
@@ -209,17 +209,17 @@ void PhysicsEngine::applyGravity()
             const float invDistance = fastInvSqrt(distanceSquared);
             const float invDistCubed = invDistance * invDistance * invDistance;
 
-            // OPTIMIZATION: Combine mass product with G constant
-            const float forceFactor = gravitationalConstant * bodyI->mass * bodyJ->mass * invDistCubed;
+            const float pairForceScale = gravitationalConstant * bodyI->mass * bodyJ->mass * invDistCubed;
 
             // Calculate force components directly (avoid Vec3 temporaries)
-            const float fx = dx * forceFactor;
-            const float fy = dy * forceFactor;
-            const float fz = dz * forceFactor;
+            const Vec3 forceOnI(
+                dx * pairForceScale,
+                dy * pairForceScale,
+                dz * pairForceScale);
 
             // Apply forces (compiler can now optimize better with explicit loads)
-            bodyI->applyForce(Vec3(fx, fy, fz));
-            bodyJ->applyForce(Vec3(-fx, -fy, -fz));
+            bodyI->applyForce(forceOnI);
+            bodyJ->applyForce(forceOnI * -1.0f);
         }
     }
 }
