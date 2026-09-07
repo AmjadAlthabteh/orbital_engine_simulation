@@ -1,7 +1,11 @@
 #include "LagrangePoints.hpp"
 #include <cmath>
 
-const float PI = 3.14159265359f;
+namespace
+{
+    constexpr float kPi = 3.14159265359f;
+    constexpr float kMinSeparationSquared = 0.000001f;
+}
 
 LagrangePoints::LagrangePoints()
     : markerSphere(0.4f), VAO(0), VBO(0), isVisible(true), animationTime(0.0f)
@@ -18,6 +22,12 @@ LagrangePoints::~LagrangePoints()
 void LagrangePoints::calculatePoints(const Body& primary, const Body& secondary)
 {
     points.clear();
+    if ((secondary.position - primary.position).lengthSquared() <= kMinSeparationSquared ||
+        primary.mass <= 0.0f || secondary.mass <= 0.0f)
+    {
+        updateBuffers();
+        return;
+    }
 
     // L1 - Between the two bodies (unstable)
     LagrangePoint L1;
@@ -78,6 +88,9 @@ Vec3 LagrangePoints::calculateL1(const Body& primary, const Body& secondary)
     // Simplified calculation: weighted average closer to smaller body
     Vec3 direction = (secondary.position - primary.position);
     float distance = direction.length();
+    if (distance <= 0.0f)
+        return primary.position;
+
     direction = direction / distance;
 
     // Mass ratio affects position
@@ -92,6 +105,9 @@ Vec3 LagrangePoints::calculateL2(const Body& primary, const Body& secondary)
     // L2 is beyond the secondary body (opposite side from primary)
     Vec3 direction = (secondary.position - primary.position);
     float distance = direction.length();
+    if (distance <= 0.0f)
+        return primary.position;
+
     direction = direction / distance;
 
     float massRatio = secondary.mass / (primary.mass + secondary.mass);
@@ -105,6 +121,9 @@ Vec3 LagrangePoints::calculateL3(const Body& primary, const Body& secondary)
     // L3 is on opposite side of primary from secondary
     Vec3 direction = (secondary.position - primary.position);
     float distance = direction.length();
+    if (distance <= 0.0f)
+        return primary.position;
+
     direction = direction / distance;
 
     float massRatio = secondary.mass / (primary.mass + secondary.mass);
@@ -116,12 +135,14 @@ Vec3 LagrangePoints::calculateL3(const Body& primary, const Body& secondary)
 Vec3 LagrangePoints::calculateL4(const Body& primary, const Body& secondary)
 {
     // L4 forms an equilateral triangle with primary and secondary
-    // It's 60° ahead of secondary in its orbit
+    // It is 60 degrees ahead of secondary in its orbit.
     Vec3 toSecondary = secondary.position - primary.position;
     float distance = toSecondary.length();
+    if (distance <= 0.0f)
+        return primary.position;
 
-    // Rotate vector by +60° around Y axis
-    float angle = 60.0f * PI / 180.0f;
+    // Rotate vector by +60 degrees around Y axis.
+    float angle = 60.0f * kPi / 180.0f;
     float cosAngle = std::cos(angle);
     float sinAngle = std::sin(angle);
 
@@ -131,19 +152,22 @@ Vec3 LagrangePoints::calculateL4(const Body& primary, const Body& secondary)
         toSecondary.x * sinAngle + toSecondary.z * cosAngle
     );
 
-    L4_direction = L4_direction / L4_direction.length();
+    L4_direction = L4_direction.normalizedOrZero();
     return primary.position + L4_direction * distance;
 }
 
 Vec3 LagrangePoints::calculateL5(const Body& primary, const Body& secondary)
 {
     // L5 forms an equilateral triangle with primary and secondary
-    // It's 60° behind secondary in its orbit
+    // It is 60 degrees behind secondary in its orbit.
     Vec3 toSecondary = secondary.position - primary.position;
     float distance = toSecondary.length();
 
-    // Rotate vector by -60° around Y axis
-    float angle = -60.0f * PI / 180.0f;
+    // Rotate vector by -60 degrees around Y axis.
+    if (distance <= 0.0f)
+        return primary.position;
+
+    float angle = -60.0f * kPi / 180.0f;
     float cosAngle = std::cos(angle);
     float sinAngle = std::sin(angle);
 
@@ -153,7 +177,7 @@ Vec3 LagrangePoints::calculateL5(const Body& primary, const Body& secondary)
         toSecondary.x * sinAngle + toSecondary.z * cosAngle
     );
 
-    L5_direction = L5_direction / L5_direction.length();
+    L5_direction = L5_direction.normalizedOrZero();
     return primary.position + L5_direction * distance;
 }
 
