@@ -32,6 +32,7 @@ PhysicsEngine::PhysicsEngine(float G)
     velocityThreshold = 100.0f;   // Activate adaptive stepping above 100 m/s
     gravitySofteningLength = 0.25f;
     maxVelocityChangePerStep = 5.0f;
+    maxFrameTime = 0.25f;
     lastSubstepCount = 1;
 }
 
@@ -45,10 +46,11 @@ void PhysicsEngine::update(float deltaTime)
     if (deltaTime <= 0.0f)
         return;
 
-    const int substeps = calculateAdaptiveSubsteps(deltaTime);
+    const float frameDeltaTime = std::min(deltaTime, maxFrameTime);
+    const int substeps = calculateAdaptiveSubsteps(frameDeltaTime);
 
     lastSubstepCount = substeps;
-    const float subDeltaTime = deltaTime / static_cast<float>(substeps);
+    const float subDeltaTime = frameDeltaTime / static_cast<float>(substeps);
 
     // Perform physics update in substeps
     for (int step = 0; step < substeps; ++step)
@@ -67,7 +69,7 @@ void PhysicsEngine::update(float deltaTime)
     }
 
     // Update collision markers once per frame (not per substep)
-    updateCollisionMarkers(deltaTime);
+    updateCollisionMarkers(frameDeltaTime);
     updateDiagnostics();
 }
 
@@ -99,6 +101,11 @@ void PhysicsEngine::setGravitySofteningLength(float length)
 void PhysicsEngine::setMaxVelocityChangePerStep(float deltaV)
 {
     maxVelocityChangePerStep = std::max(deltaV, 0.001f);
+}
+
+void PhysicsEngine::setMaxFrameTime(float seconds)
+{
+    maxFrameTime = std::max(seconds, maxTimeStep);
 }
 
 void PhysicsEngine::updateCollisionMarkers(float deltaTime)
