@@ -7,6 +7,7 @@ namespace
 {
     constexpr float kMinMass = 0.0001f;
     constexpr float kMinDistanceSquared = 0.0001f;
+    constexpr float kTrajectorySofteningSquared = 0.0625f;
     constexpr float kMinRelativeSpeedSquared = 0.000001f;
     constexpr std::size_t kMaxLineVertices = 100000;
 }
@@ -40,7 +41,7 @@ void CollisionPredictor::setupBuffers()
 Vec3 CollisionPredictor::calculateFuturePosition(const Body& body, const Body& otherBody, float G, float time)
 {
     Vec3 r = otherBody.position - body.position;
-    float distanceSquared = r.lengthSquared();
+    float distanceSquared = r.lengthSquared() + kTrajectorySofteningSquared;
 
     if (body.mass <= kMinMass || distanceSquared < kMinDistanceSquared)
         return body.position;
@@ -191,7 +192,7 @@ void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector
                 continue;
 
             Vec3 direction = other->position - simPos;
-            float distanceSquared = direction.lengthSquared();
+            float distanceSquared = direction.lengthSquared() + kTrajectorySofteningSquared;
 
             if (distanceSquared < 0.01f) // 0.1^2
                 continue;
@@ -199,13 +200,13 @@ void CollisionPredictor::calculateTrajectoryPoints(const Body& body, std::vector
             const float invDistance = 1.0f / std::sqrt(distanceSquared);
             float forceMagnitude = G * body.mass * other->mass * (invDistance * invDistance);
             Vec3 force = direction * (invDistance * forceMagnitude);
-            totalForce = totalForce + force;
+            totalForce += force;
         }
 
-        // Update position and velocity using Euler integration
+        // Match Body::integrate with semi-implicit Euler for closer prediction.
         Vec3 acceleration = totalForce * (1.0f / body.mass);
-        simVel = simVel + acceleration * timeStep;
-        simPos = simPos + simVel * timeStep;
+        simVel += acceleration * timeStep;
+        simPos += simVel * timeStep;
 
         outPoints.push_back(simPos);
     }
