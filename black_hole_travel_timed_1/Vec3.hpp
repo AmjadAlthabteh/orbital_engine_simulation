@@ -28,6 +28,30 @@ struct Vec3
         return Vec3(x / s, y / s, z / s);
     }
 
+    Vec3& operator+=(const Vec3& v)
+    {
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        return *this;
+    }
+
+    Vec3& operator-=(const Vec3& v)
+    {
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
+        return *this;
+    }
+
+    Vec3& operator*=(float s)
+    {
+        x *= s;
+        y *= s;
+        z *= s;
+        return *this;
+    }
+
     float dot(const Vec3& v) const
     {
         return x * v.x + y * v.y + z * v.z;
@@ -58,5 +82,18 @@ struct Vec3
         if (lenSquared == 0.0f) return Vec3();
         const float invLen = 1.0f / std::sqrt(lenSquared);
         return Vec3(x * invLen, y * invLen, z * invLen);
+    }
+
+    Vec3 normalizedOrZero(float minLengthSquared = 0.000001f) const
+    {
+        const float lenSquared = lengthSquared();
+        if (lenSquared <= minLengthSquared) return Vec3();
+        const float invLen = 1.0f / std::sqrt(lenSquared);
+        return Vec3(x * invLen, y * invLen, z * invLen);
+    }
+
+    bool isFinite() const
+    {
+        return std::isfinite(x) && std::isfinite(y) && std::isfinite(z);
     }
 };
