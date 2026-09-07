@@ -100,8 +100,10 @@ void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& directi
 
     // Arrow head - create perpendicular vectors
     Vec3 arbitrary = (std::abs(direction.y) < 0.9f) ? Vec3(0, 1, 0) : Vec3(1, 0, 0);
-    Vec3 perpendicular1 = direction.cross(arbitrary).normalize();
-    Vec3 perpendicular2 = direction.cross(perpendicular1).normalize();
+    Vec3 perpendicular1 = direction.cross(arbitrary).normalizedOrZero();
+    Vec3 perpendicular2 = direction.cross(perpendicular1).normalizedOrZero();
+    if (perpendicular1.lengthSquared() == 0.0f || perpendicular2.lengthSquared() == 0.0f)
+        return;
 
     float headSize = magnitude * 0.2f;
     Vec3 headBase = origin + direction * (magnitude * 0.8f);
