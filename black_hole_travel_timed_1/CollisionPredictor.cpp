@@ -135,11 +135,19 @@ void CollisionPredictor::predictCollisions(std::vector<Body*>& bodies, float G, 
 void CollisionPredictor::updateBuffers()
 {
     if (lineVertices.empty())
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         return;
+    }
 
     if (lineVertices.size() > kMaxLineVertices)
     {
         lineVertices.clear();
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         return;
     }
 
