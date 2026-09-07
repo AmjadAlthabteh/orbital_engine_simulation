@@ -41,7 +41,8 @@ OrbitalParameters OrbitalMechanicsHUD::calculateOrbitalParameters(const Body& or
     params.semiMajorAxis = calculateSemiMajorAxis(relPos, relVel, Vec3(0,0,0), central.mass);
 
     // Calculate semi-minor axis: b = a * sqrt(1 - e²)
-    params.semiMinorAxis = params.semiMajorAxis * std::sqrt(1.0f - params.eccentricity * params.eccentricity);
+    const float minorAxisTerm = std::max(0.0f, 1.0f - params.eccentricity * params.eccentricity);
+    params.semiMinorAxis = params.semiMajorAxis * std::sqrt(minorAxisTerm);
 
     // Calculate apoapsis and periapsis
     params.apoapsis = params.semiMajorAxis * (1.0f + params.eccentricity);
