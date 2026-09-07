@@ -8,6 +8,20 @@ namespace
     constexpr float kPi = 3.14159265359f;
     constexpr float kScaledG = 0.1f;
     constexpr float kMinOrbitRadius = 0.01f;
+
+    float normalizeDegrees(float angle)
+    {
+        float wrapped = std::fmod(angle, 360.0f);
+        if (wrapped < 0.0f)
+            wrapped += 360.0f;
+        return wrapped;
+    }
+
+    float angularDifferenceDegrees(float a, float b)
+    {
+        const float diff = std::abs(normalizeDegrees(a) - normalizeDegrees(b));
+        return std::min(diff, 360.0f - diff);
+    }
 }
 
 OrbitalMechanicsHUD::OrbitalMechanicsHUD()
@@ -204,7 +218,7 @@ void OrbitalMechanicsHUD::displayTransferInfo(float deltaV, float transferTime,
     std::cout << "║  Current Phase:     " << std::left << std::setw(35) << (std::to_string(phaseAngle) + " degrees") << "║\n";
     std::cout << "║  Optimal Phase:     " << std::left << std::setw(35) << (std::to_string(optimalPhase) + " degrees") << "║\n";
 
-    float angleDiff = std::abs(phaseAngle - optimalPhase);
+    float angleDiff = angularDifferenceDegrees(phaseAngle, optimalPhase);
     if (angleDiff < 10.0f)
     {
         std::cout << "║  Transfer Window:   " << std::left << std::setw(35) << "OPEN! ✓ Good to go!" << "║\n";
