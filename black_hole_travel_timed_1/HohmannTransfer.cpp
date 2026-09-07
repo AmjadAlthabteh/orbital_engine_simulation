@@ -1,9 +1,28 @@
 #include "HohmannTransfer.hpp"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
-const float PI = 3.14159265359f;
-const float G = 6.67430e-11f;  // Gravitational constant (scaled for our sim)
+namespace
+{
+    constexpr float kPi = 3.14159265359f;
+    constexpr float kSimulationG = 0.1f;
+    constexpr float kMinOrbitRadius = 0.1f;
+
+    float normalizeDegrees(float angle)
+    {
+        float wrapped = std::fmod(angle, 360.0f);
+        if (wrapped < 0.0f)
+            wrapped += 360.0f;
+        return wrapped;
+    }
+
+    float angularDifferenceDegrees(float a, float b)
+    {
+        const float diff = std::abs(normalizeDegrees(a) - normalizeDegrees(b));
+        return std::min(diff, 360.0f - diff);
+    }
+}
 
 HohmannTransfer::HohmannTransfer() : isActive(false)
 {
@@ -13,6 +32,8 @@ HohmannTransfer::HohmannTransfer() : isActive(false)
 TransferOrbit HohmannTransfer::calculateTransfer(const Body& from, const Body& to,
                                                  const Body& centralBody, float currentTime)
 {
+    (void)currentTime;
+
     TransferOrbit transfer;
     transfer.isValid = false;
 
@@ -22,7 +43,7 @@ TransferOrbit HohmannTransfer::calculateTransfer(const Body& from, const Body& t
     float r1 = fromPos.length();
     float r2 = toPos.length();
 
-    if (r1 < 0.1f || r2 < 0.1f)
+    if (r1 < kMinOrbitRadius || r2 < kMinOrbitRadius || centralBody.mass <= 0.0f)
     {
         return transfer;  // Invalid - too close to central body
     }
@@ -34,10 +55,12 @@ TransferOrbit HohmannTransfer::calculateTransfer(const Body& from, const Body& t
     // Hohmann transfer velocities
     // At periapsis (inner orbit): v_transfer = sqrt(GM * (2/r1 - 2/(r1+r2)))
     // At apoapsis (outer orbit): v_transfer = sqrt(GM * (2/r2 - 2/(r1+r2)))
-    float GM = centralBody.mass * 0.1f;  // Scaled for our simulation
+    float GM = centralBody.mass * kSimulationG;  // Scaled for our simulation
 
     float v_transfer_at_r1 = std::sqrt(GM * (2.0f/r1 - 2.0f/(r1+r2)));
     float v_transfer_at_r2 = std::sqrt(GM * (2.0f/r2 - 2.0f/(r1+r2)));
+    if (!std::isfinite(v_transfer_at_r1) || !std::isfinite(v_transfer_at_r2))
+        return transfer;
 
     // Delta-V calculations
     float deltaV1 = std::abs(v_transfer_at_r1 - v1);  // Burn at departure
@@ -48,11 +71,11 @@ TransferOrbit HohmannTransfer::calculateTransfer(const Body& from, const Body& t
     transfer.transferTime = calculateTransferTime(r1, r2, centralBody.mass);
 
     // Calculate phase angle
-    Vec3 fromDir = fromPos.normalize();
-    Vec3 toDir = toPos.normalize();
+    Vec3 fromDir = fromPos.normalizedOrZero();
+    Vec3 toDir = toPos.normalizedOrZero();
     float dotProduct = fromDir.dot(toDir);
     dotProduct = std::max(-1.0f, std::min(1.0f, dotProduct));  // Clamp
-    transfer.phase_angle = std::acos(dotProduct) * 180.0f / PI;
+    transfer.phase_angle = normalizeDegrees(std::acos(dotProduct) * 180.0f / kPi);
 
     // Calculate optimal phase angle
     transfer.optimal_phase = calculateOptimalPhaseAngle(from, to, centralBody);
@@ -95,18 +118,21 @@ float HohmannTransfer::calculateOrbitalRadius(const Vec3& position, const Vec3& 
 
 float HohmannTransfer::calculateOrbitalVelocity(float radius, float centralMass)
 {
-    if (radius < 0.1f) return 0.0f;
-    float GM = centralMass * 0.1f;  // Scaled
+    if (radius < kMinOrbitRadius || centralMass <= 0.0f) return 0.0f;
+    float GM = centralMass * kSimulationG;  // Scaled
     return std::sqrt(GM / radius);
 }
 
 float HohmannTransfer::calculateTransferTime(float r1, float r2, float centralMass)
 {
-    float GM = centralMass * 0.1f;  // Scaled
+    if (r1 < kMinOrbitRadius || r2 < kMinOrbitRadius || centralMass <= 0.0f)
+        return 0.0f;
+
+    float GM = centralMass * kSimulationG;  // Scaled
     float a = (r1 + r2) / 2.0f;  // Semi-major axis of transfer ellipse
 
-    // Orbital period: T = 2π * sqrt(a³ / GM)
-    float period = 2.0f * PI * std::sqrt((a * a * a) / GM);
+    // Orbital period: T = 2*pi * sqrt(a^3 / GM)
+    float period = 2.0f * kPi * std::sqrt((a * a * a) / GM);
 
     // Transfer time is half the period
     return period / 2.0f;
@@ -120,6 +146,8 @@ float HohmannTransfer::calculateOptimalPhaseAngle(const Body& from, const Body& 
 
     float r1 = fromPos.length();
     float r2 = toPos.length();
+    if (r1 < kMinOrbitRadius || r2 < kMinOrbitRadius)
+        return 0.0f;
 
     float transferTime = calculateTransferTime(r1, r2, centralBody.mass);
 
@@ -130,10 +158,10 @@ float HohmannTransfer::calculateOptimalPhaseAngle(const Body& from, const Body& 
     // How far target will move during transfer
     float angleTarget = omega2 * transferTime;
 
-    // Optimal phase angle = 180° - angle_target (in degrees)
-    float optimalAngle = 180.0f - (angleTarget * 180.0f / PI);
+    // Optimal phase angle = 180 degrees - angle_target.
+    float optimalAngle = 180.0f - (angleTarget * 180.0f / kPi);
 
-    return optimalAngle;
+    return normalizeDegrees(optimalAngle);
 }
 
 bool HohmannTransfer::isTransferWindowOpen(const Body& from, const Body& to,
@@ -144,7 +172,7 @@ bool HohmannTransfer::isTransferWindowOpen(const Body& from, const Body& to,
     if (!transfer.isValid)
         return false;
 
-    float angleDiff = std::abs(transfer.phase_angle - transfer.optimal_phase);
+    float angleDiff = angularDifferenceDegrees(transfer.phase_angle, transfer.optimal_phase);
 
     return angleDiff < tolerance;
 }
@@ -171,6 +199,9 @@ void HohmannTransfer::generateTransferPath(TransferOrbit& transfer, const Body& 
 
     float r1 = start.length();
     float r2 = end.length();
+    if (r1 < kMinOrbitRadius || r2 < kMinOrbitRadius)
+        return;
+
     float a = (r1 + r2) / 2.0f;  // Semi-major axis
     float e = (r2 - r1) / (r2 + r1);  // Eccentricity
 
@@ -179,9 +210,9 @@ void HohmannTransfer::generateTransferPath(TransferOrbit& transfer, const Body& 
     for (int i = 0; i <= numPoints; i++)
     {
         float t = (float)i / (float)numPoints;
-        float angle = t * PI;  // 0 to π (half ellipse)
+        float angle = t * kPi;  // 0 to pi (half ellipse)
 
-        // Ellipse equation in polar form: r = a(1-e²) / (1 + e*cos(θ))
+        // Ellipse equation in polar form: r = a(1-e^2) / (1 + e*cos(theta))
         float r = a * (1.0f - e * e) / (1.0f + e * std::cos(angle));
 
         // Calculate point on transfer ellipse
