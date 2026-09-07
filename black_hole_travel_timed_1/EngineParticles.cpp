@@ -45,8 +45,10 @@ void EngineParticles::emit(const Vec3& position, const Vec3& direction,
 
             // Emit in opposite direction of thrust with some spread
             Vec3 emitDir = direction * -1.0f;
-            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
-            emitDir = emitDir / emitDir.length();  // Normalize
+            emitDir += Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir = emitDir.normalizedOrZero();
+            if (emitDir.lengthSquared() == 0.0f)
+                emitDir = Vec3(0.0f, 0.0f, -1.0f);
 
             // Particle velocity = ship velocity + emission velocity
             float emitSpeed = speedDis(gen) * intensity;
@@ -213,8 +215,10 @@ void EngineParticles::emitRainbow(const Vec3& position, const Vec3& direction,
             p.position = position;
 
             Vec3 emitDir = direction * -1.0f;
-            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
-            emitDir = emitDir / emitDir.length();
+            emitDir += Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir = emitDir.normalizedOrZero();
+            if (emitDir.lengthSquared() == 0.0f)
+                emitDir = Vec3(0.0f, 0.0f, -1.0f);
 
             float emitSpeed = speedDis(gen);
             p.velocity = shipVelocity + emitDir * emitSpeed;
@@ -302,7 +306,10 @@ void EngineParticles::emitWarpTrail(const Vec3& position, const Vec3& direction,
 
             // Warp trail streaks backwards
             Vec3 emitDir = direction * -1.0f;
-            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir += Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir = emitDir.normalizedOrZero();
+            if (emitDir.lengthSquared() == 0.0f)
+                emitDir = Vec3(0.0f, 0.0f, -1.0f);
             p.velocity = emitDir * 30.0f;  // Fast streaks!
 
             p.size = sizeDis(gen);
@@ -338,8 +345,10 @@ void EngineParticles::emitTurboFlames(const Vec3& position, const Vec3& directio
             p.position = position;
 
             Vec3 emitDir = direction * -1.0f;
-            emitDir = emitDir + Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
-            emitDir = emitDir / emitDir.length();
+            emitDir += Vec3(spreadDis(gen), spreadDis(gen), spreadDis(gen));
+            emitDir = emitDir.normalizedOrZero();
+            if (emitDir.lengthSquared() == 0.0f)
+                emitDir = Vec3(0.0f, 0.0f, -1.0f);
 
             float emitSpeed = speedDis(gen);
             p.velocity = shipVelocity + emitDir * emitSpeed;
