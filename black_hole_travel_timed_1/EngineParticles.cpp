@@ -99,7 +99,7 @@ void EngineParticles::update(float deltaTime)
             continue;
         }
 
-        p.position = p.position + p.velocity * deltaTime;
+        p.position += p.velocity * deltaTime;
 
         // Fade out as lifetime decreases
         p.alpha = p.lifetime / p.maxLifetime;
@@ -110,7 +110,8 @@ void EngineParticles::update(float deltaTime)
         p.color.z = std::max(0.05f, p.color.z - agePercent * 0.8f * deltaTime);
 
         // Particles slow down due to "drag"
-        p.velocity = p.velocity * (1.0f - deltaTime * 0.5f);
+        const float dragFactor = std::max(0.0f, 1.0f - deltaTime * 0.5f);
+        p.velocity *= dragFactor;
 
         // Particles shrink over time
         p.size = std::max(0.05f, p.size - deltaTime * 0.3f);
