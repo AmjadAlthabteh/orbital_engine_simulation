@@ -1,6 +1,13 @@
 #include "OrbitalPath.hpp"
 #include <cmath>
 
+namespace
+{
+    constexpr float kMinMu = 0.000001f;
+    constexpr float kMinAngularMomentum = 0.000001f;
+    constexpr float kMaxRenderableEccentricity = 0.95f;
+}
+
 OrbitalPath::OrbitalPath()
     : color(Vec3(0.3f, 0.3f, 0.5f))
 {
@@ -40,25 +47,42 @@ void OrbitalPath::calculatePath(const Body& body, const Body& centralBody, float
     Vec3 v = body.velocity - centralBody.velocity;
 
     float mu = G * centralBody.mass;
+    if (mu <= kMinMu)
+        return;
 
     Vec3 h = r.cross(v);
     float h_mag = h.length();
+    if (h_mag <= kMinAngularMomentum)
+        return;
 
-    Vec3 e_vec = (v.cross(h) * (1.0f / mu)) - r.normalize();
+    Vec3 radialDirection = r.normalizedOrZero();
+    if (radialDirection.lengthSquared() == 0.0f)
+        return;
+
+    Vec3 e_vec = (v.cross(h) * (1.0f / mu)) - radialDirection;
     float e = e_vec.length();
 
-    float a = h_mag * h_mag / (mu * (1.0f - e * e + 0.0001f));
+    const float eccentricityTerm = 1.0f - e * e;
+    if (eccentricityTerm <= 0.0001f || e > kMaxRenderableEccentricity)
+        return;
 
-    if (a < 0 || e > 0.95f)
+    float a = h_mag * h_mag / (mu * eccentricityTerm);
+
+    if (a <= 0.0f || !std::isfinite(a))
     {
         return;
     }
 
     float b = a * std::sqrt(1.0f - e * e);
 
-    Vec3 periapsis = e_vec.normalize() * (-1.0f);
-    Vec3 normal = h.normalize();
+    Vec3 periapsis = e_vec.normalizedOrZero() * (-1.0f);
+    if (periapsis.lengthSquared() == 0.0f)
+        periapsis = radialDirection;
+
+    Vec3 normal = h.normalizedOrZero();
     Vec3 minor_axis = normal.cross(periapsis);
+    if (minor_axis.lengthSquared() == 0.0f)
+        return;
 
     constexpr float twoPi = 6.28318530718f;
     const float thetaStep = twoPi / static_cast<float>(numPoints);
