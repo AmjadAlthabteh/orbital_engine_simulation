@@ -16,14 +16,14 @@ void Body::applyForce(const Vec3& force)
 {
     if (isStatic) return;
 
-    forceAccum = forceAccum + force;
+    forceAccum += force;
 }
 
 void Body::applyImpulse(const Vec3& impulse)
 {
     if (isStatic) return;
 
-    velocity = velocity + impulse * inverseMass;
+    velocity += impulse * inverseMass;
 }
 
 void Body::integrate(float deltaTime)
@@ -37,8 +37,9 @@ void Body::integrate(float deltaTime)
 
     acceleration = forceAccum * inverseMass;
 
-    velocity = velocity + acceleration * deltaTime;
-    position = position + velocity * deltaTime;
+    // Semi-implicit Euler keeps orbital energy more stable than explicit Euler.
+    velocity += acceleration * deltaTime;
+    position += velocity * deltaTime;
 
     clearForces();
 }
