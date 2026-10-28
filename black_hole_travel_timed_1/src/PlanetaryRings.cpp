@@ -23,7 +23,9 @@ void PlanetaryRings::generateRing()
     vertices.clear();
     indices.clear();
 
-    // Generate ring vertices (flat disk in XZ plane)
+    // Generate ring vertices in the planet's equatorial XY plane. The sphere
+    // mesh uses Z as its polar axis, so this keeps Saturn's rings aligned with
+    // its measured axial tilt instead of cutting vertically through the planet.
     for (int i = 0; i <= segments; i++)
     {
         float angle = (float)i / (float)segments * 2.0f * PI;
@@ -32,15 +34,15 @@ void PlanetaryRings::generateRing()
 
         // Inner vertex
         float x_inner = innerRadius * cosAngle;
-        float z_inner = innerRadius * sinAngle;
+        float y_inner = innerRadius * sinAngle;
         vertices.push_back(x_inner);
-        vertices.push_back(0.0f);  // Y = 0 (flat ring)
-        vertices.push_back(z_inner);
+        vertices.push_back(y_inner);
+        vertices.push_back(0.0f);
 
         // Normal (pointing up)
         vertices.push_back(0.0f);
-        vertices.push_back(1.0f);
         vertices.push_back(0.0f);
+        vertices.push_back(1.0f);
 
         // Texture coordinate (inner)
         vertices.push_back(0.0f);
@@ -48,15 +50,15 @@ void PlanetaryRings::generateRing()
 
         // Outer vertex
         float x_outer = outerRadius * cosAngle;
-        float z_outer = outerRadius * sinAngle;
+        float y_outer = outerRadius * sinAngle;
         vertices.push_back(x_outer);
+        vertices.push_back(y_outer);
         vertices.push_back(0.0f);
-        vertices.push_back(z_outer);
 
         // Normal (pointing up)
         vertices.push_back(0.0f);
-        vertices.push_back(1.0f);
         vertices.push_back(0.0f);
+        vertices.push_back(1.0f);
 
         // Texture coordinate (outer)
         vertices.push_back(1.0f);

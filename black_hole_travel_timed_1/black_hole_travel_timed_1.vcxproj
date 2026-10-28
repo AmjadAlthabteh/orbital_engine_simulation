@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\orbital;$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,7 +100,7 @@ xcopy /Y /D "C:\Dev\SFML-2.6.2\bin\openal32.dll" "$(OutDir)"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\orbital;$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,7 +122,7 @@ xcopy /Y /D "C:\Dev\SFML-2.6.2\bin\openal32.dll" "$(OutDir)"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\orbital;$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,7 +146,7 @@ xcopy /Y /D "C:\Dev\SFML-2.6.2\bin\openal32.dll" "$(OutDir)"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\orbital;$(ProjectDir)external\glad\include;C:\Dev\SFML-2.6.2\include;C:\Dev\imgui-sfml;C:\Dev\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,33 +164,34 @@ xcopy /Y /D "C:\Dev\SFML-2.6.2\bin\openal32.dll" "$(OutDir)"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="external\glad\src\glad.c" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CelestialBody.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Body.cpp" />
-    <ClCompile Include="PhysicsEngine.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SolarSystemFactory.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="StarField.cpp" />
-    <ClCompile Include="Trail.cpp" />
-    <ClCompile Include="OrbitalPath.cpp" />
-    <ClCompile Include="CollisionPredictor.cpp" />
-    <ClCompile Include="PredictionMarker.cpp" />
-    <ClCompile Include="VectorRenderer.cpp" />
-    <ClCompile Include="Spaceship.cpp" />
-    <ClCompile Include="NebulaBackground.cpp" />
-    <ClCompile Include="EngineParticles.cpp" />
-    <ClCompile Include="TextureLoader.cpp" />
-    <ClCompile Include="GalaxyBackground.cpp" />
-    <ClCompile Include="CoordinateGrid.cpp" />
-    <ClCompile Include="StoryNarrator.cpp" />
-    <ClCompile Include="HohmannTransfer.cpp" />
-    <ClCompile Include="LagrangePoints.cpp" />
-    <ClCompile Include="PlanetaryRings.cpp" />
-    <ClCompile Include="OrbitalMechanicsHUD.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\CelestialBody.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Body.cpp" />
+    <ClCompile Include="src\PhysicsEngine.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\SolarSystemFactory.cpp" />
+    <ClCompile Include="src\Sphere.cpp" />
+    <ClCompile Include="src\StarField.cpp" />
+    <ClCompile Include="src\Trail.cpp" />
+    <ClCompile Include="src\OrbitalPath.cpp" />
+    <ClCompile Include="src\CollisionPredictor.cpp" />
+    <ClCompile Include="src\PredictionMarker.cpp" />
+    <ClCompile Include="src\VectorRenderer.cpp" />
+    <ClCompile Include="src\Spaceship.cpp" />
+    <ClCompile Include="src\NebulaBackground.cpp" />
+    <ClCompile Include="src\EngineParticles.cpp" />
+    <ClCompile Include="src\TextureLoader.cpp" />
+    <ClCompile Include="src\GalaxyBackground.cpp" />
+    <ClCompile Include="src\CoordinateGrid.cpp" />
+    <ClCompile Include="src\StoryNarrator.cpp" />
+    <ClCompile Include="src\HohmannTransfer.cpp" />
+    <ClCompile Include="src\HUD.cpp" />
+    <ClCompile Include="src\LagrangePoints.cpp" />
+    <ClCompile Include="src\PlanetaryRings.cpp" />
+    <ClCompile Include="src\OrbitalMechanicsHUD.cpp" />
     <ClCompile Include="C:\Dev\imgui\imgui.cpp" />
     <ClCompile Include="C:\Dev\imgui\imgui_draw.cpp" />
     <ClCompile Include="C:\Dev\imgui\imgui_widgets.cpp" />
@@ -198,42 +199,57 @@ xcopy /Y /D "C:\Dev\SFML-2.6.2\bin\openal32.dll" "$(OutDir)"</Command>
     <ClCompile Include="C:\Dev\imgui-sfml\imgui-SFML.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Body.hpp" />
-    <ClInclude Include="Camera.hpp" />
-    <ClInclude Include="CelestialBody.hpp" />
-    <ClInclude Include="Entity.hpp" />
-    <ClInclude Include="Mat4.hpp" />
-    <ClInclude Include="PhysicsEngine.hpp" />
-    <ClInclude Include="Renderer.hpp" />
-    <ClInclude Include="Shader.hpp" />
-    <ClInclude Include="SolarSystemFactory.hpp" />
-    <ClInclude Include="Sphere.hpp" />
-    <ClInclude Include="StarField.hpp" />
-    <ClInclude Include="Vec3.hpp" />
-    <ClInclude Include="Trail.hpp" />
-    <ClInclude Include="OrbitalPath.hpp" />
-    <ClInclude Include="CollisionPredictor.hpp" />
-    <ClInclude Include="PredictionMarker.hpp" />
-    <ClInclude Include="VectorRenderer.hpp" />
-    <ClInclude Include="Mesh.hpp" />
-    <ClInclude Include="Spaceship.hpp" />
-    <ClInclude Include="NebulaBackground.hpp" />
-    <ClInclude Include="EngineParticles.hpp" />
-    <ClInclude Include="TextureLoader.hpp" />
-    <ClInclude Include="EnhancedShaders.hpp" />
-    <ClInclude Include="GalaxyBackground.hpp" />
-    <ClInclude Include="CoordinateGrid.hpp" />
-    <ClInclude Include="StoryNarrator.hpp" />
-    <ClInclude Include="HUD.hpp" />
-    <ClInclude Include="HohmannTransfer.hpp" />
-    <ClInclude Include="LagrangePoints.hpp" />
-    <ClInclude Include="PlanetaryRings.hpp" />
-    <ClInclude Include="OrbitalMechanicsHUD.hpp" />
-    <ClInclude Include="SaveSystem.hpp" />
-    <ClInclude Include="ResourceSystem.hpp" />
-    <ClInclude Include="DamageSystem.hpp" />
-    <ClInclude Include="AudioManager.hpp" />
-    <ClInclude Include="MissionSystem.hpp" />
+    <ClInclude Include="include\orbital\Body.hpp" />
+    <ClInclude Include="include\orbital\Camera.hpp" />
+    <ClInclude Include="include\orbital\CelestialBody.hpp" />
+    <ClInclude Include="include\orbital\Entity.hpp" />
+    <ClInclude Include="include\orbital\Mat4.hpp" />
+    <ClInclude Include="include\orbital\PhysicsEngine.hpp" />
+    <ClInclude Include="include\orbital\Renderer.hpp" />
+    <ClInclude Include="include\orbital\Shader.hpp" />
+    <ClInclude Include="include\orbital\SolarSystemFactory.hpp" />
+    <ClInclude Include="include\orbital\Sphere.hpp" />
+    <ClInclude Include="include\orbital\StarField.hpp" />
+    <ClInclude Include="include\orbital\Vec3.hpp" />
+    <ClInclude Include="include\orbital\Trail.hpp" />
+    <ClInclude Include="include\orbital\OrbitalPath.hpp" />
+    <ClInclude Include="include\orbital\CollisionPredictor.hpp" />
+    <ClInclude Include="include\orbital\PredictionMarker.hpp" />
+    <ClInclude Include="include\orbital\VectorRenderer.hpp" />
+    <ClInclude Include="include\orbital\Spaceship.hpp" />
+    <ClInclude Include="include\orbital\NebulaBackground.hpp" />
+    <ClInclude Include="include\orbital\EngineParticles.hpp" />
+    <ClInclude Include="include\orbital\TextureLoader.hpp" />
+    <ClInclude Include="include\orbital\EnhancedShaders.hpp" />
+    <ClInclude Include="include\orbital\GalaxyBackground.hpp" />
+    <ClInclude Include="include\orbital\CoordinateGrid.hpp" />
+    <ClInclude Include="include\orbital\StoryNarrator.hpp" />
+    <ClInclude Include="include\orbital\HUD.hpp" />
+    <ClInclude Include="include\orbital\HohmannTransfer.hpp" />
+    <ClInclude Include="include\orbital\LagrangePoints.hpp" />
+    <ClInclude Include="include\orbital\PlanetaryRings.hpp" />
+    <ClInclude Include="include\orbital\OrbitalMechanicsHUD.hpp" />
+    <ClInclude Include="include\orbital\SaveSystem.hpp" />
+    <ClInclude Include="include\orbital\ResourceSystem.hpp" />
+    <ClInclude Include="include\orbital\DamageSystem.hpp" />
+    <ClInclude Include="include\orbital\AudioManager.hpp" />
+    <ClInclude Include="include\orbital\MissionSystem.hpp" />
+    <ClInclude Include="include\orbital\AccretionDisk.hpp" />
+    <ClInclude Include="include\orbital\AchievementSystem.hpp" />
+    <ClInclude Include="include\orbital\AdvancedHUD.hpp" />
+    <ClInclude Include="include\orbital\AdvancedTelemetry.hpp" />
+    <ClInclude Include="include\orbital\BlackHole.hpp" />
+    <ClInclude Include="include\orbital\CosmicEventSystem.hpp" />
+    <ClInclude Include="include\orbital\EnhancedLogger.hpp" />
+    <ClInclude Include="include\orbital\EnhancedStatistics.hpp" />
+    <ClInclude Include="include\orbital\Framebuffer.hpp" />
+    <ClInclude Include="include\orbital\GUI.hpp" />
+    <ClInclude Include="include\orbital\GUI_NoImGui.hpp" />
+    <ClInclude Include="include\orbital\PerformanceProfiler.hpp" />
+    <ClInclude Include="include\orbital\PlanetInformationPanel.hpp" />
+    <ClInclude Include="include\orbital\PostProcessing.hpp" />
+    <ClInclude Include="include\orbital\ScienceSystem.hpp" />
+    <ClInclude Include="include\orbital\WaypointSystem.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="external\glad\include\glad\glad.h" />
   </ItemGroup>

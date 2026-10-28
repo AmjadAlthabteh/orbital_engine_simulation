@@ -125,75 +125,91 @@ set(IMGUI_SOURCES
 
 # Source files
 set(SOURCES
-    main.cpp
-    Body.cpp
-    Camera.cpp
-    CelestialBody.cpp
-    CollisionPredictor.cpp
-    CoordinateGrid.cpp
-    EngineParticles.cpp
-    Entity.cpp
-    GalaxyBackground.cpp
-    HohmannTransfer.cpp
-    LagrangePoints.cpp
-    NebulaBackground.cpp
-    OrbitalMechanicsHUD.cpp
-    OrbitalPath.cpp
-    PhysicsEngine.cpp
-    PlanetaryRings.cpp
-    PredictionMarker.cpp
-    Renderer.cpp
-    Shader.cpp
-    SolarSystemFactory.cpp
-    Spaceship.cpp
-    Sphere.cpp
-    StarField.cpp
-    StoryNarrator.cpp
-    TextureLoader.cpp
-    Trail.cpp
-    VectorRenderer.cpp
+    src/main.cpp
+    src/Body.cpp
+    src/Camera.cpp
+    src/CelestialBody.cpp
+    src/CollisionPredictor.cpp
+    src/CoordinateGrid.cpp
+    src/EngineParticles.cpp
+    src/Entity.cpp
+    src/GalaxyBackground.cpp
+    src/HohmannTransfer.cpp
+    src/HUD.cpp
+    src/LagrangePoints.cpp
+    src/NebulaBackground.cpp
+    src/OrbitalMechanicsHUD.cpp
+    src/OrbitalPath.cpp
+    src/PhysicsEngine.cpp
+    src/PlanetaryRings.cpp
+    src/PredictionMarker.cpp
+    src/Renderer.cpp
+    src/Shader.cpp
+    src/SolarSystemFactory.cpp
+    src/Spaceship.cpp
+    src/Sphere.cpp
+    src/StarField.cpp
+    src/StoryNarrator.cpp
+    src/TextureLoader.cpp
+    src/Trail.cpp
+    src/VectorRenderer.cpp
     ${GLAD_SOURCE}
     ${IMGUI_SOURCES}
 )
 
 # Header files (for IDEs)
 set(HEADERS
-    Body.hpp
-    Camera.hpp
-    CelestialBody.hpp
-    CollisionPredictor.hpp
-    CoordinateGrid.hpp
-    EngineParticles.hpp
-    EnhancedShaders.hpp
-    Entity.hpp
-    GalaxyBackground.hpp
-    HohmannTransfer.hpp
-    HUD.hpp
-    LagrangePoints.hpp
-    Mat4.hpp
-    NebulaBackground.hpp
-    OrbitalMechanicsHUD.hpp
-    OrbitalPath.hpp
-    PhysicsEngine.hpp
-    PlanetaryRings.hpp
-    PredictionMarker.hpp
-    Renderer.hpp
-    Shader.hpp
-    SolarSystemFactory.hpp
-    Spaceship.hpp
-    Sphere.hpp
-    StarField.hpp
-    StoryNarrator.hpp
-    TextureLoader.hpp
-    Trail.hpp
-    Vec3.hpp
-    VectorRenderer.hpp
-    Framebuffer.hpp
-    PostProcessing.hpp
-    BlackHole.hpp
-    AccretionDisk.hpp
-    GUI.hpp
-    GUI_NoImGui.hpp
+    include/orbital/AccretionDisk.hpp
+    include/orbital/AchievementSystem.hpp
+    include/orbital/AdvancedHUD.hpp
+    include/orbital/AdvancedTelemetry.hpp
+    include/orbital/AudioManager.hpp
+    include/orbital/BlackHole.hpp
+    include/orbital/Body.hpp
+    include/orbital/Camera.hpp
+    include/orbital/CelestialBody.hpp
+    include/orbital/CollisionPredictor.hpp
+    include/orbital/CoordinateGrid.hpp
+    include/orbital/CosmicEventSystem.hpp
+    include/orbital/DamageSystem.hpp
+    include/orbital/EngineParticles.hpp
+    include/orbital/EnhancedLogger.hpp
+    include/orbital/EnhancedShaders.hpp
+    include/orbital/EnhancedStatistics.hpp
+    include/orbital/Entity.hpp
+    include/orbital/Framebuffer.hpp
+    include/orbital/GalaxyBackground.hpp
+    include/orbital/GUI.hpp
+    include/orbital/GUI_NoImGui.hpp
+    include/orbital/HohmannTransfer.hpp
+    include/orbital/HUD.hpp
+    include/orbital/LagrangePoints.hpp
+    include/orbital/Mat4.hpp
+    include/orbital/MissionSystem.hpp
+    include/orbital/NebulaBackground.hpp
+    include/orbital/OrbitalMechanicsHUD.hpp
+    include/orbital/OrbitalPath.hpp
+    include/orbital/PerformanceProfiler.hpp
+    include/orbital/PhysicsEngine.hpp
+    include/orbital/PlanetaryRings.hpp
+    include/orbital/PlanetInformationPanel.hpp
+    include/orbital/PostProcessing.hpp
+    include/orbital/PredictionMarker.hpp
+    include/orbital/Renderer.hpp
+    include/orbital/ResourceSystem.hpp
+    include/orbital/SaveSystem.hpp
+    include/orbital/ScienceSystem.hpp
+    include/orbital/Shader.hpp
+    include/orbital/SolarSystemFactory.hpp
+    include/orbital/Spaceship.hpp
+    include/orbital/Sphere.hpp
+    include/orbital/StarField.hpp
+    include/orbital/StoryNarrator.hpp
+    include/orbital/TextureLoader.hpp
+    include/orbital/Trail.hpp
+    include/orbital/Vec3.hpp
+    include/orbital/VectorRenderer.hpp
+    include/orbital/WaypointSystem.hpp
 )
 
 # Create executable
@@ -202,6 +218,7 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 # Include directories
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/orbital
     ${GLAD_INCLUDE_DIR}
     ${SFML_INCLUDE_DIR}
     ${IMGUI_DIR}

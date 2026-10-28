@@ -94,7 +94,10 @@ GLuint TextureLoader::createProceduralPlanetTexture(const std::string& planetNam
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
+    // Procedural colors are authored in display (sRGB) space. Decode them to
+    // linear light in hardware before illumination and HDR tone mapping.
+    constexpr GLint kSrgb8InternalFormat = 0x8C41; // GL_SRGB8 (absent in the legacy GLAD header)
+    glTexImage2D(GL_TEXTURE_2D, 0, kSrgb8InternalFormat, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

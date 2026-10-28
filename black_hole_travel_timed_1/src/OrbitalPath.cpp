@@ -66,16 +66,17 @@ void OrbitalPath::calculatePath(const Body& body, const Body& centralBody, float
     if (eccentricityTerm <= 0.0001f || e > kMaxRenderableEccentricity)
         return;
 
-    float a = h_mag * h_mag / (mu * eccentricityTerm);
+    const float semiLatusRectum = h_mag * h_mag / mu;
+    float a = semiLatusRectum / eccentricityTerm;
 
     if (a <= 0.0f || !std::isfinite(a))
     {
         return;
     }
 
-    float b = a * std::sqrt(1.0f - e * e);
-
-    Vec3 periapsis = e_vec.normalizedOrZero() * (-1.0f);
+    // The eccentricity vector points toward periapsis. The central body belongs
+    // at a focus, not at the geometric center of the rendered ellipse.
+    Vec3 periapsis = e_vec.normalizedOrZero();
     if (periapsis.lengthSquared() == 0.0f)
         periapsis = radialDirection;
 
@@ -93,10 +94,10 @@ void OrbitalPath::calculatePath(const Body& body, const Body& centralBody, float
 
     for (int i = 0; i <= numPoints; ++i)
     {
-        float x = a * cosTheta;
-        float y = b * sinTheta;
-
-        Vec3 point = centralBody.position + periapsis * x + minor_axis * y;
+        const float radius = semiLatusRectum / (1.0f + e * cosTheta);
+        Vec3 point = centralBody.position +
+                     periapsis * (radius * cosTheta) +
+                     minor_axis * (radius * sinTheta);
         pathPoints.push_back(point);
 
         const float nextCos = cosTheta * cosStep - sinTheta * sinStep;

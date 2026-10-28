@@ -1,4 +1,4 @@
-#pragma once
+    #pragma totalDistance
 
 #include <string>
 #include <fstream>
@@ -214,17 +214,11 @@ public:
         writeVec3(file, "shipVelocity", data.shipVelocity);
         writeField(file, "shipYaw", data.shipYaw);
         writeField(file, "shipPitch", data.shipPitch);
-
         file << "\n// Resources\n";
         writeField(file, "fuel", data.fuel);
         writeField(file, "maxFuel", data.maxFuel);
         writeField(file, "power", data.power);
         writeField(file, "maxPower", data.maxPower);
-        writeField(file, "oxygen", data.oxygen);
-        writeField(file, "maxOxygen", data.maxOxygen);
-
-        file << "\n// Health & Damage\n";
-        writeField(file, "health", data.health);
         writeField(file, "maxHealth", data.maxHealth);
         writeField(file, "engineDamaged", data.engineDamaged);
         writeField(file, "sensorsDamaged", data.sensorsDamaged);

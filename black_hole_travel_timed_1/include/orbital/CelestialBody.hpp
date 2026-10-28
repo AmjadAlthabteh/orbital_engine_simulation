@@ -17,6 +17,7 @@ private:
     float rotationAngle;
     float rotationSpeed;
     Vec3 rotationAxis;
+    float axialTiltDegrees;
 
     std::unique_ptr<Trail> trail;
     bool hasTrail;
@@ -34,10 +35,14 @@ public:
     void renderTrail();
 
     Body& getPhysicsBody();
+    const Body& getPhysicsBody() const;
 
     const std::string& getName() const;
     float getRadius() const;
     const Vec3& getColor() const;
     float getRotationAngle() const;
     const Vec3& getRotationAxis() const;
+    Mat4 getRenderModelMatrix() const;
 };
+
+

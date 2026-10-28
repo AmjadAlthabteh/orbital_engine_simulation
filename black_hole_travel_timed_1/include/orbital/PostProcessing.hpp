@@ -114,6 +114,18 @@ uniform sampler2D sceneTexture;
 uniform sampler2D bloomTexture;
 uniform float exposure;
 uniform float bloomStrength;
+uniform bool bloomEnabled;
+uniform vec2 resolution;
+
+vec3 acesFilm(vec3 x)
+{
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
 
 void main()
 {
@@ -121,10 +133,20 @@ void main()
     vec3 bloomColor = texture(bloomTexture, TexCoords).rgb;
 
     // Add bloom to scene
-    hdrColor += bloomColor * bloomStrength;
+    if (bloomEnabled)
+        hdrColor += bloomColor * bloomStrength;
 
-    // Tone mapping (Reinhard)
-    vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+    // Filmic highlight rolloff preserves star and sun color better than Reinhard.
+    vec3 mapped = acesFilm(hdrColor * exposure);
+
+    // Very subtle lens vignette anchors the image without obscuring the HUD.
+    vec2 uv = TexCoords * 2.0 - 1.0;
+    float vignette = 1.0 - smoothstep(0.35, 1.45, dot(uv, uv)) * 0.16;
+    mapped *= vignette;
+
+    // Tiny stable dither reduces visible color banding in dark nebula gradients.
+    float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    mapped += (dither - 0.5) / 255.0;
 
     // Gamma correction
     mapped = pow(mapped, vec3(1.0 / 2.2));
@@ -198,7 +220,7 @@ public:
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     }
 
-    void process(GLuint sceneTexture)
+    void process(GLuint sceneTexture, bool enableBloom = true)
     {
         glDisable(GL_DEPTH_TEST);
 
@@ -234,6 +256,7 @@ public:
         hdrShader->use();
         hdrShader->setFloat("exposure", exposure);
         hdrShader->setFloat("bloomStrength", bloomStrength);
+        hdrShader->setBool("bloomEnabled", enableBloom);
         hdrShader->setInt("sceneTexture", 0);
         hdrShader->setInt("bloomTexture", 1);
 

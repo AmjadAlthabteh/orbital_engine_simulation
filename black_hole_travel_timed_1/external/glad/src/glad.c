@@ -1,5 +1,7 @@
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <GL/glx.h>
 #endif
 
 #include <glad/glad.h>
@@ -26,8 +28,7 @@ static void *glad_get_proc(const char *name)
 #else
 static void *glad_get_proc(const char *name)
 {
-    (void)name;
-    return 0;
+    return (void *)glXGetProcAddressARB((const GLubyte *)name);
 }
 #endif
 
@@ -66,6 +67,21 @@ PFNGLDELETERENDERBUFFERSPROC glad_glDeleteRenderbuffers;
 PFNGLBINDRENDERBUFFERPROC glad_glBindRenderbuffer;
 PFNGLRENDERBUFFERSTORAGEPROC glad_glRenderbufferStorage;
 PFNGLFRAMEBUFFERRENDERBUFFERPROC glad_glFramebufferRenderbuffer;
+PFNGLDRAWELEMENTSPROC glad_glDrawElements;
+PFNGLDRAWARRAYSPROC glad_glDrawArrays;
+PFNGLGENTEXTURESPROC glad_glGenTextures;
+PFNGLDELETETEXTURESPROC glad_glDeleteTextures;
+PFNGLBINDTEXTUREPROC glad_glBindTexture;
+PFNGLTEXIMAGE2DPROC glad_glTexImage2D;
+PFNGLTEXPARAMETERIPROC glad_glTexParameteri;
+PFNGLVIEWPORTPROC glad_glViewport;
+PFNGLCLEARCOLORPROC glad_glClearColor;
+PFNGLCLEARPROC glad_glClear;
+PFNGLENABLEPROC glad_glEnable;
+PFNGLDISABLEPROC glad_glDisable;
+PFNGLBLENDFUNCPROC glad_glBlendFunc;
+PFNGLDEPTHMASKPROC glad_glDepthMask;
+PFNGLLINEWIDTHPROC glad_glLineWidth;
 
 int gladLoadGL(void)
 {
@@ -104,9 +120,28 @@ int gladLoadGL(void)
     glad_glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)glad_get_proc("glBindRenderbuffer");
     glad_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)glad_get_proc("glRenderbufferStorage");
     glad_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glad_get_proc("glFramebufferRenderbuffer");
+    glad_glDrawElements = (PFNGLDRAWELEMENTSPROC)glad_get_proc("glDrawElements");
+    glad_glDrawArrays = (PFNGLDRAWARRAYSPROC)glad_get_proc("glDrawArrays");
+    glad_glGenTextures = (PFNGLGENTEXTURESPROC)glad_get_proc("glGenTextures");
+    glad_glDeleteTextures = (PFNGLDELETETEXTURESPROC)glad_get_proc("glDeleteTextures");
+    glad_glBindTexture = (PFNGLBINDTEXTUREPROC)glad_get_proc("glBindTexture");
+    glad_glTexImage2D = (PFNGLTEXIMAGE2DPROC)glad_get_proc("glTexImage2D");
+    glad_glTexParameteri = (PFNGLTEXPARAMETERIPROC)glad_get_proc("glTexParameteri");
+    glad_glViewport = (PFNGLVIEWPORTPROC)glad_get_proc("glViewport");
+    glad_glClearColor = (PFNGLCLEARCOLORPROC)glad_get_proc("glClearColor");
+    glad_glClear = (PFNGLCLEARPROC)glad_get_proc("glClear");
+    glad_glEnable = (PFNGLENABLEPROC)glad_get_proc("glEnable");
+    glad_glDisable = (PFNGLDISABLEPROC)glad_get_proc("glDisable");
+    glad_glBlendFunc = (PFNGLBLENDFUNCPROC)glad_get_proc("glBlendFunc");
+    glad_glDepthMask = (PFNGLDEPTHMASKPROC)glad_get_proc("glDepthMask");
+    glad_glLineWidth = (PFNGLLINEWIDTHPROC)glad_get_proc("glLineWidth");
 
     return glad_glGenVertexArrays && glad_glBindVertexArray && glad_glGenBuffers &&
            glad_glBindBuffer && glad_glBufferData && glad_glEnableVertexAttribArray &&
            glad_glVertexAttribPointer && glad_glCreateShader && glad_glCreateProgram &&
-           glad_glUseProgram && glad_glActiveTexture;
+           glad_glUseProgram && glad_glActiveTexture && glad_glDrawElements &&
+           glad_glDrawArrays && glad_glGenTextures && glad_glBindTexture &&
+           glad_glTexImage2D && glad_glTexParameteri && glad_glViewport &&
+           glad_glClearColor && glad_glClear && glad_glEnable && glad_glBlendFunc &&
+           glad_glDepthMask && glad_glLineWidth;
 }

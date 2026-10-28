@@ -2,7 +2,9 @@
 #include <glad/glad.h>
 
 Renderer::Renderer(Shader* shader_)
-    : shader(shader_), sphere(1.0f)
+    // Planet silhouettes need substantially more tessellation than debug markers;
+    // 96x48 remains inexpensive for this small solar system and removes faceting.
+    : shader(shader_), sphere(1.0f, 96, 48)
 {
 }
 

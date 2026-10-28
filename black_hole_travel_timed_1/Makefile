@@ -13,7 +13,7 @@ GLAD_SRC := external/glad/src
 # Flags
 CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic
 CFLAGS := -std=c11
-INCLUDES := -I$(SFML_DIR)/include -I$(GLAD_DIR)/include -I.
+INCLUDES := -I$(SFML_DIR)/include -I$(GLAD_DIR)/include -Iinclude/orbital -I.
 LDFLAGS := -L$(SFML_DIR)/lib
 LIBS := -lsfml-graphics -lsfml-window -lsfml-system -lopengl32 -lgdi32
 
@@ -44,33 +44,34 @@ TARGET := BlackHoleTravelSimulator.exe
 
 # Source files
 SOURCES := \
-    main.cpp \
-    Body.cpp \
-    Camera.cpp \
-    CelestialBody.cpp \
-    CollisionPredictor.cpp \
-    CoordinateGrid.cpp \
-    EngineParticles.cpp \
-    Entity.cpp \
-    GalaxyBackground.cpp \
-    HohmannTransfer.cpp \
-    LagrangePoints.cpp \
-    NebulaBackground.cpp \
-    OrbitalMechanicsHUD.cpp \
-    OrbitalPath.cpp \
-    PhysicsEngine.cpp \
-    PlanetaryRings.cpp \
-    PredictionMarker.cpp \
-    Renderer.cpp \
-    Shader.cpp \
-    SolarSystemFactory.cpp \
-    Spaceship.cpp \
-    Sphere.cpp \
-    StarField.cpp \
-    StoryNarrator.cpp \
-    TextureLoader.cpp \
-    Trail.cpp \
-    VectorRenderer.cpp
+    src/main.cpp \
+    src/Body.cpp \
+    src/Camera.cpp \
+    src/CelestialBody.cpp \
+    src/CollisionPredictor.cpp \
+    src/CoordinateGrid.cpp \
+    src/EngineParticles.cpp \
+    src/Entity.cpp \
+    src/GalaxyBackground.cpp \
+    src/HohmannTransfer.cpp \
+    src/HUD.cpp \
+    src/LagrangePoints.cpp \
+    src/NebulaBackground.cpp \
+    src/OrbitalMechanicsHUD.cpp \
+    src/OrbitalPath.cpp \
+    src/PhysicsEngine.cpp \
+    src/PlanetaryRings.cpp \
+    src/PredictionMarker.cpp \
+    src/Renderer.cpp \
+    src/Shader.cpp \
+    src/SolarSystemFactory.cpp \
+    src/Spaceship.cpp \
+    src/Sphere.cpp \
+    src/StarField.cpp \
+    src/StoryNarrator.cpp \
+    src/TextureLoader.cpp \
+    src/Trail.cpp \
+    src/VectorRenderer.cpp
 
 C_SOURCES := $(GLAD_SRC)/glad.c
 

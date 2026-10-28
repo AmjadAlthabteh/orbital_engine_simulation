@@ -1,4 +1,5 @@
 #pragma once
+
 #include <glad/glad.h>
 #include "Vec3.hpp"
 #include "Mat4.hpp"
@@ -51,6 +52,22 @@ uniform float time;
 uniform float innerRadius;
 uniform float outerRadius;
 
+float hash21(vec2 p)
+{
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+
+float noise(vec2 p)
+{
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash21(i), hash21(i + vec2(1, 0)), f.x),
+               mix(hash21(i + vec2(0, 1)), hash21(i + vec2(1, 1)), f.x), f.y);
+}
+
 void main()
 {
     // Normalize distance (0 = inner, 1 = outer)
@@ -75,23 +92,26 @@ void main()
         color = mix(middleColor, outerColor, (normalizedDist - 0.5) * 2.0);
     }
 
-    // Add swirling pattern using noise-like function
-    float swirl = sin(normalizedDist * 20.0 + time * 2.0 + TexCoords.x * 10.0) * 0.5 + 0.5;
-    color *= (0.7 + swirl * 0.3);
+    // Differentially rotating turbulent plasma lanes.
+    float angularFlow = TexCoords.x * 36.0 - time * (3.8 / (0.22 + normalizedDist));
+    float lanes = noise(vec2(angularFlow, normalizedDist * 34.0));
+    lanes = mix(lanes, noise(vec2(angularFlow * 2.1, normalizedDist * 71.0)), 0.35);
+    float filament = smoothstep(0.24, 0.88, lanes);
+    color *= 0.45 + filament * 1.15;
 
     // Brightness based on distance (brighter near center)
-    float brightness = 1.5 - normalizedDist * 0.8;
+    float brightness = 3.2 - normalizedDist * 2.15;
     color *= brightness;
 
     // Turbulence effect
-    float turbulence = sin(normalizedDist * 30.0 + time * 3.0) * 0.1 + 0.9;
+    float turbulence = 0.86 + sin(normalizedDist * 52.0 - time * 1.7) * 0.10;
     color *= turbulence;
 
     // Edge fade
     float edgeFade = smoothstep(0.0, 0.1, normalizedDist) * smoothstep(1.0, 0.9, normalizedDist);
 
     // Alpha based on distance (more transparent at edges)
-    float alpha = 0.8 * edgeFade;
+    float alpha = (0.30 + filament * 0.68) * edgeFade;
 
     FragColor = vec4(color, alpha);
 }

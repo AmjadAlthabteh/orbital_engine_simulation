@@ -125,6 +125,21 @@ typedef void (APIENTRYP PFNGLDELETERENDERBUFFERSPROC)(GLsizei n, const GLuint *r
 typedef void (APIENTRYP PFNGLBINDRENDERBUFFERPROC)(GLenum target, GLuint renderbuffer);
 typedef void (APIENTRYP PFNGLRENDERBUFFERSTORAGEPROC)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 typedef void (APIENTRYP PFNGLFRAMEBUFFERRENDERBUFFERPROC)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+typedef void (APIENTRYP PFNGLDRAWELEMENTSPROC)(GLenum mode, GLsizei count, GLenum type, const void *indices);
+typedef void (APIENTRYP PFNGLDRAWARRAYSPROC)(GLenum mode, GLint first, GLsizei count);
+typedef void (APIENTRYP PFNGLGENTEXTURESPROC)(GLsizei n, GLuint *textures);
+typedef void (APIENTRYP PFNGLDELETETEXTURESPROC)(GLsizei n, const GLuint *textures);
+typedef void (APIENTRYP PFNGLBINDTEXTUREPROC)(GLenum target, GLuint texture);
+typedef void (APIENTRYP PFNGLTEXIMAGE2DPROC)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels);
+typedef void (APIENTRYP PFNGLTEXPARAMETERIPROC)(GLenum target, GLenum pname, GLint param);
+typedef void (APIENTRYP PFNGLVIEWPORTPROC)(GLint x, GLint y, GLsizei width, GLsizei height);
+typedef void (APIENTRYP PFNGLCLEARCOLORPROC)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+typedef void (APIENTRYP PFNGLCLEARPROC)(GLbitfield mask);
+typedef void (APIENTRYP PFNGLENABLEPROC)(GLenum cap);
+typedef void (APIENTRYP PFNGLDISABLEPROC)(GLenum cap);
+typedef void (APIENTRYP PFNGLBLENDFUNCPROC)(GLenum sfactor, GLenum dfactor);
+typedef void (APIENTRYP PFNGLDEPTHMASKPROC)(GLboolean flag);
+typedef void (APIENTRYP PFNGLLINEWIDTHPROC)(GLfloat width);
 
 extern PFNGLGENVERTEXARRAYSPROC glad_glGenVertexArrays;
 extern PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays;
@@ -161,6 +176,21 @@ extern PFNGLDELETERENDERBUFFERSPROC glad_glDeleteRenderbuffers;
 extern PFNGLBINDRENDERBUFFERPROC glad_glBindRenderbuffer;
 extern PFNGLRENDERBUFFERSTORAGEPROC glad_glRenderbufferStorage;
 extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glad_glFramebufferRenderbuffer;
+extern PFNGLDRAWELEMENTSPROC glad_glDrawElements;
+extern PFNGLDRAWARRAYSPROC glad_glDrawArrays;
+extern PFNGLGENTEXTURESPROC glad_glGenTextures;
+extern PFNGLDELETETEXTURESPROC glad_glDeleteTextures;
+extern PFNGLBINDTEXTUREPROC glad_glBindTexture;
+extern PFNGLTEXIMAGE2DPROC glad_glTexImage2D;
+extern PFNGLTEXPARAMETERIPROC glad_glTexParameteri;
+extern PFNGLVIEWPORTPROC glad_glViewport;
+extern PFNGLCLEARCOLORPROC glad_glClearColor;
+extern PFNGLCLEARPROC glad_glClear;
+extern PFNGLENABLEPROC glad_glEnable;
+extern PFNGLDISABLEPROC glad_glDisable;
+extern PFNGLBLENDFUNCPROC glad_glBlendFunc;
+extern PFNGLDEPTHMASKPROC glad_glDepthMask;
+extern PFNGLLINEWIDTHPROC glad_glLineWidth;
 
 #define glGenVertexArrays glad_glGenVertexArrays
 #define glDeleteVertexArrays glad_glDeleteVertexArrays
@@ -197,6 +227,21 @@ extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glad_glFramebufferRenderbuffer;
 #define glBindRenderbuffer glad_glBindRenderbuffer
 #define glRenderbufferStorage glad_glRenderbufferStorage
 #define glFramebufferRenderbuffer glad_glFramebufferRenderbuffer
+#define glDrawElements glad_glDrawElements
+#define glDrawArrays glad_glDrawArrays
+#define glGenTextures glad_glGenTextures
+#define glDeleteTextures glad_glDeleteTextures
+#define glBindTexture glad_glBindTexture
+#define glTexImage2D glad_glTexImage2D
+#define glTexParameteri glad_glTexParameteri
+#define glViewport glad_glViewport
+#define glClearColor glad_glClearColor
+#define glClear glad_glClear
+#define glEnable glad_glEnable
+#define glDisable glad_glDisable
+#define glBlendFunc glad_glBlendFunc
+#define glDepthMask glad_glDepthMask
+#define glLineWidth glad_glLineWidth
 
 int gladLoadGL(void);
 

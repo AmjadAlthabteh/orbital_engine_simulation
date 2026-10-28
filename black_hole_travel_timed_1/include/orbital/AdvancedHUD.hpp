@@ -122,7 +122,7 @@ public:
         drawList->AddLine(ImVec2(center.x + offset, center.y - offset),
                          ImVec2(center.x + offset, center.y - offset - bracketSize), color, thickness);
 
-        // Bottom-left
+                // Bottom-left
         drawList->AddLine(ImVec2(center.x - offset, center.y + offset),
                          ImVec2(center.x - offset - bracketSize, center.y + offset), color, thickness);
         drawList->AddLine(ImVec2(center.x - offset, center.y + offset),

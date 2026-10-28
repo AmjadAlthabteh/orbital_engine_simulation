@@ -10,8 +10,8 @@
 const char* lensingVertexShader = R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
+layout (location = 1) in vec2 aTexCoords;
+layout (location = 2) in vec3 aNormal;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -43,12 +43,15 @@ uniform vec3 blackHolePos;
 uniform float blackHoleMass;
 uniform float schwarzschildRadius;
 uniform sampler2D skyboxTexture;  // Background space texture
+uniform float time;
 
 void main()
 {
     vec3 viewDir = normalize(FragPos - viewPos);
     vec3 toBlackHole = blackHolePos - FragPos;
     float distToBlackHole = length(toBlackHole);
+    float silhouette = max(dot(normalize(Normal), normalize(viewPos - FragPos)), 0.0);
+    float limb = 1.0 - silhouette;
 
     // Calculate gravitational lensing effect
     // Bend light rays based on distance to event horizon
@@ -58,35 +61,13 @@ void main()
     // Bend the view direction toward the black hole
     vec3 bentDir = normalize(viewDir + normalize(toBlackHole) * lensStrength * 0.5);
 
-    // Event horizon - pure black
-    if (distToBlackHole < schwarzschildRadius * 1.1)
-    {
-        FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-        return;
-    }
-
-    // Photon sphere - extreme lensing effect
-    if (distToBlackHole < schwarzschildRadius * 1.5)
-    {
-        float photonEffect = 1.0 - (distToBlackHole - schwarzschildRadius * 1.1) / (schwarzschildRadius * 0.4);
-        vec3 distortedColor = vec3(0.1, 0.05, 0.2) * photonEffect;
-        FragColor = vec4(distortedColor, 1.0);
-        return;
-    }
-
-    // Lensing ring effect - gravitationally bent light
-    float ringDist = abs(distToBlackHole - schwarzschildRadius * 2.0);
-    if (ringDist < schwarzschildRadius * 0.3)
-    {
-        float ringIntensity = 1.0 - (ringDist / (schwarzschildRadius * 0.3));
-        vec3 ringColor = vec3(0.8, 0.6, 1.0) * ringIntensity * 0.5;
-        FragColor = vec4(ringColor, 1.0);
-        return;
-    }
-
-    // Normal space with slight distortion
-    vec3 distortedColor = vec3(0.02, 0.02, 0.05);
-    FragColor = vec4(distortedColor, 0.8);
+    // A narrow photon ring appears at the projected limb of the lensing shell.
+    float photonRing = exp(-pow((limb - 0.72) * 19.0, 2.0));
+    float secondaryRing = exp(-pow((limb - 0.88) * 34.0, 2.0)) * 0.35;
+    float shimmer = 0.88 + 0.12 * sin(time * 1.3 + TexCoords.x * 90.0);
+    vec3 ringColor = mix(vec3(1.0, 0.34, 0.06), vec3(0.72, 0.84, 1.0), limb);
+    float alpha = (photonRing + secondaryRing) * shimmer * 0.72;
+    FragColor = vec4(ringColor * alpha * 2.4, alpha);
 }
 )";
 

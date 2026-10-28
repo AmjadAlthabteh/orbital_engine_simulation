@@ -316,6 +316,7 @@ int main()
 
     // Create ENHANCED shaders with atmospheric effects, rim lighting, and improved visuals
     Shader planetShader(enhancedPlanetVertexShader, enhancedPlanetFragmentShader);
+    Shader atmosphereShader(atmosphereVertexShader, atmosphereFragmentShader);
     Shader lineShader(lineVertexShaderSource, lineFragmentShaderSource);
     Shader starShader(enhancedStarVertexShader, enhancedStarFragmentShader);
     Shader vectorShader(vectorVertexShaderSource, vectorFragmentShaderSource);
@@ -329,16 +330,18 @@ int main()
     // Create texture loader and load/generate planet textures
     TextureLoader textureLoader;
     std::cout << "Generating procedural planet textures...\n";
-    textureLoader.createProceduralPlanetTexture("Earth", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Moon", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Mars", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Jupiter", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Saturn", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Sun", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Venus", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Mercury", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Uranus", 512, 512);
-    textureLoader.createProceduralPlanetTexture("Neptune", 512, 512);
+    constexpr int PLANET_TEXTURE_WIDTH = 2048;
+    constexpr int PLANET_TEXTURE_HEIGHT = 1024;
+    textureLoader.createProceduralPlanetTexture("Earth", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Moon", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Mars", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Jupiter", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Saturn", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Sun", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Venus", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Mercury", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Uranus", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
+    textureLoader.createProceduralPlanetTexture("Neptune", PLANET_TEXTURE_WIDTH, PLANET_TEXTURE_HEIGHT);
     std::cout << "Textures generated successfully!\n";
 
     // Create visual enhancement systems
@@ -399,6 +402,8 @@ int main()
     std::cout << "ImGui GUI: Interactive control panels and real-time adjustments!\n";
 
     Renderer renderer(&planetShader);
+    Sphere atmosphereSphere(1.0f, 64, 32);
+    Sphere lensingSphere(1.0f, 64, 32);
     Camera camera;
     camera.position = Vec3(0, 30, 80);
 
@@ -546,7 +551,7 @@ int main()
     std::cout << "Ready to launch! Press I to thrust forward...\n\n";
 
     // Create starfield
-    StarField starfield(5000);
+    StarField starfield(14000);
 
     // Create collision predictor
     CollisionPredictor collisionPredictor;
@@ -597,6 +602,7 @@ int main()
     const float GFORCE_DAMAGE_THRESHOLD = 10.0f;
 
     sf::Clock clock;
+    float visualTime = 0.0f;
     float collisionPredictTimer = 0.0f;
     float vectorUpdateTimer = 0.0f;
     float trajectoryUpdateTimer = 0.0f;
@@ -608,6 +614,7 @@ int main()
     while (window.isOpen())
     {
         float rawDeltaTime = clock.restart().asSeconds();
+        visualTime += rawDeltaTime;
         float deltaTime = isPaused ? 0.0f : rawDeltaTime * timeScale;
 
         sf::Event event;
@@ -1603,10 +1610,17 @@ int main()
 
         // 1. Render scene to framebuffer for post-processing
         sceneFramebuffer.bind();
-        glClearColor(0.0f, 0.0f, 0.01f, 1.0f);  // Darker for better nebula contrast
+        // Astronomical vacuum is black; illumination comes only from scene objects.
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         Mat4 view = camera.getViewMatrix();
+        Mat4 starView = view;
+        // Remove translation: stars are effectively infinitely distant and must
+        // rotate with the camera without sliding past it as the ship travels.
+        starView.m[12] = 0.0f;
+        starView.m[13] = 0.0f;
+        starView.m[14] = 0.0f;
 
         // Dynamic projection matrix with camera FOV (for zoom)
         Mat4 projection = Mat4::perspective(
@@ -1616,26 +1630,17 @@ int main()
             2000.0f
         );
 
-        // Render nebula background (furthest back)
-        glDepthMask(GL_FALSE);  // Don't write to depth buffer
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);  // Additive blending for glow
-        nebulaShader.use();
-        nebulaShader.setMat4("view", view);
-        nebulaShader.setMat4("projection", projection);
-        nebulaShader.setFloat("opacityScale", 0.58f);
-        nebula.render();
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Reset blending
-        glDepthMask(GL_TRUE);
-
-        // Render starfield (basic background stars)
+        // A restrained stellar sky replaces the former colored nebula backdrop.
+        glDepthMask(GL_FALSE);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         starShader.use();
-        starShader.setMat4("view", view);
+        starShader.setMat4("view", starView);
         starShader.setMat4("projection", projection);
-        starShader.setFloat("alphaScale", 0.70f);
+        starShader.setFloat("alphaScale", 0.82f);
+        starShader.setFloat("time", visualTime);
         starfield.render();
-
-        // Render MASSIVE galaxy background with 20,000 stars in realistic spiral arms!
-        galaxy.render();
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(GL_TRUE);
 
         // Render coordinate grid (mathematical visualization) - if enabled
         if (showCoordinateGrid)
@@ -1653,11 +1658,11 @@ int main()
         lineShader.use();
         lineShader.setMat4("view", view);
         lineShader.setMat4("projection", projection);
-        lineShader.setFloat("alpha", 0.3f);
+        lineShader.setFloat("alpha", 0.18f);
 
         for (auto& path : orbitalPaths)
         {
-            lineShader.setVec3("lineColor", Vec3(0.4f, 0.4f, 0.6f));
+            lineShader.setVec3("lineColor", Vec3(0.34f, 0.44f, 0.58f));
             path.render();
         }
         glDepthMask(GL_TRUE);
@@ -1666,6 +1671,7 @@ int main()
         planetShader.use();
         planetShader.setVec3("viewPos", camera.position);
         planetShader.setVec3("lightPos", Vec3(0, 0, 0));
+        planetShader.setFloat("time", visualTime);
 
         // Track Saturn for rings and Black Hole for special rendering
         Mat4 saturnModelMatrix;
@@ -1693,12 +1699,31 @@ int main()
 
             bodiesRendered++;
 
-            Mat4 model = body->getModelMatrix();
+            Mat4 model = body->getRenderModelMatrix();
             bool isSun = (body->getName() == "Sun");
             planetShader.setBool("isSun", isSun);
 
             // Set atmospheric parameters based on planet
             std::string name = body->getName();
+            int materialType = 0;
+            if (name == "Earth") materialType = 1;
+            else if (name == "Mars") materialType = 2;
+            else if (name == "Venus") materialType = 3;
+            else if (name == "Jupiter" || name == "Saturn") materialType = 4;
+            else if (name == "Uranus" || name == "Neptune") materialType = 5;
+            else if (name == "Black Hole") materialType = 9;
+            planetShader.setInt("materialType", materialType);
+            const float solarDistanceSquared = std::max(bodyPos.lengthSquared(), 1.0f);
+            // Earth-distance irradiance is 1.0. Clamping preserves visibility in
+            // this compressed educational scale while retaining inverse-square falloff.
+            const float solarIrradiance = std::max(0.08f, std::min(3.5f, 324.0f / solarDistanceSquared));
+            planetShader.setFloat("lightIntensity", isSun ? 1.0f : solarIrradiance);
+            float surfaceRoughness = 0.78f;
+            if (name == "Earth") surfaceRoughness = 0.32f;
+            else if (name == "Venus" || name == "Jupiter" || name == "Saturn") surfaceRoughness = 0.62f;
+            else if (name == "Uranus" || name == "Neptune") surfaceRoughness = 0.48f;
+            else if (name == "Moon" || name == "Mercury" || name.find("Asteroid") == 0) surfaceRoughness = 0.92f;
+            planetShader.setFloat("roughness", surfaceRoughness);
             if (name == "Earth")
             {
                 planetShader.setBool("hasAtmosphere", true);
@@ -1762,6 +1787,36 @@ int main()
         lastBodiesRendered = bodiesRendered;
         lastBodiesCulled = bodiesCulled;
 
+        // Render atmospheres as genuine shells above the terrain. This gives the
+        // limb physical thickness and lets the night side remain correctly dark.
+        glDepthMask(GL_FALSE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        atmosphereShader.use();
+        atmosphereShader.setMat4("view", view);
+        atmosphereShader.setMat4("projection", projection);
+        atmosphereShader.setVec3("viewPos", camera.position);
+        atmosphereShader.setVec3("lightPos", Vec3(0, 0, 0));
+        for (auto* body : bodies)
+        {
+            const std::string& atmosphereName = body->getName();
+            Vec3 atmosphereTint;
+            float shellScale = 1.035f;
+            float density = 0.0f;
+            if (atmosphereName == "Earth") { atmosphereTint = Vec3(0.18f, 0.42f, 1.0f); density = 0.82f; shellScale = 1.055f; }
+            else if (atmosphereName == "Mars") { atmosphereTint = Vec3(1.0f, 0.28f, 0.08f); density = 0.28f; shellScale = 1.025f; }
+            else if (atmosphereName == "Venus") { atmosphereTint = Vec3(1.0f, 0.66f, 0.22f); density = 0.78f; shellScale = 1.045f; }
+            else if (atmosphereName == "Jupiter" || atmosphereName == "Saturn") { atmosphereTint = body->getColor(); density = 0.28f; }
+            else if (atmosphereName == "Uranus" || atmosphereName == "Neptune") { atmosphereTint = body->getColor(); density = 0.42f; }
+            if (density <= 0.0f) continue;
+            atmosphereShader.setVec3("atmosphereColor", atmosphereTint);
+            atmosphereShader.setFloat("density", density);
+            atmosphereShader.setMat4("model", body->getRenderModelMatrix() * Mat4::scale(shellScale));
+            atmosphereSphere.draw();
+        }
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(GL_TRUE);
+
         // Render Black Hole with accretion disk and lensing effect
         if (blackHoleBody)
         {
@@ -1788,13 +1843,17 @@ int main()
             lensingShader.setVec3("blackHolePos", blackHolePos);
             lensingShader.setFloat("blackHoleMass", blackHoleMass);
             lensingShader.setFloat("schwarzschildRadius", blackHoleRadius * 0.8f);
+            lensingShader.setFloat("time", visualTime);
 
             Mat4 lensingModel = Mat4::translation(blackHolePos.x, blackHolePos.y, blackHolePos.z)
                               * Mat4::scale(blackHoleRadius * 2.5f);
             lensingShader.setMat4("model", lensingModel);
 
-            // Would render lensing sphere here (need to create Sphere instance)
-            // For now, the black hole visual is just the dark sphere
+            glDepthMask(GL_FALSE);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            lensingSphere.draw();
+            glDepthMask(GL_TRUE);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glDisable(GL_BLEND);
         }
@@ -1824,6 +1883,9 @@ int main()
         planetShader.setBool("isSun", false);
         planetShader.setBool("hasAtmosphere", false);
         planetShader.setBool("hasTexture", false);
+        planetShader.setInt("materialType", 0);
+        planetShader.setFloat("lightIntensity", 1.0f);
+        planetShader.setFloat("roughness", 0.38f);
         renderer.render(shipModel, view, projection, ship.getColor());
 
         // Render engine particles (glowing exhaust)
@@ -1961,13 +2023,13 @@ int main()
         // Apply bloom and HDR tone mapping
         if (guiState.bloomEnabled)
         {
-            postProcessing.process(sceneFramebuffer.getColorTexture());
+            postProcessing.process(sceneFramebuffer.getColorTexture(), true);
         }
         else
         {
             // If bloom disabled, just render scene texture directly
             // (Would need a simple pass-through shader here)
-            postProcessing.process(sceneFramebuffer.getColorTexture());
+            postProcessing.process(sceneFramebuffer.getColorTexture(), false);
         }
 
         // 3. Reset OpenGL state for GUI rendering

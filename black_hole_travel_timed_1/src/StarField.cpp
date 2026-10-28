@@ -143,7 +143,7 @@ void StarField::update(float deltaTime)
     for (auto& star : stars)
     {
         star.brightness += (std::sin(deltaTime * 10.0f + star.position.x * 0.01f) * 0.001f);
-        star.brightness = std::clamp(star.brightness, 0.3f, 1.0f);
+        star.brightness = std::max(0.3f, std::min(1.0f, star.brightness));
     }
 }
 

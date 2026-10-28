@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -30,88 +30,91 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Body.cpp">
+    <ClCompile Include="src\Body.cpp">
       <Filter>physics</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsEngine.cpp">
+    <ClCompile Include="src\PhysicsEngine.cpp">
       <Filter>physics</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
+    <ClCompile Include="src\Renderer.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
     <ClCompile Include="external\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
+    <ClCompile Include="src\Shader.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="CelestialBody.cpp">
+    <ClCompile Include="src\CelestialBody.cpp">
       <Filter>universe</Filter>
     </ClCompile>
-    <ClCompile Include="SolarSystemFactory.cpp">
+    <ClCompile Include="src\SolarSystemFactory.cpp">
       <Filter>universe</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="src\Camera.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
+    <ClCompile Include="src\Sphere.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="StarField.cpp">
+    <ClCompile Include="src\StarField.cpp">
       <Filter>entities</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
+    <ClCompile Include="src\Entity.cpp">
       <Filter>entities</Filter>
     </ClCompile>
-    <ClCompile Include="Trail.cpp">
+    <ClCompile Include="src\Trail.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="OrbitalPath.cpp">
+    <ClCompile Include="src\OrbitalPath.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionPredictor.cpp">
+    <ClCompile Include="src\CollisionPredictor.cpp">
       <Filter>physics</Filter>
     </ClCompile>
-    <ClCompile Include="PredictionMarker.cpp">
+    <ClCompile Include="src\PredictionMarker.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="VectorRenderer.cpp">
+    <ClCompile Include="src\VectorRenderer.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Spaceship.cpp">
+    <ClCompile Include="src\Spaceship.cpp">
       <Filter>entities</Filter>
     </ClCompile>
-    <ClCompile Include="NebulaBackground.cpp">
+    <ClCompile Include="src\NebulaBackground.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="EngineParticles.cpp">
+    <ClCompile Include="src\EngineParticles.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="TextureLoader.cpp">
+    <ClCompile Include="src\TextureLoader.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="GalaxyBackground.cpp">
+    <ClCompile Include="src\GalaxyBackground.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="CoordinateGrid.cpp">
+    <ClCompile Include="src\CoordinateGrid.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="StoryNarrator.cpp">
+    <ClCompile Include="src\StoryNarrator.cpp">
       <Filter>entities</Filter>
     </ClCompile>
-    <ClCompile Include="HohmannTransfer.cpp">
+    <ClCompile Include="src\HohmannTransfer.cpp">
       <Filter>physics</Filter>
     </ClCompile>
-    <ClCompile Include="LagrangePoints.cpp">
-      <Filter>physics</Filter>
-    </ClCompile>
-    <ClCompile Include="PlanetaryRings.cpp">
+    <ClCompile Include="src\HUD.cpp">
       <Filter>rendering</Filter>
     </ClCompile>
-    <ClCompile Include="OrbitalMechanicsHUD.cpp">
+    <ClCompile Include="src\LagrangePoints.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PlanetaryRings.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OrbitalMechanicsHUD.cpp">
       <Filter>entities</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,98 +122,158 @@
     <ClInclude Include="external\glad\include\glad\glad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Body.hpp">
+    <ClInclude Include="include\orbital\Body.hpp">
       <Filter>physics</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsEngine.hpp">
+    <ClInclude Include="include\orbital\PhysicsEngine.hpp">
       <Filter>physics</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.hpp">
+    <ClInclude Include="include\orbital\Renderer.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Vec3.hpp">
+    <ClInclude Include="include\orbital\Vec3.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="Mat4.hpp">
+    <ClInclude Include="include\orbital\Mat4.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.hpp">
+    <ClInclude Include="include\orbital\Shader.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="CelestialBody.hpp">
+    <ClInclude Include="include\orbital\CelestialBody.hpp">
       <Filter>universe</Filter>
     </ClInclude>
-    <ClInclude Include="SolarSystemFactory.hpp">
+    <ClInclude Include="include\orbital\SolarSystemFactory.hpp">
       <Filter>universe</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.hpp">
+    <ClInclude Include="include\orbital\Camera.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.hpp">
+    <ClInclude Include="include\orbital\Sphere.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="StarField.hpp">
+    <ClInclude Include="include\orbital\StarField.hpp">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.hpp">
+    <ClInclude Include="include\orbital\Entity.hpp">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="Trail.hpp">
+    <ClInclude Include="include\orbital\Trail.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="OrbitalPath.hpp">
+    <ClInclude Include="include\orbital\OrbitalPath.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionPredictor.hpp">
+    <ClInclude Include="include\orbital\CollisionPredictor.hpp">
       <Filter>physics</Filter>
     </ClInclude>
-    <ClInclude Include="PredictionMarker.hpp">
+    <ClInclude Include="include\orbital\PredictionMarker.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="VectorRenderer.hpp">
+    <ClInclude Include="include\orbital\VectorRenderer.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.hpp">
-      <Filter>rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Spaceship.hpp">
+    <ClInclude Include="include\orbital\Spaceship.hpp">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="NebulaBackground.hpp">
+    <ClInclude Include="include\orbital\NebulaBackground.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="EngineParticles.hpp">
+    <ClInclude Include="include\orbital\EngineParticles.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="TextureLoader.hpp">
+    <ClInclude Include="include\orbital\TextureLoader.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="EnhancedShaders.hpp">
+    <ClInclude Include="include\orbital\EnhancedShaders.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="GalaxyBackground.hpp">
+    <ClInclude Include="include\orbital\GalaxyBackground.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="CoordinateGrid.hpp">
+    <ClInclude Include="include\orbital\CoordinateGrid.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="StoryNarrator.hpp">
+    <ClInclude Include="include\orbital\StoryNarrator.hpp">
       <Filter>entities</Filter>
     </ClInclude>
-    <ClInclude Include="HUD.hpp">
+    <ClInclude Include="include\orbital\HUD.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="HohmannTransfer.hpp">
+    <ClInclude Include="include\orbital\HohmannTransfer.hpp">
       <Filter>physics</Filter>
     </ClInclude>
-    <ClInclude Include="LagrangePoints.hpp">
+    <ClInclude Include="include\orbital\LagrangePoints.hpp">
       <Filter>physics</Filter>
     </ClInclude>
-    <ClInclude Include="PlanetaryRings.hpp">
+    <ClInclude Include="include\orbital\PlanetaryRings.hpp">
       <Filter>rendering</Filter>
     </ClInclude>
-    <ClInclude Include="OrbitalMechanicsHUD.hpp">
+    <ClInclude Include="include\orbital\OrbitalMechanicsHUD.hpp">
       <Filter>entities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\AccretionDisk.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\AchievementSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\AdvancedHUD.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\AdvancedTelemetry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\AudioManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\BlackHole.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\CosmicEventSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\DamageSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\EnhancedLogger.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\EnhancedStatistics.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\Framebuffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\GUI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\GUI_NoImGui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\MissionSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\PerformanceProfiler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\PlanetInformationPanel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\PostProcessing.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\ResourceSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\SaveSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\ScienceSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orbital\WaypointSystem.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
