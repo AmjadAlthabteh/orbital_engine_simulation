@@ -35,6 +35,20 @@ if %CLEAN%==1 (
     rmdir /s /q build 2>nul
 )
 
+rem CMake caches absolute paths. A cache made in WSL cannot be reused by
+rem Windows CMake (and vice versa), so discard that generated directory when
+rem its recorded source path does not match this checkout.
+if exist build\CMakeCache.txt (
+    set "CURRENT_SOURCE=%CD:\=/%"
+    setlocal EnableDelayedExpansion
+    findstr /x /l /c:"CMAKE_HOME_DIRECTORY:INTERNAL=!CURRENT_SOURCE!" build\CMakeCache.txt >nul
+    if errorlevel 1 (
+        echo Build cache belongs to a different checkout or environment; recreating it...
+        rmdir /s /q build
+    )
+    endlocal
+)
+
 if not exist build mkdir build
 cd build
 

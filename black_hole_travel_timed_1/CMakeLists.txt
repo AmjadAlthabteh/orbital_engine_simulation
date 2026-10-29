@@ -234,6 +234,31 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-audio
 )
 
+# SFML is distributed as shared libraries on Windows. Copy the runtime DLLs
+# beside the executable so it can be launched from the build directory without
+# requiring users to modify PATH manually.
+if(WIN32)
+    foreach(SFML_TARGET sfml-graphics sfml-window sfml-system sfml-audio)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:${SFML_TARGET}>
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            VERBATIM
+        )
+    endforeach()
+
+    # SFML Audio loads OpenAL at runtime; it is shipped in SFML's bin folder.
+    get_filename_component(SFML_ROOT_DIR "${SFML_DIR}/../../.." ABSOLUTE)
+    if(EXISTS "${SFML_ROOT_DIR}/bin/openal32.dll")
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${SFML_ROOT_DIR}/bin/openal32.dll"
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            VERBATIM
+        )
+    endif()
+endif()
+
 # Platform-specific libraries
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE gdi32 user32 kernel32)

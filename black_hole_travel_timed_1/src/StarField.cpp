@@ -8,6 +8,7 @@ StarField::StarField(int count)
 {
     generateStars(count);
     setupBuffers();
+    updateBuffers();
 }
 
 StarField::~StarField()
@@ -89,7 +90,6 @@ void StarField::generateStars(int count)
         stars.push_back(brightStar);
     }
 
-    updateBuffers();
 }
 
 void StarField::setupBuffers()

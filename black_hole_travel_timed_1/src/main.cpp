@@ -56,6 +56,12 @@
 #include "AudioManager.hpp"
 #include "MissionSystem.hpp"
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#endif
+
 // Using enhanced shaders from EnhancedShaders.hpp
 // Enhanced planet shader replaces the basic one - adds atmospheric glow and rim lighting
 
@@ -266,6 +272,13 @@ static bool shouldDisplayOrbitalPath(const CelestialBody* body)
 
 int main()
 {
+#ifdef _WIN32
+    // Source strings are UTF-8. Make Windows terminals render the box drawing,
+    // arrows, and symbols instead of displaying mojibake such as "ΓòÉ".
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+
     sf::ContextSettings settings;
     settings.depthBits = 24;
     // Don't force OpenGL 4.6 Core - let SFML use compatibility mode for ImGui
@@ -279,6 +292,10 @@ int main()
         sf::Style::Default,
         settings
     );
+
+    // Creating the OpenGL context early is required for resource setup, but do
+    // not show a blank/unresponsive window during the expensive startup work.
+    window.setVisible(false);
 
     window.setVerticalSyncEnabled(true);
     // Don't hide/grab cursor for GUI interaction
@@ -610,6 +627,15 @@ int main()
     float lastX = 640;
     float lastY = 360;
     bool firstMouse = true;
+
+    // Startup is complete. Center the simulation window and bring it forward
+    // so it cannot remain hidden behind the build console.
+    const sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    const int centeredX = (static_cast<int>(desktop.width) - WINDOW_WIDTH) / 2;
+    const int centeredY = (static_cast<int>(desktop.height) - WINDOW_HEIGHT) / 2;
+    window.setPosition(sf::Vector2i(centeredX, centeredY));
+    window.setVisible(true);
+    window.requestFocus();
 
     while (window.isOpen())
     {
