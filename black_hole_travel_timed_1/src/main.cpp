@@ -173,8 +173,8 @@ void main()
 constexpr float MAX_DISTANCE = 999999.0f;
 
 // Window dimensions - centralized for consistency across rendering pipeline
-constexpr int WINDOW_WIDTH = 1280;
-constexpr int WINDOW_HEIGHT = 720;
+constexpr int WINDOW_WIDTH = 1100;
+constexpr int WINDOW_HEIGHT = 700;
 constexpr float ASPECT_RATIO = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
 
 // Physics simulation constants

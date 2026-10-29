@@ -146,7 +146,8 @@ void main()
 
     // Tiny stable dither reduces visible color banding in dark nebula gradients.
     float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    mapped += (dither - 0.5) / 255.0;
+    float litPixel = step(0.002, max(mapped.r, max(mapped.g, mapped.b)));
+    mapped = clamp(mapped + (dither - 0.5) * litPixel / 255.0, 0.0, 1.0);
 
     // Gamma correction
     mapped = pow(mapped, vec3(1.0 / 2.2));

@@ -43,19 +43,21 @@ void StarField::generateStars(int count)
         star.position.y = radius * sinPhi * std::sin(theta);
         star.position.z = radius * std::cos(phi);
 
-        star.brightness = 0.3f + dis(gen) * 0.7f;
-        star.size = 1.0f + dis(gen) * 2.0f;
+        // Most naked-eye stars are faint point sources. A power curve prevents
+        // the sky from looking like evenly bright confetti.
+        star.brightness = 0.16f + std::pow(dis(gen), 3.2f) * 0.84f;
+        star.size = 0.75f + std::pow(dis(gen), 4.0f) * 2.1f;
 
         float colorChoice = dis(gen);
-        if (colorChoice < 0.7f)
+        if (colorChoice < 0.82f)
         {
             star.color = Vec3(1.0f, 1.0f, 1.0f);
         }
-        else if (colorChoice < 0.85f)
+        else if (colorChoice < 0.90f)
         {
             star.color = Vec3(0.8f, 0.9f, 1.0f);
         }
-        else if (colorChoice < 0.95f)
+        else if (colorChoice < 0.985f)
         {
             star.color = Vec3(1.0f, 0.9f, 0.7f);
         }
@@ -143,7 +145,7 @@ void StarField::update(float deltaTime)
     for (auto& star : stars)
     {
         star.brightness += (std::sin(deltaTime * 10.0f + star.position.x * 0.01f) * 0.001f);
-        star.brightness = std::max(0.3f, std::min(1.0f, star.brightness));
+        star.brightness = std::max(0.12f, std::min(1.0f, star.brightness));
     }
 }
 

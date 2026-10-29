@@ -112,16 +112,16 @@ private:
     const int historySize = 100;
 
     // Font sizes
-    float fontScaleNormal = 1.08f;
-    float fontScaleLarge = 1.18f;
-    float fontScaleHuge = 1.28f;
+    float fontScaleNormal = 0.92f;
+    float fontScaleLarge = 1.00f;
+    float fontScaleHuge = 1.08f;
 
     // Colors for theming (brighter for better visibility)
     ImVec4 colorSuccess = ImVec4(0.3f, 1.0f, 0.4f, 1.0f);
     ImVec4 colorWarning = ImVec4(1.0f, 0.85f, 0.0f, 1.0f);
     ImVec4 colorDanger = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
-    ImVec4 colorInfo = ImVec4(0.4f, 0.8f, 1.0f, 1.0f);
-    ImVec4 colorHighlight = ImVec4(0.0f, 1.0f, 1.0f, 1.0f);  // Cyan for targets
+    ImVec4 colorInfo = ImVec4(0.82f, 0.84f, 0.88f, 1.0f);
+    ImVec4 colorHighlight = ImVec4(0.92f, 0.94f, 1.0f, 1.0f);
 
     // Cached target info
     std::vector<TargetInfo> cachedTargets;
@@ -131,9 +131,9 @@ private:
     {
         ImVec2 workPos{0.0f, 0.0f};
         ImVec2 workSize{0.0f, 0.0f};
-        float margin = 14.0f;
-        float topHudHeight = 110.0f;
-        float mainPanelTopOffset = 136.0f;
+        float margin = 9.0f;
+        float topHudHeight = 82.0f;
+        float mainPanelTopOffset = 100.0f;
 
         ImVec2 topHudPos() const { return ImVec2(workPos.x + margin, workPos.y + margin); }
         ImVec2 topHudSize() const { return ImVec2(std::max(0.0f, workSize.x - margin * 2.0f), topHudHeight); }
@@ -178,7 +178,7 @@ private:
             drawList->AddRectFilled(
                 ImVec2(min.x - spread, min.y - spread),
                 ImVec2(max.x + spread, max.y + spread),
-                IM_COL32(80, 190, 255, alpha),
+                IM_COL32(150, 160, 175, alpha / 2),
                 14.0f + spread
             );
         }
@@ -206,34 +206,34 @@ public:
         ImVec4* colors = style.Colors;
 
         // Background colors (darker for space theme)
-        colors[ImGuiCol_WindowBg] = ImVec4(0.035f, 0.045f, 0.11f, 0.98f);
-        colors[ImGuiCol_ChildBg] = ImVec4(0.055f, 0.065f, 0.14f, 0.94f);
-        colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.18f, 0.98f);
+        colors[ImGuiCol_WindowBg] = ImVec4(0.008f, 0.008f, 0.010f, 0.94f);
+        colors[ImGuiCol_ChildBg] = ImVec4(0.012f, 0.012f, 0.015f, 0.84f);
+        colors[ImGuiCol_PopupBg] = ImVec4(0.015f, 0.015f, 0.020f, 0.98f);
 
         // Border and frame colors
-        colors[ImGuiCol_Border] = ImVec4(0.25f, 0.50f, 0.80f, 0.65f);
+        colors[ImGuiCol_Border] = ImVec4(0.30f, 0.32f, 0.36f, 0.60f);
         colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.50f);
-        colors[ImGuiCol_FrameBg] = ImVec4(0.12f, 0.18f, 0.28f, 0.75f);
-        colors[ImGuiCol_FrameBgHovered] = ImVec4(0.22f, 0.35f, 0.55f, 0.70f);
-        colors[ImGuiCol_FrameBgActive] = ImVec4(0.28f, 0.45f, 0.70f, 0.85f);
+        colors[ImGuiCol_FrameBg] = ImVec4(0.08f, 0.08f, 0.10f, 0.82f);
+        colors[ImGuiCol_FrameBgHovered] = ImVec4(0.16f, 0.16f, 0.19f, 0.90f);
+        colors[ImGuiCol_FrameBgActive] = ImVec4(0.22f, 0.22f, 0.25f, 0.95f);
 
         // Title bar colors
-        colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.15f, 0.25f, 1.00f);
-        colors[ImGuiCol_TitleBgActive] = ImVec4(0.18f, 0.30f, 0.48f, 1.00f);
-        colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.08f, 0.12f, 0.20f, 0.85f);
+        colors[ImGuiCol_TitleBg] = ImVec4(0.025f, 0.025f, 0.030f, 1.00f);
+        colors[ImGuiCol_TitleBgActive] = ImVec4(0.075f, 0.075f, 0.090f, 1.00f);
+        colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.02f, 0.02f, 0.025f, 0.90f);
 
         // Interactive element colors (brighter for visibility)
         colors[ImGuiCol_CheckMark] = ImVec4(0.50f, 0.90f, 1.00f, 1.00f);
         colors[ImGuiCol_SliderGrab] = ImVec4(0.45f, 0.75f, 1.00f, 1.00f);
         colors[ImGuiCol_SliderGrabActive] = ImVec4(0.55f, 0.90f, 1.00f, 1.00f);
-        colors[ImGuiCol_Button] = ImVec4(0.22f, 0.40f, 0.65f, 0.70f);
-        colors[ImGuiCol_ButtonHovered] = ImVec4(0.35f, 0.60f, 0.90f, 1.00f);
-        colors[ImGuiCol_ButtonActive] = ImVec4(0.28f, 0.50f, 0.80f, 1.00f);
+        colors[ImGuiCol_Button] = ImVec4(0.13f, 0.13f, 0.16f, 0.88f);
+        colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.24f, 0.28f, 1.00f);
+        colors[ImGuiCol_ButtonActive] = ImVec4(0.32f, 0.32f, 0.36f, 1.00f);
 
         // Header colors (for collapsible sections)
-        colors[ImGuiCol_Header] = ImVec4(0.22f, 0.35f, 0.55f, 0.75f);
-        colors[ImGuiCol_HeaderHovered] = ImVec4(0.32f, 0.50f, 0.75f, 0.90f);
-        colors[ImGuiCol_HeaderActive] = ImVec4(0.28f, 0.45f, 0.70f, 1.00f);
+        colors[ImGuiCol_Header] = ImVec4(0.10f, 0.10f, 0.13f, 0.88f);
+        colors[ImGuiCol_HeaderHovered] = ImVec4(0.20f, 0.20f, 0.24f, 0.95f);
+        colors[ImGuiCol_HeaderActive] = ImVec4(0.27f, 0.27f, 0.31f, 1.00f);
 
         // Tab colors
         colors[ImGuiCol_Tab] = ImVec4(0.18f, 0.30f, 0.48f, 0.85f);
@@ -243,7 +243,7 @@ public:
         colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.22f, 0.35f, 0.55f, 1.00f);
 
         // Separator colors
-        colors[ImGuiCol_Separator] = ImVec4(0.25f, 0.50f, 0.80f, 0.60f);
+        colors[ImGuiCol_Separator] = ImVec4(0.30f, 0.31f, 0.34f, 0.55f);
         colors[ImGuiCol_SeparatorHovered] = ImVec4(0.35f, 0.65f, 1.00f, 0.80f);
         colors[ImGuiCol_SeparatorActive] = ImVec4(0.45f, 0.75f, 1.00f, 1.00f);
 
@@ -272,16 +272,13 @@ public:
         style.PopupBorderSize = 1.5f;
 
         // Larger padding and spacing for better readability
-        style.WindowPadding = ImVec2(16, 16);
-        style.FramePadding = ImVec2(12, 8);
-        style.ItemSpacing = ImVec2(12, 10);
-        style.ItemInnerSpacing = ImVec2(10, 7);
+        style.WindowPadding = ImVec2(10, 9);
+        style.FramePadding = ImVec2(8, 5);
+        style.ItemSpacing = ImVec2(8, 6);
+        style.ItemInnerSpacing = ImVec2(6, 4);
 
-        style.ScrollbarSize = 16.0f;
-        style.GrabMinSize = 12.0f;
-
-        // Scale everything up slightly for better visibility
-        style.ScaleAllSizes(1.15f);
+        style.ScrollbarSize = 12.0f;
+        style.GrabMinSize = 9.0f;
     }
 
     void initializeMissions()
@@ -336,7 +333,7 @@ public:
         float speed = ship.getSpeed();
 
         const float hudSpacing = ImGui::GetStyle().ItemSpacing.x;
-        const float hudChildHeight = 86.0f;
+        const float hudChildHeight = 59.0f;
         const float hudChildWidth = std::max(0.0f, (layout.topHudSize().x - hudSpacing * 2.0f) / 3.0f);
 
         // LEFT: Ship Status
@@ -427,11 +424,11 @@ public:
 
         const Layout layout = getLayout();
 
-        const float minCenterWidth = 320.0f;
-        float panelWidth = clampf(layout.workSize.x * 0.35f, 380.0f, 540.0f);
+        const float minCenterWidth = 420.0f;
+        float panelWidth = clampf(layout.workSize.x * 0.245f, 250.0f, 340.0f);
         if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
         {
-            panelWidth = std::max(320.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
+            panelWidth = std::max(230.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
         }
         const float maxPanelWidth = std::max(240.0f, layout.workSize.x - layout.margin * 2.0f);
         panelWidth = clampf(panelWidth, 240.0f, maxPanelWidth);
@@ -623,11 +620,11 @@ public:
 
         const Layout layout = getLayout();
 
-        const float minCenterWidth = 320.0f;
-        float panelWidth = clampf(layout.workSize.x * 0.35f, 380.0f, 540.0f);
+        const float minCenterWidth = 420.0f;
+        float panelWidth = clampf(layout.workSize.x * 0.245f, 250.0f, 340.0f);
         if (layout.workSize.x - layout.margin * 2.0f - panelWidth * 2.0f < minCenterWidth)
         {
-            panelWidth = std::max(320.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
+            panelWidth = std::max(230.0f, (layout.workSize.x - layout.margin * 2.0f - minCenterWidth) * 0.5f);
         }
 
         // Lock panel position and size (cannot be moved or resized)
@@ -902,8 +899,8 @@ public:
 
         // Lock panel position and size (cannot be moved or resized)
         const Layout layout = getLayout();
-        const float desiredWidth = 420.0f;
-        const float desiredHeight = 300.0f;
+        const float desiredWidth = 360.0f;
+        const float desiredHeight = 250.0f;
         const float maxWidth = std::max(0.0f, layout.workSize.x - layout.margin * 2.0f);
         const float clampedWidth = std::min(desiredWidth, maxWidth);
         const float x = layout.workPos.x + (layout.workSize.x - clampedWidth) * 0.5f;
@@ -1087,8 +1084,8 @@ public:
 
         // Lock panel position and size (cannot be moved or resized)
         const Layout layout = getLayout();
-        const float desiredWidth = 420.0f;
-        const float desiredHeight = 320.0f;
+        const float desiredWidth = 360.0f;
+        const float desiredHeight = 270.0f;
         const float maxWidth = std::max(0.0f, layout.workSize.x - layout.margin * 2.0f);
         const float clampedWidth = std::min(desiredWidth, maxWidth);
         const float x = layout.workPos.x + (layout.workSize.x - clampedWidth) * 0.5f;
