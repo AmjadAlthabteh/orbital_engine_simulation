@@ -341,7 +341,7 @@ int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
         if (bodyI == nullptr || bodyI->isStatic || maxVelocityChangePerStep <= 0.0f)
             continue;
 
-        float accelerationMagnitude = 0.0f;
+        Vec3 netAcceleration;
         for (size_t j = 0; j < bodyCount; ++j)
         {
             if (i == j)
@@ -355,9 +355,15 @@ int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
             const float dy = bodyJ->position.y - bodyI->position.y;
             const float dz = bodyJ->position.z - bodyI->position.z;
             const float distanceSquared = std::max(dx * dx + dy * dy + dz * dz + softeningSquared, 0.0001f);
-            accelerationMagnitude += gravitationalConstant * bodyJ->mass / distanceSquared;
+            const float inverseDistance = 1.0f / std::sqrt(distanceSquared);
+            const float accelerationScale =
+                gravitationalConstant * bodyJ->mass * inverseDistance * inverseDistance * inverseDistance;
+            netAcceleration += Vec3(dx, dy, dz) * accelerationScale;
         }
 
+        // Opposing gravitational pulls cancel as vectors. Summing magnitudes
+        // overestimated the real acceleration near balanced configurations.
+        const float accelerationMagnitude = netAcceleration.length();
         const float velocityChange = accelerationMagnitude * deltaTime;
         const int accelerationSubsteps =
             static_cast<int>(std::ceil(velocityChange / maxVelocityChangePerStep));
