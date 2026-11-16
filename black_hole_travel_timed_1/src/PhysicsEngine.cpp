@@ -2,24 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
-#include <cstdint>
-#include <cstring>
 #include <limits>
-
-// OPTIMIZATION: Fast inverse square root (Quake III style) for distance calculations
-// Only about 1% less accurate than std::sqrt but significantly faster
-inline float fastInvSqrt(float x)
-{
-    float halfx = 0.5f * x;
-    static_assert(sizeof(float) == sizeof(std::uint32_t), "fastInvSqrt assumes 32-bit float");
-
-    std::uint32_t i = 0;
-    std::memcpy(&i, &x, sizeof(x));
-    i = 0x5f3759df - (i >> 1);
-    std::memcpy(&x, &i, sizeof(x));
-    x = x * (1.5f - halfx * x * x);  // One Newton iteration
-    return x;
-}
 
 PhysicsEngine::PhysicsEngine(float G)
 {
@@ -57,16 +40,22 @@ void PhysicsEngine::update(float deltaTime)
     // Perform physics update in substeps
     for (int step = 0; step < substeps; ++step)
     {
+        // Velocity Verlet samples gravity at both ends of the interval. Unlike
+        // Euler integration it is time-reversible and does not introduce a
+        // systematic orbital-energy gain or loss.
         applyGravity();
-        handleCollisions();
-
-        // Integrate all bodies (with null pointer safety check)
         for (auto* body : bodies)
         {
             if (body != nullptr)
-            {
-                body->integrate(subDeltaTime);
-            }
+                body->beginVelocityVerlet(subDeltaTime);
+        }
+
+        handleCollisions();
+        applyGravity();
+        for (auto* body : bodies)
+        {
+            if (body != nullptr)
+                body->finishVelocityVerlet(subDeltaTime);
         }
     }
 
@@ -218,7 +207,10 @@ void PhysicsEngine::applyGravity()
             if (distanceSquared < 0.0001f) continue;  // 0.01^2
 
             // Plummer-style softening keeps close passes finite without changing far-field gravity.
-            const float invDistance = fastInvSqrt(distanceSquared);
+            // Use the exact reciprocal distance. The old one-iteration fast
+            // inverse square root biased every pair force, causing measurable
+            // apsidal precession and energy drift over long orbital runs.
+            const float invDistance = 1.0f / std::sqrt(distanceSquared);
             const float invDistCubed = invDistance * invDistance * invDistance;
 
             const float pairForceScale = gravitationalConstant * bodyI->mass * bodyJ->mass * invDistCubed;

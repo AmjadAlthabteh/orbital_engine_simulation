@@ -29,6 +29,11 @@ public:
 
     void integrate(float deltaTime);
 
+    // Split velocity-Verlet integration used by PhysicsEngine. Forces must be
+    // accumulated before each half of the step.
+    void beginVelocityVerlet(float deltaTime);
+    void finishVelocityVerlet(float deltaTime);
+
     void clearForces();
 
     float getSpeed() const;

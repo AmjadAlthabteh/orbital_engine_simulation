@@ -44,6 +44,35 @@ void Body::integrate(float deltaTime)
     clearForces();
 }
 
+void Body::beginVelocityVerlet(float deltaTime)
+{
+    if (isStatic || inverseMass <= 0.0f)
+    {
+        clearForces();
+        acceleration = Vec3(0, 0, 0);
+        return;
+    }
+
+    acceleration = forceAccum * inverseMass;
+    velocity += acceleration * (0.5f * deltaTime);
+    position += velocity * deltaTime;
+    clearForces();
+}
+
+void Body::finishVelocityVerlet(float deltaTime)
+{
+    if (isStatic || inverseMass <= 0.0f)
+    {
+        clearForces();
+        acceleration = Vec3(0, 0, 0);
+        return;
+    }
+
+    acceleration = forceAccum * inverseMass;
+    velocity += acceleration * (0.5f * deltaTime);
+    clearForces();
+}
+
 void Body::clearForces()
 {
     forceAccum = Vec3(0, 0, 0);
