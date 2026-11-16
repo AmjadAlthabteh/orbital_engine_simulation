@@ -140,8 +140,30 @@ void PhysicsEngine::updateDiagnostics()
         if (body == nullptr || body->mass <= 0.0f)
             continue;
 
+        diagnostics.totalMass += body->mass;
         diagnostics.kineticEnergy += body->kineticEnergy();
         diagnostics.totalMomentum += body->velocity * body->mass;
+        diagnostics.centerOfMass += body->position * body->mass;
+    }
+
+    if (diagnostics.totalMass > 0.0f)
+    {
+        diagnostics.centerOfMass = diagnostics.centerOfMass / diagnostics.totalMass;
+        diagnostics.centerOfMassVelocity = diagnostics.totalMomentum / diagnostics.totalMass;
+
+        // Measure intrinsic angular momentum about the barycenter so a uniform
+        // translation of the whole system does not change the diagnostic.
+        for (size_t i = 0; i < bodyCount; ++i)
+        {
+            const Body* const body = bodyData[i];
+            if (body == nullptr || body->mass <= 0.0f)
+                continue;
+
+            const Vec3 relativePosition = body->position - diagnostics.centerOfMass;
+            const Vec3 relativeVelocity = body->velocity - diagnostics.centerOfMassVelocity;
+            diagnostics.angularMomentum +=
+                relativePosition.cross(relativeVelocity * body->mass);
+        }
     }
 
     const float softeningSquared = gravitySofteningLength * gravitySofteningLength;

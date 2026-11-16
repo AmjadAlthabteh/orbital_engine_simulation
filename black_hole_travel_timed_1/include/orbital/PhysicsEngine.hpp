@@ -17,7 +17,11 @@ struct PhysicsDiagnostics
     float kineticEnergy = 0.0f;
     float potentialEnergy = 0.0f;
     float totalEnergy = 0.0f;
+    float totalMass = 0.0f;
     Vec3 totalMomentum;
+    Vec3 centerOfMass;
+    Vec3 centerOfMassVelocity;
+    Vec3 angularMomentum;
     float closestApproach = 0.0f;
 };
 
