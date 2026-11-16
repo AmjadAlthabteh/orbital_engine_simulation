@@ -393,18 +393,32 @@ void PhysicsEngine::handleCollisions()
             const float distanceSquared = dx * dx + dy * dy + dz * dz;
             if (distanceSquared < maxDistSquared)
             {
+                const Vec3 relativeVel = bodyB->velocity - bodyA->velocity;
                 const float distance = std::sqrt(distanceSquared);
-                const Vec3 normal = distance > 0.0f ? Vec3(dx, dy, dz) * (1.0f / distance) : Vec3();
+                Vec3 normal;
+                if (distance > 0.000001f)
+                {
+                    normal = Vec3(dx, dy, dz) * (1.0f / distance);
+                }
+                else
+                {
+                    // Coincident centers have no geometric normal. Use the
+                    // incoming direction so the impulse can still separate them.
+                    const float relativeSpeed = relativeVel.length();
+                    normal = relativeSpeed > 0.000001f
+                        ? relativeVel * (-1.0f / relativeSpeed)
+                        : Vec3(1.0f, 0.0f, 0.0f);
+                }
                 const Vec3 collisionPoint = bodyA->position + normal * bodyA->radius;
 
                 // Calculate relative velocity
-                Vec3 relativeVel = bodyB->velocity - bodyA->velocity;
-                float velAlongNormal = relativeVel.dot(normal);
+                const float velAlongNormal = relativeVel.dot(normal);
 
                 if (velAlongNormal > 0) continue;
 
-                // Calculate collision intensity for visualization
-                float collisionSpeed = relativeVel.length();
+                // Only normal closing speed contributes to impact energy.
+                // Tangential motion is handled independently by friction.
+                const float collisionSpeed = -velAlongNormal;
 
                 const float inverseMassA = bodyA->inverseMass;
                 const float inverseMassB = bodyB->inverseMass;
