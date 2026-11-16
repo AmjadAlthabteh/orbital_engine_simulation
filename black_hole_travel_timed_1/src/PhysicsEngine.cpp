@@ -279,16 +279,23 @@ float PhysicsEngine::predictCollisionTime(const Body* a, const Body* b) const
 
 bool PhysicsEngine::needsAdaptiveStepping() const
 {
-    // Check if any body is moving fast enough to require adaptive stepping
+    // Relative speed, rather than world-space speed, determines how quickly
+    // bodies can cross one another. This keeps the result Galilean-invariant.
     const float thresholdSquared = velocityThreshold * velocityThreshold;
-    for (const auto* body : bodies)
+    for (size_t i = 0; i < bodies.size(); ++i)
     {
-        if (body != nullptr)
+        const Body* bodyI = bodies[i];
+        if (bodyI == nullptr)
+            continue;
+
+        for (size_t j = i + 1; j < bodies.size(); ++j)
         {
-            if (body->velocity.lengthSquared() > thresholdSquared)
-            {
+            const Body* bodyJ = bodies[j];
+            if (bodyJ == nullptr)
+                continue;
+
+            if ((bodyJ->velocity - bodyI->velocity).lengthSquared() > thresholdSquared)
                 return true;
-            }
         }
     }
     return false;
@@ -301,19 +308,28 @@ int PhysicsEngine::calculateAdaptiveSubsteps(float deltaTime) const
 
     int substeps = static_cast<int>(std::ceil(deltaTime / maxTimeStep));
 
-    for (const auto* body : bodies)
+    // Limit relative travel per step to a fraction of each pair's contact
+    // distance. A shared bulk velocity no longer wastes the substep budget.
+    for (size_t i = 0; i < bodies.size(); ++i)
     {
-        if (body == nullptr || body->radius <= 0.0f)
+        const Body* bodyI = bodies[i];
+        if (bodyI == nullptr || bodyI->radius <= 0.0f)
             continue;
 
-        const float velocitySquared = body->velocity.lengthSquared();
-        if (velocitySquared <= 0.0f)
-            continue;
+        for (size_t j = i + 1; j < bodies.size(); ++j)
+        {
+            const Body* bodyJ = bodies[j];
+            if (bodyJ == nullptr || bodyJ->radius <= 0.0f)
+                continue;
 
-        const float travelDistance = std::sqrt(velocitySquared) * deltaTime;
-        const float maxTravelPerStep = std::max(body->radius * 0.25f, 0.01f);
-        const int travelSubsteps = static_cast<int>(std::ceil(travelDistance / maxTravelPerStep));
-        substeps = std::max(substeps, travelSubsteps);
+            const float relativeSpeed = (bodyJ->velocity - bodyI->velocity).length();
+            const float relativeTravel = relativeSpeed * deltaTime;
+            const float contactDistance = bodyI->radius + bodyJ->radius;
+            const float maxTravelPerStep = std::max(contactDistance * 0.25f, 0.01f);
+            const int travelSubsteps =
+                static_cast<int>(std::ceil(relativeTravel / maxTravelPerStep));
+            substeps = std::max(substeps, travelSubsteps);
+        }
     }
 
     const float softeningSquared = gravitySofteningLength * gravitySofteningLength;
