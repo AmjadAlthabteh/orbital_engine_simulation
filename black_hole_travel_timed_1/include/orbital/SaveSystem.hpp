@@ -8,6 +8,7 @@
 #include <ctime>
 #include <filesystem>
 #include <system_error>
+#include <algorithm>
 #include "Vec3.hpp"
 
 // Save/Load system for preserving game state
@@ -330,7 +331,7 @@ public:
         // Write JSON-like format
         file << "{\n";
         writeField(file, "saveName", data.saveName);
-        writeField(file, "saveDate", timeBuffer);
+        writeField(file, "saveDate", std::string(timeBuffer));
         writeField(file, "saveVersion", data.saveVersion);
 
         file << "\n// Ship State\n";
@@ -553,13 +554,20 @@ public:
     }
 
     // List all available save files
-    std::vector<std::string> listSaves()
+    std::vector<std::string> listSaves() const
     {
         std::vector<std::string> saves;
-        // Note: This is simplified - full implementation would scan directory
-        saves.push_back("quicksave.sav");
-        saves.push_back("autosave.sav");
-        saves.push_back("manual_save_1.sav");
+        std::error_code error;
+        std::filesystem::directory_iterator entries(saveDirectory, error);
+        if (error) return saves;
+
+        for (const auto& entry : entries)
+        {
+            if (entry.is_regular_file(error) && !error && entry.path().extension() == ".sav")
+                saves.push_back(entry.path().filename().string());
+            error.clear();
+        }
+        std::sort(saves.begin(), saves.end());
         return saves;
     }
 
