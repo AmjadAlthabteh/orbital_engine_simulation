@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <filesystem>
+#include <system_error>
 #include "Vec3.hpp"
 
 // Save/Load system for preserving game state
@@ -171,12 +173,13 @@ public:
     SaveSystem(const std::string& saveDir = "saves/")
         : saveDirectory(saveDir)
     {
-        // Create save directory if it doesn't exist (platform-dependent)
-        #ifdef _WIN32
-        system(("mkdir " + saveDirectory + " 2>nul").c_str());
-        #else
-        system(("mkdir -p " + saveDirectory).c_str());
-        #endif
+        std::error_code error;
+        std::filesystem::create_directories(saveDirectory, error);
+        if (error)
+        {
+            std::cerr << "[SaveSystem] ERROR: Cannot create save directory: "
+                      << saveDirectory << " (" << error.message() << ")\n";
+        }
     }
 
     // Save current game state to file
