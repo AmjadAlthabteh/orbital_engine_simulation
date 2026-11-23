@@ -243,6 +243,32 @@ private:
         return line.substr(keyStart + 1, keyEnd - keyStart - 1);
     }
 
+    static bool validateSaveData(const SaveData& data)
+    {
+        const auto finiteNonNegative = [](float value) {
+            return std::isfinite(value) && value >= 0.0f;
+        };
+        const auto validResource = [&](float value, float maximum) {
+            return finiteNonNegative(value) && std::isfinite(maximum) && maximum > 0.0f && value <= maximum;
+        };
+
+        return data.shipPosition.isFinite() && data.shipVelocity.isFinite() &&
+               std::isfinite(data.shipYaw) && std::isfinite(data.shipPitch) &&
+               validResource(data.fuel, data.maxFuel) &&
+               validResource(data.power, data.maxPower) &&
+               validResource(data.oxygen, data.maxOxygen) &&
+               validResource(data.health, data.maxHealth) &&
+               finiteNonNegative(data.totalDistance) && finiteNonNegative(data.maxSpeed) &&
+               finiteNonNegative(data.maxGForce) && finiteNonNegative(data.totalFlightTime) &&
+               finiteNonNegative(data.sciencePoints) && finiteNonNegative(data.totalGameTime) &&
+               std::isfinite(data.timeScale) && data.timeScale > 0.0f &&
+               data.planetsVisited >= 0 && data.achievementsUnlocked >= 0 &&
+               data.achievementPoints >= 0 && data.experimentsCompleted >= 0 &&
+               data.waypointsCreated >= 0 && data.closeCallsSurvived >= 0 &&
+               data.cosmicEventsSurvived >= 0 && data.landingAttempts >= 0 &&
+               data.successfulLandings >= 0;
+    }
+
     Vec3 parseVec3(const std::string& value)
     {
         Vec3 result;
@@ -273,6 +299,12 @@ public:
     // Save current game state to file
     bool save(const SaveData& data, const std::string& filename = "quicksave.sav")
     {
+        if (!validateSaveData(data))
+        {
+            std::cerr << "[SaveSystem] ERROR: Refusing to save invalid game state.\n";
+            return false;
+        }
+
         std::filesystem::path savePath;
         if (!resolveSavePath(filename, savePath)) return false;
         const std::string fullPath = savePath.string();
@@ -458,6 +490,14 @@ public:
             data = originalData;
             std::cerr << "[SaveSystem] ERROR: Invalid data in " << fullPath
                       << " (" << error.what() << ")\n";
+            return false;
+        }
+
+        if (!validateSaveData(data))
+        {
+            data = originalData;
+            std::cerr << "[SaveSystem] ERROR: Save contains out-of-range game state: "
+                      << fullPath << "\n";
             return false;
         }
 
