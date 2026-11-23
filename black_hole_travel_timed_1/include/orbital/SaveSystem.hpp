@@ -234,6 +234,15 @@ private:
         return value;
     }
 
+    static std::string extractKey(const std::string& line)
+    {
+        const size_t keyStart = line.find('"');
+        if (keyStart == std::string::npos) return "";
+        const size_t keyEnd = line.find('"', keyStart + 1);
+        if (keyEnd == std::string::npos) return "";
+        return line.substr(keyStart + 1, keyEnd - keyStart - 1);
+    }
+
     Vec3 parseVec3(const std::string& value)
     {
         Vec3 result;
@@ -366,77 +375,78 @@ public:
         std::string line;
         while (std::getline(file, line))
         {
-            if (line.find("shipPosition") != std::string::npos)
+            const std::string key = extractKey(line);
+            if (key == "shipPosition")
                 data.shipPosition = parseVec3(line);
-            else if (line.find("shipVelocity") != std::string::npos)
+            else if (key == "shipVelocity")
                 data.shipVelocity = parseVec3(line);
-            else if (line.find("shipYaw") != std::string::npos)
+            else if (key == "shipYaw")
                 data.shipYaw = std::stof(extractValue(line));
-            else if (line.find("shipPitch") != std::string::npos)
+            else if (key == "shipPitch")
                 data.shipPitch = std::stof(extractValue(line));
-            else if (line.find("fuel\"") != std::string::npos)
+            else if (key == "fuel")
                 data.fuel = std::stof(extractValue(line));
-            else if (line.find("maxFuel") != std::string::npos)
+            else if (key == "maxFuel")
                 data.maxFuel = std::stof(extractValue(line));
-            else if (line.find("power\"") != std::string::npos)
+            else if (key == "power")
                 data.power = std::stof(extractValue(line));
-            else if (line.find("maxPower") != std::string::npos)
+            else if (key == "maxPower")
                 data.maxPower = std::stof(extractValue(line));
-            else if (line.find("oxygen\"") != std::string::npos)
+            else if (key == "oxygen")
                 data.oxygen = std::stof(extractValue(line));
-            else if (line.find("maxOxygen") != std::string::npos)
+            else if (key == "maxOxygen")
                 data.maxOxygen = std::stof(extractValue(line));
-            else if (line.find("health\"") != std::string::npos)
+            else if (key == "health")
                 data.health = std::stof(extractValue(line));
-            else if (line.find("maxHealth") != std::string::npos)
+            else if (key == "maxHealth")
                 data.maxHealth = std::stof(extractValue(line));
-            else if (line.find("engineDamaged") != std::string::npos)
+            else if (key == "engineDamaged")
                 data.engineDamaged = (extractValue(line) == "true");
-            else if (line.find("sensorsDamaged") != std::string::npos)
+            else if (key == "sensorsDamaged")
                 data.sensorsDamaged = (extractValue(line) == "true");
-            else if (line.find("navigationDamaged") != std::string::npos)
+            else if (key == "navigationDamaged")
                 data.navigationDamaged = (extractValue(line) == "true");
-            else if (line.find("lifeSupportDamaged") != std::string::npos)
+            else if (key == "lifeSupportDamaged")
                 data.lifeSupportDamaged = (extractValue(line) == "true");
-            else if (line.find("totalDistance") != std::string::npos)
+            else if (key == "totalDistance")
                 data.totalDistance = std::stof(extractValue(line));
-            else if (line.find("maxSpeed") != std::string::npos)
+            else if (key == "maxSpeed")
                 data.maxSpeed = std::stof(extractValue(line));
-            else if (line.find("maxGForce") != std::string::npos)
+            else if (key == "maxGForce")
                 data.maxGForce = std::stof(extractValue(line));
-            else if (line.find("totalFlightTime") != std::string::npos)
+            else if (key == "totalFlightTime")
                 data.totalFlightTime = std::stof(extractValue(line));
-            else if (line.find("planetsVisited") != std::string::npos)
+            else if (key == "planetsVisited")
                 data.planetsVisited = std::stoi(extractValue(line));
-            else if (line.find("achievementsUnlocked") != std::string::npos)
+            else if (key == "achievementsUnlocked")
                 data.achievementsUnlocked = std::stoi(extractValue(line));
-            else if (line.find("achievementPoints") != std::string::npos)
+            else if (key == "achievementPoints")
                 data.achievementPoints = std::stoi(extractValue(line));
-            else if (line.find("sciencePoints") != std::string::npos)
+            else if (key == "sciencePoints")
                 data.sciencePoints = std::stof(extractValue(line));
-            else if (line.find("experimentsCompleted") != std::string::npos)
+            else if (key == "experimentsCompleted")
                 data.experimentsCompleted = std::stoi(extractValue(line));
-            else if (line.find("waypointsCreated") != std::string::npos)
+            else if (key == "waypointsCreated")
                 data.waypointsCreated = std::stoi(extractValue(line));
-            else if (line.find("closeCallsSurvived") != std::string::npos)
+            else if (key == "closeCallsSurvived")
                 data.closeCallsSurvived = std::stoi(extractValue(line));
-            else if (line.find("cosmicEventsSurvived") != std::string::npos)
+            else if (key == "cosmicEventsSurvived")
                 data.cosmicEventsSurvived = std::stoi(extractValue(line));
-            else if (line.find("landingAttempts") != std::string::npos)
+            else if (key == "landingAttempts")
                 data.landingAttempts = std::stoi(extractValue(line));
-            else if (line.find("successfulLandings") != std::string::npos)
+            else if (key == "successfulLandings")
                 data.successfulLandings = std::stoi(extractValue(line));
-            else if (line.find("totalGameTime") != std::string::npos)
+            else if (key == "totalGameTime")
                 data.totalGameTime = std::stof(extractValue(line));
-            else if (line.find("timeScale") != std::string::npos)
+            else if (key == "timeScale")
                 data.timeScale = std::stof(extractValue(line));
-            else if (line.find("currentTarget") != std::string::npos)
+            else if (key == "currentTarget")
                 data.currentTarget = extractValue(line);
-            else if (line.find("saveName") != std::string::npos)
+            else if (key == "saveName")
                 data.saveName = extractValue(line);
-            else if (line.find("saveDate") != std::string::npos)
+            else if (key == "saveDate")
                 data.saveDate = extractValue(line);
-            else if (line.find("saveVersion") != std::string::npos)
+            else if (key == "saveVersion")
                 data.saveVersion = std::stoi(extractValue(line));
         }
 
