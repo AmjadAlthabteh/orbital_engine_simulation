@@ -116,6 +116,56 @@ private:
     std::string currentSaveFile;
     SaveData currentData;
 
+    static std::string escapeString(const std::string& value)
+    {
+        std::string escaped;
+        escaped.reserve(value.size());
+        for (char character : value)
+        {
+            switch (character)
+            {
+                case '\\': escaped += "\\\\"; break;
+                case '"': escaped += "\\\""; break;
+                case '\n': escaped += "\\n"; break;
+                case '\r': escaped += "\\r"; break;
+                case '\t': escaped += "\\t"; break;
+                default: escaped += character; break;
+            }
+        }
+        return escaped;
+    }
+
+    static std::string unescapeString(const std::string& value)
+    {
+        std::string unescaped;
+        unescaped.reserve(value.size());
+        bool escaping = false;
+        for (char character : value)
+        {
+            if (escaping)
+            {
+                switch (character)
+                {
+                    case 'n': unescaped += '\n'; break;
+                    case 'r': unescaped += '\r'; break;
+                    case 't': unescaped += '\t'; break;
+                    default: unescaped += character; break;
+                }
+                escaping = false;
+            }
+            else if (character == '\\')
+            {
+                escaping = true;
+            }
+            else
+            {
+                unescaped += character;
+            }
+        }
+        if (escaping) unescaped += '\\';
+        return unescaped;
+    }
+
     bool resolveSavePath(const std::string& filename, std::filesystem::path& result) const
     {
         const std::filesystem::path requested(filename);
@@ -133,7 +183,7 @@ private:
     // Helper to write a key-value pair
     void writeField(std::ofstream& file, const std::string& key, const std::string& value)
     {
-        file << "\"" << key << "\": \"" << value << "\",\n";
+        file << "\"" << key << "\": \"" << escapeString(value) << "\",\n";
     }
 
     void writeField(std::ofstream& file, const std::string& key, float value)
@@ -162,10 +212,25 @@ private:
         size_t colonPos = line.find(':');
         if (colonPos == std::string::npos) return "";
 
-        std::string value = line.substr(colonPos + 1);
-        // Remove quotes, spaces, commas
-        value.erase(0, value.find_first_not_of(" \t\""));
-        value.erase(value.find_last_not_of(" \t\",\n") + 1);
+        const size_t valueStart = line.find_first_not_of(" \t", colonPos + 1);
+        if (valueStart == std::string::npos) return "";
+        if (line[valueStart] == '"')
+        {
+            std::string encoded;
+            bool escaping = false;
+            for (size_t i = valueStart + 1; i < line.size(); ++i)
+            {
+                const char character = line[i];
+                if (character == '"' && !escaping) return unescapeString(encoded);
+                encoded += character;
+                escaping = character == '\\' && !escaping;
+                if (character != '\\') escaping = false;
+            }
+            return "";
+        }
+
+        std::string value = line.substr(valueStart);
+        value.erase(value.find_last_not_of(" \t,\r\n") + 1);
         return value;
     }
 
