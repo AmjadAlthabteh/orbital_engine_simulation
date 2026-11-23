@@ -219,6 +219,11 @@ public:
         writeField(file, "maxFuel", data.maxFuel);
         writeField(file, "power", data.power);
         writeField(file, "maxPower", data.maxPower);
+        writeField(file, "oxygen", data.oxygen);
+        writeField(file, "maxOxygen", data.maxOxygen);
+
+        file << "\n// Health & Damage\n";
+        writeField(file, "health", data.health);
         writeField(file, "maxHealth", data.maxHealth);
         writeField(file, "engineDamaged", data.engineDamaged);
         writeField(file, "sensorsDamaged", data.sensorsDamaged);
