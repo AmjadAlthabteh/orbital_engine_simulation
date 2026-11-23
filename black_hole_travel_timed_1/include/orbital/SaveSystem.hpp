@@ -1,4 +1,4 @@
-    #pragma totalDistance
+#pragma once
 
 #include <string>
 #include <fstream>
