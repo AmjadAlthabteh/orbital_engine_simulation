@@ -372,12 +372,15 @@ public:
             return false;
         }
 
-        std::string line;
-        while (std::getline(file, line))
+        const SaveData originalData = data;
+        try
         {
-            const std::string key = extractKey(line);
-            if (key == "shipPosition")
-                data.shipPosition = parseVec3(line);
+            std::string line;
+            while (std::getline(file, line))
+            {
+                const std::string key = extractKey(line);
+                if (key == "shipPosition")
+                    data.shipPosition = parseVec3(line);
             else if (key == "shipVelocity")
                 data.shipVelocity = parseVec3(line);
             else if (key == "shipYaw")
@@ -446,8 +449,16 @@ public:
                 data.saveName = extractValue(line);
             else if (key == "saveDate")
                 data.saveDate = extractValue(line);
-            else if (key == "saveVersion")
-                data.saveVersion = std::stoi(extractValue(line));
+                else if (key == "saveVersion")
+                    data.saveVersion = std::stoi(extractValue(line));
+            }
+        }
+        catch (const std::exception& error)
+        {
+            data = originalData;
+            std::cerr << "[SaveSystem] ERROR: Invalid data in " << fullPath
+                      << " (" << error.what() << ")\n";
+            return false;
         }
 
         file.close();
