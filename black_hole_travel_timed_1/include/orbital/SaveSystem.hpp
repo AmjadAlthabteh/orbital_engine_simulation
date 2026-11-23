@@ -116,6 +116,20 @@ private:
     std::string currentSaveFile;
     SaveData currentData;
 
+    bool resolveSavePath(const std::string& filename, std::filesystem::path& result) const
+    {
+        const std::filesystem::path requested(filename);
+        if (filename.empty() || requested.is_absolute() || requested.has_parent_path() ||
+            requested.filename() == "." || requested.filename() == "..")
+        {
+            std::cerr << "[SaveSystem] ERROR: Invalid save filename: " << filename << "\n";
+            return false;
+        }
+
+        result = std::filesystem::path(saveDirectory) / requested.filename();
+        return true;
+    }
+
     // Helper to write a key-value pair
     void writeField(std::ofstream& file, const std::string& key, const std::string& value)
     {
@@ -185,7 +199,9 @@ public:
     // Save current game state to file
     bool save(const SaveData& data, const std::string& filename = "quicksave.sav")
     {
-        std::string fullPath = saveDirectory + filename;
+        std::filesystem::path savePath;
+        if (!resolveSavePath(filename, savePath)) return false;
+        const std::string fullPath = savePath.string();
         std::ofstream file(fullPath);
 
         if (!file.is_open())
@@ -271,7 +287,9 @@ public:
     // Load game state from file
     bool load(SaveData& data, const std::string& filename = "quicksave.sav")
     {
-        std::string fullPath = saveDirectory + filename;
+        std::filesystem::path savePath;
+        if (!resolveSavePath(filename, savePath)) return false;
+        const std::string fullPath = savePath.string();
         std::ifstream file(fullPath);
 
         if (!file.is_open())
