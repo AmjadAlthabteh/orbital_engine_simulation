@@ -308,16 +308,15 @@ public:
         std::filesystem::path savePath;
         if (!resolveSavePath(filename, savePath)) return false;
         const std::string fullPath = savePath.string();
-        std::ofstream file(fullPath);
+        std::filesystem::path temporaryPath = savePath;
+        temporaryPath += ".tmp";
+        std::ofstream file(temporaryPath, std::ios::trunc);
 
         if (!file.is_open())
         {
             std::cerr << "[SaveSystem] ERROR: Cannot open file for writing: " << fullPath << "\n";
             return false;
         }
-
-        currentData = data;
-        currentSaveFile = fullPath;
 
         // Get current timestamp
         time_t now = time(0);
@@ -379,7 +378,47 @@ public:
         file << "\"end\": true\n";
         file << "}\n";
 
+        file.flush();
+        const bool writeSucceeded = file.good();
         file.close();
+        if (!writeSucceeded)
+        {
+            std::error_code cleanupError;
+            std::filesystem::remove(temporaryPath, cleanupError);
+            std::cerr << "[SaveSystem] ERROR: Failed while writing: " << fullPath << "\n";
+            return false;
+        }
+
+        std::filesystem::path backupPath = savePath;
+        backupPath += ".bak";
+        std::error_code error;
+        std::filesystem::remove(backupPath, error);
+        error.clear();
+        if (std::filesystem::exists(savePath))
+        {
+            std::filesystem::rename(savePath, backupPath, error);
+            if (error)
+            {
+                std::filesystem::remove(temporaryPath, error);
+                std::cerr << "[SaveSystem] ERROR: Cannot replace save file: " << fullPath << "\n";
+                return false;
+            }
+        }
+
+        std::filesystem::rename(temporaryPath, savePath, error);
+        if (error)
+        {
+            std::error_code restoreError;
+            if (std::filesystem::exists(backupPath))
+                std::filesystem::rename(backupPath, savePath, restoreError);
+            std::filesystem::remove(temporaryPath, restoreError);
+            std::cerr << "[SaveSystem] ERROR: Cannot finalize save file: " << fullPath << "\n";
+            return false;
+        }
+        std::filesystem::remove(backupPath, error);
+
+        currentData = data;
+        currentSaveFile = fullPath;
 
         std::cout << "\n[SaveSystem] ====================================\n";
         std::cout << "[SaveSystem] GAME SAVED SUCCESSFULLY\n";
