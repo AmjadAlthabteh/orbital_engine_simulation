@@ -634,7 +634,11 @@ public:
         drawPanelGlow(panelPos, ImVec2(panelWidth, layout.mainPanelHeight()), 0.9f);
 
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
-        ImGui::Begin("Navigation & Radar", &state.showRightPanel, flags);
+        if (!ImGui::Begin("Navigation & Radar", &state.showRightPanel, flags))
+        {
+            ImGui::End();
+            return;
+        }
         ImGui::SetWindowFontScale(fontScaleNormal);
 
         Vec3 shipPos = ship.getPhysicsBody().position;
@@ -658,31 +662,26 @@ public:
             ImGui::Separator();
 
             // Target list with highlighting
-            ImGui::BeginChild("TargetList", ImVec2(-1, 220), true);
-
-            if (ImGui::BeginTable("##TargetTable", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp))
+            if (ImGui::BeginChild("TargetList", ImVec2(-1, 220), true))
             {
-                ImGui::TableSetupColumn("Target", ImGuiTableColumnFlags_WidthStretch, 2.0f);
-                ImGui::TableSetupColumn("Dist", ImGuiTableColumnFlags_WidthFixed, 70.0f);
-                ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed, 90.0f);
+                ImGui::Columns(3, "TargetColumns", false);
 
                 for (size_t i = 0; i < cachedTargets.size(); ++i)
                 {
                     const TargetInfo& target = cachedTargets[i];
                     const bool isSelected = (state.selectedTarget == static_cast<int>(i));
 
-                    ImGui::TableNextRow();
-
-                    ImGui::TableSetColumnIndex(0);
+                    ImGui::PushID(static_cast<int>(i));
                     if (ImGui::Selectable(target.name.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns))
                     {
                         state.selectedTarget = static_cast<int>(i);
                     }
+                    ImGui::PopID();
 
-                    ImGui::TableSetColumnIndex(1);
+                    ImGui::NextColumn();
                     ImGui::TextColored(colorInfo, "%.0f u", target.distance);
 
-                    ImGui::TableSetColumnIndex(2);
+                    ImGui::NextColumn();
                     if (isSelected && state.lockTarget)
                     {
                         ImGui::TextColored(colorHighlight, "LOCKED");
@@ -695,9 +694,10 @@ public:
                     {
                         ImGui::TextDisabled("-");
                     }
+                    ImGui::NextColumn();
                 }
 
-                ImGui::EndTable();
+                ImGui::Columns(1);
             }
 
             ImGui::EndChild();
