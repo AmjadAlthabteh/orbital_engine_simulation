@@ -719,6 +719,14 @@ public:
 
                 ImGui::Separator();
                 ImGui::TextColored(colorInfo, "Selected: %s", target.name.c_str());
+                const auto liveTarget = std::find_if(bodies.begin(), bodies.end(),
+                                                     [&target](const CelestialBody* body)
+                                                     { return body->getName() == target.name; });
+                if (liveTarget != bodies.end())
+                {
+                    const Vec3& position = (*liveTarget)->getPhysicsBody().position;
+                    ImGui::Text("World (X, Y): (%.2f, %.2f) u", position.x, position.y);
+                }
                 ImGui::Text("Distance: %.1f units", target.distance);
                 ImGui::Text("Rel. Velocity: %.2f m/s", target.relativeVelocity.length());
 
@@ -873,16 +881,19 @@ public:
                     label = body->getName().substr(0, 3);
                 }
 
-                // Highlight locked target
-                bool isLocked = (state.lockTarget && state.selectedTarget >= 0 &&
-                               static_cast<size_t>(state.selectedTarget) < cachedTargets.size() &&
-                               cachedTargets[state.selectedTarget].name == body->getName());
+                const bool isSelected = state.selectedTarget >= 0 &&
+                                        static_cast<size_t>(state.selectedTarget) < cachedTargets.size() &&
+                                        cachedTargets[state.selectedTarget].name == body->getName();
 
-                if (isLocked)
+                if (isSelected && state.lockTarget)
                 {
                     // Pulsing ring around locked target
                     float pulseSize = 12.0f + 3.0f * std::sin(ImGui::GetTime() * 4.0f);
                     drawList->AddCircle(ImVec2(x, y), pulseSize, IM_COL32(0, 255, 255, 200), 16, 2.5f);
+                }
+                else if (isSelected)
+                {
+                    drawList->AddCircle(ImVec2(x, y), size + 4.0f, IM_COL32(0, 255, 255, 200), 16, 1.5f);
                 }
 
                 // Draw object
