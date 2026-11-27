@@ -12,6 +12,7 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <optional>
 
 // Include ImGui headers
 #include <imgui.h>
@@ -1218,6 +1219,10 @@ private:
     // Update cached target information
     void updateTargetCache(const std::vector<CelestialBody*>& bodies, const Spaceship& ship)
     {
+        std::optional<std::string> selectedName;
+        if (state.selectedTarget >= 0 && static_cast<size_t>(state.selectedTarget) < cachedTargets.size())
+            selectedName = cachedTargets[state.selectedTarget].name;
+
         cachedTargets.clear();
         Vec3 shipPos = ship.getPhysicsBody().position;
 
@@ -1237,5 +1242,14 @@ private:
         // Sort by distance
         std::sort(cachedTargets.begin(), cachedTargets.end(),
                   [](const TargetInfo& a, const TargetInfo& b) { return a.distance < b.distance; });
+
+        const auto selected = std::find_if(cachedTargets.begin(), cachedTargets.end(),
+                                           [&selectedName](const TargetInfo& target)
+                                           { return selectedName && target.name == *selectedName; });
+        state.selectedTarget = selected == cachedTargets.end()
+                                   ? -1
+                                   : static_cast<int>(selected - cachedTargets.begin());
+        if (state.selectedTarget < 0)
+            state.lockTarget = false;
     }
 };
