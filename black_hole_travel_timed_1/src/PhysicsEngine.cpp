@@ -522,6 +522,7 @@ void PhysicsEngine::handleCollisions()
                     event.intensity = collisionSpeed;
                     event.bodyA = bodyA;
                     event.bodyB = bodyB;
+                    event.sequence = ++collisionSequence;
                     recentCollisions.push_back(event);
 
                     // Console output for debugging

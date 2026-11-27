@@ -19,6 +19,7 @@
 #include "StarField.hpp"
 #include "Trail.hpp"
 #include "CollisionPredictor.hpp"
+#include "CollisionEffects.hpp"
 #include "OrbitalPath.hpp"
 #include "PredictionMarker.hpp"
 #include "VectorRenderer.hpp"
@@ -400,6 +401,7 @@ int main()
     // Create visual enhancement systems
     NebulaBackground nebula;
     EngineParticles engineParticles(1000);  // Max 1000 particles
+    CollisionEffects collisionEffects;
     GalaxyBackground galaxy(20000);          // 20,000 stars in realistic galaxy structure
     CoordinateGrid coordinateGrid(100.0f, 10.0f);  // 100 unit grid with 10 unit spacing
     StoryNarrator narrator;                  // Story and narrative system
@@ -504,7 +506,7 @@ int main()
     std::cout << "FEATURES:\n";
     std::cout << "  ✓ Realistic Newtonian gravity (F = G·m₁·m₂/r²)\n";
     std::cout << "  ✓ Elastic collision physics with visualization\n";
-    std::cout << "  ✓ Real-time collision markers (RED SPHERES)\n";
+    std::cout << "  ✓ Energy-scaled collision shockwaves and debris\n";
     std::cout << "  ✓ Collision warnings and altitude alerts\n";
     std::cout << "  ✓ Ship telemetry display (updates every 1 sec)\n";
     std::cout << "  ✓ 5000+ star background field\n";
@@ -1215,6 +1217,7 @@ int main()
         // -------- Physics Update --------
         // Update physics (ship's update() will handle surface lock if landed)
         physics.update(deltaTime);
+        camera.addShake(collisionEffects.update(physics.getRecentCollisions(), rawDeltaTime, camera.position));
 
         for (auto* body : bodies)
             body->update(deltaTime);
@@ -1960,35 +1963,7 @@ int main()
             glDepthMask(GL_TRUE);
         }
 
-        // *** RENDER COLLISION POINTS - RED PULSING SPHERES ***
-        const auto& collisions = physics.getRecentCollisions();
-        for (const auto& collision : collisions)
-        {
-            // Calculate fade-out based on age (0 = new, 3 = old)
-            float age = collision.timestamp;
-            float fade = 1.0f - (age / 3.0f);  // Fades over 3 seconds
-            if (fade < 0.0f) fade = 0.0f;
-
-            // Pulsing effect - make sphere throb
-            float pulse = 1.0f + 0.3f * std::sin(age * 10.0f);  // Fast pulse
-            float markerSize = 0.8f * pulse * fade;  // Size based on fade
-
-            // Bright red color that fades to orange
-            Vec3 collisionColor(1.0f, fade * 0.2f, 0.0f);  // Red to orange
-
-            // Create model matrix for collision marker
-            Mat4 collisionModel = Mat4::translation(
-                collision.position.x,
-                collision.position.y,
-                collision.position.z
-            ) * Mat4::scale(markerSize);
-
-            // Render as glowing sphere (like sun)
-            planetShader.setBool("isSun", true);  // Makes it glow!
-            planetShader.setBool("hasAtmosphere", false);
-            planetShader.setBool("hasTexture", false);
-            renderer.render(collisionModel, view, projection, collisionColor);
-        }
+        collisionEffects.render(view, projection);
 
         // Render orbital trails
         glDepthMask(GL_FALSE);

@@ -1,6 +1,7 @@
 #pragma once
 #include "Body.hpp"
 #include "Vec3.hpp"
+#include <cstdint>
 #include <vector>
 
 struct CollisionEvent
@@ -10,6 +11,7 @@ struct CollisionEvent
     float intensity;      // How hard (for size/color)
     Body* bodyA;          // What collided
     Body* bodyB;
+    std::uint64_t sequence = 0;
 };
 
 struct PhysicsDiagnostics
@@ -31,6 +33,7 @@ private:
     std::vector<Body*> bodies;
     float gravitationalConstant;
     std::vector<CollisionEvent> recentCollisions;  // Track recent collisions
+    std::uint64_t collisionSequence = 0;
     PhysicsDiagnostics diagnostics;
 
     // Adaptive substepping parameters for improved stability
