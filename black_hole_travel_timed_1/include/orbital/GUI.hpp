@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <cstdio>
 #include <algorithm>
 #include <optional>
 
@@ -662,50 +663,25 @@ public:
             ImGui::TextColored(colorInfo, "Available Targets:");
             ImGui::Separator();
 
-            // Target list with highlighting
+            // Each target is a single widget with its own ID.
             if (ImGui::BeginChild("TargetList", ImVec2(-1, 220), true))
             {
-                ImGui::Columns(3, "TargetColumns", false);
-                ImGui::TextUnformatted("Target");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Distance");
-                ImGui::NextColumn();
-                ImGui::TextUnformatted("Status");
-                ImGui::NextColumn();
-                ImGui::Separator();
-
                 for (size_t i = 0; i < cachedTargets.size(); ++i)
                 {
                     const TargetInfo& target = cachedTargets[i];
-                    const bool isSelected = (state.selectedTarget == static_cast<int>(i));
-
-                    ImGui::PushID(static_cast<int>(i));
-                    if (ImGui::Selectable(target.name.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns))
-                    {
+                    const bool selected = state.selectedTarget == static_cast<int>(i);
+                    const char* status = selected && state.lockTarget ? "  Locked" :
+                                         target.isLandable ? "  Landable" : "";
+                    char details[96];
+                    std::snprintf(details, sizeof(details), "  %.0f u%s", target.distance, status);
+                    const std::string label = target.name + details + "###Target" + std::to_string(i);
+                    if (selected)
+                        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+                    if (ImGui::Button(label.c_str(), ImVec2(-1.0f, 0.0f)))
                         state.selectedTarget = static_cast<int>(i);
-                    }
-                    ImGui::PopID();
-
-                    ImGui::NextColumn();
-                    ImGui::TextColored(colorInfo, "%.0f u", target.distance);
-
-                    ImGui::NextColumn();
-                    if (isSelected && state.lockTarget)
-                    {
-                        ImGui::TextColored(colorHighlight, "LOCKED");
-                    }
-                    else if (target.isLandable)
-                    {
-                        ImGui::TextColored(colorSuccess, "LAND");
-                    }
-                    else
-                    {
-                        ImGui::TextDisabled("-");
-                    }
-                    ImGui::NextColumn();
+                    if (selected)
+                        ImGui::PopStyleColor();
                 }
-
-                ImGui::Columns(1);
             }
 
             ImGui::EndChild();
