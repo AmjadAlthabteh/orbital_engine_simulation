@@ -29,9 +29,10 @@ void StarField::generateStars(int count)
 
     stars.clear();
     const int brightStarCount = safeCount / 10;
-    stars.reserve(static_cast<size_t>(safeCount + brightStarCount));
+    const int faintStarCount = safeCount / 2;
+    stars.reserve(static_cast<size_t>(safeCount) + faintStarCount + brightStarCount);
 
-    for (int i = 0; i < safeCount; ++i)
+    for (size_t i = 0; i < static_cast<size_t>(safeCount) + faintStarCount; ++i)
     {
         Star star;
 
@@ -43,6 +44,15 @@ void StarField::generateStars(int count)
         star.position.x = radius * sinPhi * std::cos(theta);
         star.position.y = radius * sinPhi * std::sin(theta);
         star.position.z = radius * std::cos(phi);
+
+        if (i >= static_cast<size_t>(safeCount))
+        {
+            star.brightness = 0.06f + dis(gen) * 0.08f;
+            star.size = 1.0f;
+            star.color = Vec3(0.78f, 0.88f, 1.0f);
+            stars.push_back(star);
+            continue;
+        }
 
         // Most naked-eye stars are faint point sources. A power curve prevents
         // the sky from looking like evenly bright confetti.

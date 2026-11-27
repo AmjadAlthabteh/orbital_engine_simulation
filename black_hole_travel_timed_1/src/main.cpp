@@ -1650,9 +1650,6 @@ int main()
         // Update prediction markers
         predictionMarkers.update(deltaTime);
 
-        // Update starfield
-        starfield.update(deltaTime);
-
         // -------- Rendering --------
         const sf::Vector2u currentWindowSize = window.getSize();
         if (currentWindowSize != lastWindowSize)

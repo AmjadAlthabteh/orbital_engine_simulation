@@ -346,6 +346,8 @@ layout (location = 2) in float aSize;
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform float time;
+uniform float alphaScale;
 
 out vec3 starColor;
 out float starSize;
