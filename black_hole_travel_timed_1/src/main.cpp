@@ -8,6 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include <cstdio>
 
 #include "Camera.hpp"
 #include "Shader.hpp"
@@ -268,6 +269,41 @@ static bool shouldDisplayOrbitalPath(const CelestialBody* body)
     return name != "Sun" &&
            name != "Black Hole" &&
            name.find("Asteroid") == std::string::npos;
+}
+
+static void drawBodyCoordinates(const std::vector<CelestialBody*>& bodies,
+                                const Mat4& view, const Mat4& projection)
+{
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImDrawList* drawList = ImGui::GetBackgroundDrawList();
+    const Mat4 viewProjection = projection * view;
+    const auto& m = viewProjection.m;
+
+    for (const auto* body : bodies)
+    {
+        const Vec3& position = body->getPhysicsBody().position;
+        const float w = m[3] * position.x + m[7] * position.y + m[11] * position.z + m[15];
+        const float z = m[2] * position.x + m[6] * position.y + m[10] * position.z + m[14];
+        if (w <= 0.0f || z < -w || z > w)
+            continue;
+
+        const float x = (m[0] * position.x + m[4] * position.y + m[8] * position.z + m[12]) / w;
+        const float y = (m[1] * position.x + m[5] * position.y + m[9] * position.z + m[13]) / w;
+        const float top = y + projection.m[5] * body->getRadius() / w;
+        if (std::abs(x) > 1.0f || top < -1.0f || top > 1.0f)
+            continue;
+
+        char coordinates[96];
+        std::snprintf(coordinates, sizeof(coordinates), " (%.2f, %.2f)", position.x, position.y);
+        const std::string label = body->getName() + coordinates;
+        const ImVec2 size = ImGui::CalcTextSize(label.c_str());
+        const ImVec2 pos(viewport->Pos.x + (x + 1.0f) * 0.5f * viewport->Size.x - size.x * 0.5f,
+                         viewport->Pos.y + (1.0f - top) * 0.5f * viewport->Size.y - size.y - 7.0f);
+        drawList->AddRectFilled(ImVec2(pos.x - 5.0f, pos.y - 2.0f),
+                                ImVec2(pos.x + size.x + 5.0f, pos.y + size.y + 2.0f),
+                                IM_COL32(10, 18, 30, 220), 4.0f);
+        drawList->AddText(pos, IM_COL32(218, 239, 255, 255), label.c_str());
+    }
 }
 
 int main()
@@ -2065,6 +2101,8 @@ int main()
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // 4. Render GUI on top of everything
+        if (!planetPanel.isActive())
+            drawBodyCoordinates(bodies, view, projection);
         gui.renderAllPanels(ship, bodies, &postProcessing, 1.0f / rawDeltaTime, rawDeltaTime);
         gui.render(window);
 
