@@ -666,6 +666,13 @@ public:
             if (ImGui::BeginChild("TargetList", ImVec2(-1, 220), true))
             {
                 ImGui::Columns(3, "TargetColumns", false);
+                ImGui::TextUnformatted("Target");
+                ImGui::NextColumn();
+                ImGui::TextUnformatted("Distance");
+                ImGui::NextColumn();
+                ImGui::TextUnformatted("Status");
+                ImGui::NextColumn();
+                ImGui::Separator();
 
                 for (size_t i = 0; i < cachedTargets.size(); ++i)
                 {
