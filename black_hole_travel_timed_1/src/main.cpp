@@ -171,7 +171,7 @@ in vec3 vertexColor;
 
 void main()
 {
-    FragColor = vec4(vertexColor, 0.9);
+    FragColor = vec4(vertexColor, 1.0);
 }
 )";
 
@@ -214,6 +214,7 @@ constexpr size_t SHIP_TRAJECTORY_POINT_SKIP = 3;  // Display every Nth point for
 constexpr int ORBITAL_PATH_POINTS = 360;          // Number of points for orbital path calculation
 constexpr float ORBITAL_PATH_COLOR_DIM = 0.5f;    // Dimming factor for orbital path colors
 constexpr float TRAJECTORY_POINT_COLOR_DIM = 0.7f; // Dimming factor for trajectory point colors
+constexpr float SHIP_TRAJECTORY_COLOR_DIM = 0.8f;
 
 // Rotation and angle constants
 constexpr float FULL_ROTATION_DEGREES = 360.0f;   // Full rotation in degrees
@@ -531,7 +532,6 @@ int main()
     std::cout << "  ✓ 5000+ star background field\n";
     std::cout << "  ✓ Enhanced planet colors and sizes\n";
     std::cout << "  ✓ Black hole gravity well detection\n";
-    std::cout << "  ✓ Frustum culling optimization (auto-skip off-screen objects)\n";
     std::cout << "  ✓ Special modes status display (turbo, barrel roll, etc.)\n\n";
 
     std::cout << "VISUAL ENHANCEMENTS:\n";
@@ -1423,8 +1423,6 @@ int main()
 
         // *** REAL-TIME DISTANCE/ALTITUDE DISPLAY ***
         static float displayTimer = 0.0f;
-        static int lastBodiesRendered = 0;
-        static int lastBodiesCulled = 0;
         displayTimer += rawDeltaTime;
         if (displayTimer > 1.0f)  // Update every second
         {
@@ -1537,16 +1535,7 @@ int main()
 
             // ===== PERFORMANCE STATS =====
             std::cout << "\n--- PERFORMANCE ---\n";
-            int totalBodies = lastBodiesRendered + lastBodiesCulled;
-            float cullPercentage = totalBodies > 0 ? (lastBodiesCulled * 100.0f / totalBodies) : 0.0f;
-
-            std::cout << "Bodies Rendered: " << lastBodiesRendered << "/" << totalBodies
-                      << " (" << (int)cullPercentage << "% culled)\n";
-
-            if (lastBodiesCulled > 0)
-            {
-                std::cout << "⚡ Frustum Culling Active - Performance Boost!\n";
-            }
+            std::cout << "Bodies submitted: " << bodies.size() << "\n";
 
             std::cout << "FOV: " << (int)camera.getFOV() << "°";
             if (camera.getFOV() > 50.0f)
@@ -1589,15 +1578,17 @@ int main()
                 {
                     vectorRenderer.addVelocityVector(
                         body->getPhysicsBody().position,
-                        body->getPhysicsBody().velocity
+                        body->getPhysicsBody().velocity,
+                        body->getColor() * TRAJECTORY_POINT_COLOR_DIM
                     );
                 }
             }
 
-            // Add spaceship velocity vector (brighter when thrusting)
+            // Match the ship's trajectory points.
             vectorRenderer.addVelocityVector(
                 ship.getPhysicsBody().position,
-                ship.getPhysicsBody().velocity
+                ship.getPhysicsBody().velocity,
+                ship.getColor() * SHIP_TRAJECTORY_COLOR_DIM
             );
 
             vectorUpdateTimer = 0.0f;
@@ -1665,7 +1656,7 @@ int main()
                     {
                         predictionMarkers.addTrajectoryPoint(
                             shipTrajectoryPoints[i],
-                            ship.getColor() * 0.8f  // Bright cyan trail
+                            ship.getColor() * SHIP_TRAJECTORY_COLOR_DIM
                         );
                     }
                 }
@@ -1773,26 +1764,10 @@ int main()
         Mat4 saturnModelMatrix;
         bool foundSaturn = false;
 
-        // PERFORMANCE OPTIMIZATION: Frustum culling stats
-        int bodiesRendered = 0;
-        int bodiesCulled = 0;
-
+        // Let GPU clipping use the same view and projection as the rendered meshes.
         for (auto* body : bodies)
         {
-            // FRUSTUM CULLING: Skip rendering objects outside camera view!
-            Vec3 bodyPos = body->getPhysicsBody().position;
-            float bodyRadius = body->getRadius();
-
-            // Always render Sun and Black Hole (they're important landmarks)
-            bool isImportant = (body->getName() == "Sun" || body->getName() == "Black Hole");
-
-            if (!isImportant && !camera.isSphereInFrustum(bodyPos, bodyRadius * 2.0f, aspectRatio))
-            {
-                bodiesCulled++;
-                continue;  // Skip rendering this body - it's not visible!
-            }
-
-            bodiesRendered++;
+            const Vec3 bodyPos = body->getPhysicsBody().position;
 
             const Mat4 model = tidalModel(body->getRenderModelMatrix(), body->getPhysicsBody(),
                                           sunGravity, holeGravity, visualTime);
@@ -1872,10 +1847,6 @@ int main()
                 foundSaturn = true;
             }
         }
-
-        // ===== SAVE PERFORMANCE STATS =====
-        lastBodiesRendered = bodiesRendered;
-        lastBodiesCulled = bodiesCulled;
 
         // Render atmospheres as genuine shells above the terrain. This gives the
         // limb physical thickness and lets the night side remain correctly dark.
@@ -2037,14 +2008,13 @@ int main()
         if (showVectors)
         {
             glDepthMask(GL_FALSE);
-            glLineWidth(3.0f);
+            glLineWidth(2.0f);
 
             vectorShader.use();
             vectorShader.setMat4("view", view);
             vectorShader.setMat4("projection", projection);
             vectorRenderer.render();
 
-            glLineWidth(2.0f);
             glDepthMask(GL_TRUE);
         }
 

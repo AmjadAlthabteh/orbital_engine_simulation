@@ -1,4 +1,5 @@
 #include "VectorRenderer.hpp"
+#include <algorithm>
 #include <cmath>
 
 VectorRenderer::VectorRenderer()
@@ -31,7 +32,7 @@ void VectorRenderer::setupBuffers()
     glBindVertexArray(0);
 }
 
-void VectorRenderer::addVelocityVector(const Vec3& origin, const Vec3& velocity)
+void VectorRenderer::addVelocityVector(const Vec3& origin, const Vec3& velocity, const Vec3& color)
 {
     if (!origin.isFinite() || !velocity.isFinite())
         return;
@@ -45,8 +46,8 @@ void VectorRenderer::addVelocityVector(const Vec3& origin, const Vec3& velocity)
     VectorArrow arrow;
     arrow.origin = origin;
     arrow.direction = velocity / speed;
-    arrow.magnitude = speed * 2.0f; // Scale for visibility
-    arrow.color = Vec3(0.0f, 1.0f, 0.5f); // Green-cyan for velocity
+    arrow.magnitude = std::min(speed * 1.35f, 12.0f);
+    arrow.color = color;
     arrow.active = true;
 
     velocityVectors.push_back(arrow);
@@ -105,7 +106,7 @@ void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& directi
     if (perpendicular1.lengthSquared() == 0.0f || perpendicular2.lengthSquared() == 0.0f)
         return;
 
-    float headSize = magnitude * 0.2f;
+    float headSize = magnitude * 0.13f;
     Vec3 headBase = origin + direction * (magnitude * 0.8f);
 
     // Arrow head triangles (4 lines making a cone)
@@ -117,16 +118,16 @@ void VectorRenderer::createArrowGeometry(const Vec3& origin, const Vec3& directi
         vertexData.push_back(endpoint.x);
         vertexData.push_back(endpoint.y);
         vertexData.push_back(endpoint.z);
-        vertexData.push_back(color.x * 1.2f);
-        vertexData.push_back(color.y * 1.2f);
-        vertexData.push_back(color.z * 1.2f);
+        vertexData.push_back(color.x);
+        vertexData.push_back(color.y);
+        vertexData.push_back(color.z);
 
         vertexData.push_back(headPoint.x);
         vertexData.push_back(headPoint.y);
         vertexData.push_back(headPoint.z);
-        vertexData.push_back(color.x * 1.2f);
-        vertexData.push_back(color.y * 1.2f);
-        vertexData.push_back(color.z * 1.2f);
+        vertexData.push_back(color.x);
+        vertexData.push_back(color.y);
+        vertexData.push_back(color.z);
     }
 }
 

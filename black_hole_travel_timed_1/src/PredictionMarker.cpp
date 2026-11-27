@@ -133,7 +133,7 @@ void PredictionMarker::render(Shader* shader, const Mat4& view, const Mat4& proj
     shader->use();
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
-    shader->setBool("isSun", false);
+    shader->setBool("unlitMarker", true);
 
     for (const auto& marker : markers)
     {
@@ -147,11 +147,9 @@ void PredictionMarker::render(Shader* shader, const Mat4& view, const Mat4& proj
 
         shader->setMat4("model", model);
         shader->setVec3("objectColor", marker.color);
-        shader->setVec3("viewPos", Vec3(0, 0, 0));
-        shader->setVec3("lightPos", Vec3(0, 0, 0));
-
         markerSphere.draw();
     }
+    shader->setBool("unlitMarker", false);
 }
 
 void PredictionMarker::clear()

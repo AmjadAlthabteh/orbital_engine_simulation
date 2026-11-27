@@ -44,6 +44,7 @@ uniform vec3 objectColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform bool isSun;
+uniform bool unlitMarker;
 uniform bool hasTexture;
 uniform sampler2D planetTexture;
 uniform bool hasAtmosphere;
@@ -76,6 +77,12 @@ float surfaceNoise(vec3 p)
 
 void main()
 {
+    if (unlitMarker)
+    {
+        FragColor = vec4(objectColor, 1.0);
+        return;
+    }
+
     if (isSun)
     {
         vec3 norm = normalize(Normal);
@@ -142,7 +149,7 @@ void main()
     vec3 specular = vec3(distribution * geometryV * geometryL * fresnel /
                          max(4.0 * nDotV * nDotL, 0.001));
 
-    float nightFill = hasAtmosphere ? 0.018 : 0.008;
+    float nightFill = hasAtmosphere ? 0.075 : 0.045;
     vec3 ambient = baseColor * nightFill;
     vec3 diffuse = baseColor * nDotL * (1.0 - fresnel) * lightIntensity / 3.14159265;
 

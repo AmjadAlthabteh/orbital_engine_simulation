@@ -24,7 +24,7 @@ public:
     VectorRenderer();
     ~VectorRenderer();
 
-    void addVelocityVector(const Vec3& origin, const Vec3& velocity);
+    void addVelocityVector(const Vec3& origin, const Vec3& velocity, const Vec3& color);
     void addForceVector(const Vec3& origin, const Vec3& force);
     void clear();
     void render();
