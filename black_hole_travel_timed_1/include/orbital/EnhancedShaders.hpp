@@ -348,13 +348,39 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform float time;
 uniform float alphaScale;
+uniform bool lensStars;
+uniform vec3 sunOffset;
+uniform vec3 holeOffset;
+uniform float sunRadius;
+uniform float holeRadius;
 
 out vec3 starColor;
 out float starSize;
 
+vec3 lensOffset(vec3 ray, vec3 source, float radius, float bend)
+{
+    float distanceToLens = length(source);
+    vec3 axis = source / max(distanceToLens, 0.001);
+    float alignment = dot(ray, axis);
+    vec3 outward = ray - axis * alignment;
+    float separation = length(outward);
+    float extent = min(0.55, 4.0 * radius / max(distanceToLens, 0.001));
+    float falloff = 1.0 - smoothstep(0.0, max(extent, 0.001), separation);
+    float deflection = extent * bend * falloff * falloff;
+    return outward * (deflection / max(separation, 0.001)) * step(0.0, alignment);
+}
+
 void main()
 {
-    gl_Position = projection * view * vec4(aPos, 1.0);
+    vec3 position = aPos;
+    if (lensStars)
+    {
+        vec3 ray = normalize(aPos);
+        vec3 offset = lensOffset(ray, sunOffset, sunRadius, 0.16)
+                    + lensOffset(ray, holeOffset, holeRadius, 0.46);
+        position = normalize(ray + offset) * length(aPos);
+    }
+    gl_Position = projection * view * vec4(position, 1.0);
     gl_PointSize = aSize;
     starColor = aColor;
     starSize = aSize;

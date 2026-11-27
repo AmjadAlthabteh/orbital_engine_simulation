@@ -20,6 +20,7 @@
 #include "Trail.hpp"
 #include "CollisionPredictor.hpp"
 #include "CollisionEffects.hpp"
+#include "GravityVisuals.hpp"
 #include "OrbitalPath.hpp"
 #include "PredictionMarker.hpp"
 #include "VectorRenderer.hpp"
@@ -74,10 +75,21 @@ layout (location = 0) in vec3 aPos;
 
 uniform mat4 view;
 uniform mat4 projection;
-uniform float alphaScale;
+uniform bool lightTrails;
+uniform vec3 sunPosition;
+uniform vec3 holePosition;
+uniform float sunRange;
+uniform float holeRange;
+out vec2 gravityGlow;
 
 void main()
 {
+    gravityGlow = vec2(0.0);
+    if (lightTrails)
+    {
+        gravityGlow.x = 0.55 * (1.0 - smoothstep(0.0, max(sunRange, 0.001), distance(aPos, sunPosition)));
+        gravityGlow.y = 1.0 - smoothstep(0.0, max(holeRange, 0.001), distance(aPos, holePosition));
+    }
     gl_Position = projection * view * vec4(aPos, 1.0);
 }
 )";
@@ -88,10 +100,13 @@ out vec4 FragColor;
 
 uniform vec3 lineColor;
 uniform float alpha;
+in vec2 gravityGlow;
 
 void main()
 {
-    FragColor = vec4(lineColor, alpha);
+    vec3 glow = gravityGlow.x * vec3(1.0, 0.52, 0.14)
+              + gravityGlow.y * vec3(0.55, 0.38, 1.15);
+    FragColor = vec4(lineColor + glow, min(1.0, alpha + 0.30 * (gravityGlow.x + gravityGlow.y)));
 }
 )";
 
@@ -349,6 +364,10 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_PROGRAM_POINT_SIZE);
+    // Compatibility contexts need point sprites enabled for gl_PointCoord.
+    constexpr GLenum pointSprite = 0x8861; // GL_POINT_SPRITE
+    if ((window.getSettings().attributeFlags & sf::ContextSettings::Core) == 0)
+        glEnable(pointSprite);
     glLineWidth(2.0f);
 
     auto applyViewportAndResizeTargets =
@@ -568,6 +587,11 @@ int main()
 
     // Initialize solar system
     auto bodies = SolarSystemFactory::createSimpleSystem();
+    const CelestialBody* sunBody = findBodyByName("Sun", bodies);
+    const CelestialBody* blackHoleBody = findBodyByName("Black Hole", bodies);
+    const Body* sunGravity = sunBody ? &sunBody->getPhysicsBody() : nullptr;
+    const Body* holeGravity = blackHoleBody ? &blackHoleBody->getPhysicsBody() : nullptr;
+    BlackHoleInflow blackHoleInflow;
     PhysicsEngine physics(PHYSICS_TIMESTEP);
 
     // Create preset waypoints now that bodies exist
@@ -1700,6 +1724,11 @@ int main()
         starShader.setMat4("projection", projection);
         starShader.setFloat("alphaScale", 0.82f);
         starShader.setFloat("time", visualTime);
+        starShader.setBool("lensStars", true);
+        starShader.setVec3("sunOffset", sunGravity ? sunGravity->position - camera.position : Vec3());
+        starShader.setVec3("holeOffset", holeGravity ? holeGravity->position - camera.position : Vec3());
+        starShader.setFloat("sunRadius", sunGravity ? sunGravity->radius : 0.0f);
+        starShader.setFloat("holeRadius", holeGravity ? holeGravity->radius : 0.0f);
         starfield.render();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDepthMask(GL_TRUE);
@@ -1721,6 +1750,11 @@ int main()
         lineShader.setMat4("view", view);
         lineShader.setMat4("projection", projection);
         lineShader.setFloat("alpha", 0.18f);
+        lineShader.setBool("lightTrails", true);
+        lineShader.setVec3("sunPosition", sunGravity ? sunGravity->position : Vec3());
+        lineShader.setVec3("holePosition", holeGravity ? holeGravity->position : Vec3());
+        lineShader.setFloat("sunRange", sunGravity ? sunGravity->radius * 3.0f : 0.0f);
+        lineShader.setFloat("holeRange", holeGravity ? holeGravity->radius * 12.0f : 0.0f);
 
         for (auto& path : orbitalPaths)
         {
@@ -1735,10 +1769,9 @@ int main()
         planetShader.setVec3("lightPos", Vec3(0, 0, 0));
         planetShader.setFloat("time", visualTime);
 
-        // Track Saturn for rings and Black Hole for special rendering
+        // Track Saturn's render transform for its rings.
         Mat4 saturnModelMatrix;
         bool foundSaturn = false;
-        CelestialBody* blackHoleBody = nullptr;
 
         // PERFORMANCE OPTIMIZATION: Frustum culling stats
         int bodiesRendered = 0;
@@ -1761,7 +1794,8 @@ int main()
 
             bodiesRendered++;
 
-            Mat4 model = body->getRenderModelMatrix();
+            const Mat4 model = tidalModel(body->getRenderModelMatrix(), body->getPhysicsBody(),
+                                          sunGravity, holeGravity, visualTime);
             bool isSun = (body->getName() == "Sun");
             planetShader.setBool("isSun", isSun);
 
@@ -1837,12 +1871,6 @@ int main()
                 saturnModelMatrix = model;
                 foundSaturn = true;
             }
-
-            // Save black hole for special rendering
-            if (body->getName() == "Black Hole")
-            {
-                blackHoleBody = body;
-            }
         }
 
         // ===== SAVE PERFORMANCE STATS =====
@@ -1873,7 +1901,9 @@ int main()
             if (density <= 0.0f) continue;
             atmosphereShader.setVec3("atmosphereColor", atmosphereTint);
             atmosphereShader.setFloat("density", density);
-            atmosphereShader.setMat4("model", body->getRenderModelMatrix() * Mat4::scale(shellScale));
+            const Mat4 model = tidalModel(body->getRenderModelMatrix(), body->getPhysicsBody(),
+                                          sunGravity, holeGravity, visualTime);
+            atmosphereShader.setMat4("model", model * Mat4::scale(shellScale));
             atmosphereSphere.draw();
         }
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1914,10 +1944,9 @@ int main()
             glDepthMask(GL_FALSE);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
             lensingSphere.draw();
+            blackHoleInflow.render(*holeGravity, view, projection, visualTime);
             glDepthMask(GL_TRUE);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-            glDisable(GL_BLEND);
         }
 
         // Render Saturn's Rings!
@@ -1941,7 +1970,8 @@ int main()
         }
 
         // Render spaceship with oriented model matrix and atmospheric effects
-        Mat4 shipModel = ship.getOrientedModelMatrix();
+        const Mat4 shipModel = tidalModel(ship.getOrientedModelMatrix(), ship.getPhysicsBody(),
+                                         sunGravity, holeGravity, visualTime);
         planetShader.setBool("isSun", false);
         planetShader.setBool("hasAtmosphere", false);
         planetShader.setBool("hasTexture", false);
@@ -1971,6 +2001,7 @@ int main()
         lineShader.setMat4("view", view);
         lineShader.setMat4("projection", projection);
         lineShader.setFloat("alpha", 0.6f);
+        lineShader.setBool("lightTrails", true);
 
         for (auto* body : bodies)
         {
@@ -1984,6 +2015,7 @@ int main()
         // Render spaceship exhaust trail (orange/red)
         lineShader.setVec3("lineColor", Vec3(1.0f, 0.5f, 0.1f));
         ship.renderExhaustTrail();
+        lineShader.setBool("lightTrails", false);
 
         // Render collision prediction lines
         if (!collisionPredictor.getPredictions().empty())
@@ -2023,6 +2055,7 @@ int main()
             starShader.setMat4("view", view);
             starShader.setMat4("projection", projection);
             starShader.setFloat("alphaScale", 1.0f);
+            starShader.setBool("lensStars", false);
             lagrangePoints.render();
         }
 
